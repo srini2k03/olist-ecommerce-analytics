@@ -30,7 +30,7 @@ nav { margin-bottom: 24px; color: var(--muted); }
 <li><strong>Rendered notebooks and summary:</strong> https://srini2k03.github.io/olist-ecommerce-analytics/</li>
 </ul>
 <h2>Key findings</h2>
-<p>Every number below comes from executed code on the real data. The SQL snapshots are in <a href="results/sql"><code>results/sql/</code></a>, and the notebook outputs are in <a href="notebooks"><code>notebooks/</code></a>.</p>
+<p>Every number below comes from executed code on the real data. The SQL snapshots are in <a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/results/sql"><code>results/sql/</code></a>, and the notebook outputs are in <a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/notebooks"><code>notebooks/</code></a>.</p>
 <table>
 <thead>
 <tr>
@@ -57,7 +57,7 @@ nav { margin-bottom: 24px; color: var(--muted); }
 </tr>
 <tr>
 <td>4</td>
-<td><strong>Lateness is regional.</strong> The late rate is <strong>21.4%</strong> in Alagoas against <strong>4.5%</strong> in São Paulo. The single lane <strong>SP → RJ</strong> accounts for <strong>19.4% of all late deliveries</strong>.</td>
+<td><strong>Lateness is regional.</strong> The late rate is <strong>21.4%</strong> in Alagoas against <strong>4.5%</strong> in São Paulo. The single lane <strong>SP → RJ</strong> accounts for <strong>17.6% of all late deliveries</strong>.</td>
 <td>SQL 09, 13</td>
 </tr>
 <tr>
@@ -67,7 +67,7 @@ nav { margin-bottom: 24px; color: var(--muted); }
 </tr>
 <tr>
 <td>6</td>
-<td><strong>Repeat purchase is barely predictable, and we say so.</strong> With a 1.18% base rate, LightGBM reaches ROC-AUC 0.583 and PR-AUC 0.020 on a later, held-out time window. <strong>Targeting the top 10% of customers ranked by the model captures 19.6% of those who actually bought again within 180 days (1.96x lift), against 15.4% for a recency rule.</strong> Logistic regression is statistically tied.</td>
+<td><strong>Repeat purchase is barely predictable, and we say so.</strong> With a 1.18% base rate, LightGBM reaches ROC-AUC 0.581 and PR-AUC 0.020 on a later, held-out time window. <strong>Targeting the top 10% of customers ranked by the model captures 19.4% of those who actually bought again within 180 days (1.94x lift), against 15.4% for a recency rule.</strong> Logistic regression is statistically tied.</td>
 <td><a href="notebooks/04_churn.html">04_churn</a></td>
 </tr>
 <tr>
@@ -112,7 +112,7 @@ tests/                   pytest: SQL, stats, leakage, models, segmentation, app
 </ul>
 <p>Every file is checked against a SHA-256 checksum. A Kaggle file that differs from the pinned bytes is replaced from the mirror, so every run analyses identical data.
 - <strong>Derived artefacts</strong> (aggregated SQL outputs, figures, the per-customer scores in <code>app/data</code>) are shared under the same CC BY-NC-SA 4.0 terms.
-- <strong>Code:</strong> MIT (<a href="LICENSE">LICENSE</a>).</p>
+- <strong>Code:</strong> MIT (<a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/LICENSE">LICENSE</a>).</p>
 <h2>Reproduce</h2>
 <pre><code class="language-bash">python -m venv .venv &amp;&amp; source .venv/bin/activate
 make setup          # pip install -r requirements-dev.txt -e .
