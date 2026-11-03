@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Olist dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser@1.10.0/build/stlite.css">
+<style>
+#loading { font: 16px/1.6 system-ui, sans-serif; padding: 24px 16px; color: #52514e; }
+</style>
+</head><body>
+<div id="root"><p id="loading">Loading the dashboard: Python is starting in your browser,
+which takes 10&ndash;30 seconds on the first visit.</p></div>
+<script type="module">
+import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@1.10.0/build/stlite.js";
+const files = ["streamlit_app.py", "data/churn_scores.parquet", "data/cohort.parquet", "data/delivery_delay.parquet", "data/kpis.json", "data/model_card.json", "data/monthly.parquet", "data/segment_sample.parquet", "data/segments.parquet", "data/state_sla.parquet"];
+mount(
+  {
+    requirements: ["altair", "pyarrow"],
+    entrypoint: "streamlit_app.py",
+    files: Object.fromEntries(files.map((f) => [f, { url: f }])),
+  },
+  document.getElementById("root"),
+);
+</script>
+</body></html>
