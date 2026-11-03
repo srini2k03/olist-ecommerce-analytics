@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Executive summary</title>
+<style>
+:root { --ink:#0b0b0b; --muted:#52514e; --bg:#fcfcfb; --line:#e4e3df; --link:#2a78d6; }
+@media (prefers-color-scheme: dark) {
+  :root { --ink:#f0efec; --muted:#c3c2b7; --bg:#1a1a19; --line:#3a3a38; --link:#6da7ec; }
+  img { background:#fcfcfb; }
+}
+body { font: 16px/1.6 system-ui, -apple-system, Segoe UI, sans-serif; color:var(--ink);
+       background:var(--bg); max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
+a { color: var(--link); }
+img { max-width: 100%; height: auto; }
+table { border-collapse: collapse; display:block; overflow-x:auto; }
+th, td { border-bottom: 1px solid var(--line); padding: 4px 10px; text-align: left; }
+code { font-size: 0.92em; }
+nav { margin-bottom: 24px; color: var(--muted); }
+</style></head><body>
+<nav><a href="index.html">Home</a> · <a href="executive_summary.html">Executive summary</a> ·
+<a href="notebooks/01_eda.html">01_eda</a> · <a href="notebooks/02_stats.html">02_stats</a> · <a href="notebooks/03_segmentation.html">03_segmentation</a> · <a href="notebooks/04_churn.html">04_churn</a></nav>
+<h1>Executive summary: Olist marketplace, Jan 2017 to Aug 2018</h1>
+<p><strong>Bottom line.</strong> Olist more than doubled in a year (Jan–Aug 2018 GMV +140% on the same months of 2017), but <strong>growth flattened in 2018</strong> (mean month-on-month −1.0%). Almost nobody buys twice: <strong>3.0%</strong> of customers ever do. Further growth has to come from keeping customers. Our analysis points to <strong>late delivery</strong> as the main controllable reason they do not return.</p>
+<p><em>Scope:</em> 99,441 orders from the public Olist dataset. Figures come from executed SQL and notebooks in this repository. The A/B test in recommendation 4 is <strong>simulated</strong>, with inputs calibrated to real data.</p>
+<h2>Recommendations</h2>
+<p><strong>1. Make "delivered by the promised date" the top customer-experience KPI, and fix it lane by lane.</strong>
+- <strong>Finding:</strong> late orders average <strong>2.27★</strong>, against <strong>4.29★</strong> for on-time orders. Controlling for category, state, basket and value, being late cuts the odds of a better review about 15-fold (odds ratio <strong>0.068</strong>, 95% CI 0.063–0.074).
+- <strong>Where:</strong> late rates reach <strong>21.4%</strong> in Alagoas against <strong>4.5%</strong> in São Paulo, and the SP → RJ lane alone accounts for <strong>19.4% of all late orders</strong>.
+- <strong>Action:</strong> pad promised dates on high-risk north-east lanes. Customers tolerate slow delivery but punish late delivery; arriving 1–3 days late already drops the mean to 3.29★. Renegotiate or switch the SP → RJ carrier.
+- <strong>Size of the prize:</strong> if the 6.7% of late orders were reviewed like on-time ones, the platform's mean review would rise by about <strong>0.13★</strong> (6.7% × 2.02★).</p>
+<p><strong>2. Run a win-back programme for "At-risk big spenders" before day 365.</strong>
+- <strong>Finding:</strong> this K-Means segment is <strong>12.4% of customers but 38.6% of revenue</strong> (R$ 515 average spend, about 298 days since the last order). It has the <strong>lowest mean review of any segment (3.95)</strong>.
+- <strong>Action:</strong> send a personal offer in the category they bought, starting with an apology or credit where their order was late. This is the only segment where paid reactivation clearly pays.</p>
+<p><strong>3. Nudge recent buyers to a second order between day 30 and day 90.</strong>
+- <strong>Finding:</strong> month-1 retention is <strong>0.48%</strong>. Of the customers who do return, <strong>68%</strong> place their second order within 90 days and <strong>83%</strong> within 180 days.
+- <strong>Action:</strong> trigger a complementary-category bundle for "Recent mid-value buyers" (31.2% of customers, 31.4% of revenue) inside that window, and measure it against a holdout.</p>
+<p><strong>4. Do not launch a R$ 150 free-shipping threshold as designed. Test a better-targeted version, and run tests properly.</strong>
+- <strong>Finding (simulated, calibrated to real 2018 data):</strong> the threshold lifts the multi-item rate (+1.43 pp, p = 0.006). However, the freight subsidy costs <strong>R$ 9.60 per order</strong> against about <strong>R$ 1.44</strong> of extra GMV, because <strong>26%</strong> of orders already qualify.
+- <strong>Action:</strong> test a threshold just above typical single-item baskets, or a partial subsidy, and use margin as a guardrail.
+- <strong>Testing discipline:</strong>
+  - at 222 orders per day, plan about <strong>9-week</strong> tests (a 15% minimum detectable effect);
+  - <strong>do not peek</strong>: checking 20 times inflates the false-positive rate from 5% to <strong>23%</strong>;
+  - read results by week of exposure to strip out novelty effects.</p>
+<p><strong>5. Use the churn score only to prioritise cheap retention actions, and prove uplift first.</strong>
+- <strong>Finding:</strong> repeat purchase is hard to predict. On a later, held-out window, LightGBM reaches ROC-AUC <strong>0.583</strong> and PR-AUC <strong>0.020</strong> against a 1.18% base rate. Logistic regression performs about as well. Still, <strong>targeting the top 10% of customers ranked by the model captures 19.6% of next-180-day repeat buyers (1.96x lift)</strong>, against 15.4% for a "most recent first" rule.
+- <strong>Action:</strong> use the score for email and push to the top 10–20%. Run a randomised holdout before attaching discounts.</p>
+<h2>Caveats</h2>
+<ul>
+<li>The data is observational, so the delivery-to-review link is strongly supported but not experimentally proven.</li>
+<li>Repeat-purchase signal is weak, with no browsing or marketing data available.</li>
+<li>Review "sentiment" relies on keyword proxies.</li>
+</ul>
+<p>Details: <a href="notebooks/">notebooks</a> · <a href="results/sql/">SQL snapshots</a> · dashboard: <code>app/streamlit_app.py</code>.</p>
+</body></html>
