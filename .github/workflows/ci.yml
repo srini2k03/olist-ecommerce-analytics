@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.13"
+
+jobs:
+  lint-test:
+    name: Ruff + pytest (synthetic fixture, no network)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - run: pip install -r requirements-dev.txt -e .
+      - run: ruff check .
+      - run: ruff format --check .
+      - name: pytest (includes Streamlit AppTest against committed app/data)
+        run: pytest -v
+
+  sql-duckdb-postgres:
+    name: All SQL on real data, DuckDB vs Postgres
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: olist
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      OLIST_PG_DSN: postgresql://postgres:postgres@localhost:5432/olist
+      OLIST_PG_TEST_DSN: postgresql://postgres:postgres@localhost:5432/olist_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - run: pip install -r requirements-dev.txt -e .
+      - uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: olist-raw-${{ hashFiles('scripts/fetch_data.py') }}
+      - name: Fetch the real Olist CSVs (checksum-verified)
+        run: python scripts/fetch_data.py
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      - name: Load DuckDB and Postgres
+        run: python scripts/build_warehouse.py --postgres
+      - name: Run all 16 queries on both engines and require identical results
+        run: python scripts/run_sql.py --postgres
+      - name: Committed results/sql snapshots match a fresh run
+        run: git diff --exit-code results/sql
+      - name: Synthetic-fixture SQL tests on Postgres
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE olist_test"
+          pytest -v tests/test_sql.py
+
+  notebooks:
+    name: Execute notebooks on real data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - run: pip install -r requirements-dev.txt -e .
+      - uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: olist-raw-${{ hashFiles('scripts/fetch_data.py') }}
+      - run: python scripts/fetch_data.py
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      - run: python scripts/build_warehouse.py
+      - name: nbconvert --execute (fails on any cell error)
+        run: make notebooks
+      - name: Executed notebooks keep their key numbers
+        run: git diff --stat -- notebooks results/metrics
+      - uses: actions/upload-artifact@v4
+        with:
+          name: executed-notebooks
+          path: |
+            notebooks/*.ipynb
+            results/figures
+            results/metrics
+
+  streamlit-smoke:
+    name: Streamlit smoke test (streamlit run + Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Install the app's own requirements.txt (what Streamlit Cloud installs)
+        run: pip install -r requirements.txt playwright==1.64.1
+      - run: python -m playwright install --with-deps chromium
+      - run: python scripts/smoke_app.py --screenshot smoke/app.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: streamlit-screenshots
+          path: smoke/
