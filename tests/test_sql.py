@@ -90,3 +90,20 @@ def test_pareto_ranks_are_contiguous(duck):
 def test_same_result_on_postgres(duck, pg, query):
     ok, msg = frames_match(run(duck, query), run(pg, query))
     assert ok, msg
+
+
+def test_hotspot_share_is_of_all_late_orders(duck):
+    """share_of_all_late must use every late order as the denominator, not only the late
+    orders of lanes that pass the 200-order filter."""
+    df = _q(duck, "13_late_delivery_hotspots")
+    all_late = duck.query(
+        """
+        SELECT COUNT(*) AS n
+        FROM orders AS o
+        JOIN order_items AS oi ON oi.order_id = o.order_id AND oi.order_item_id = 1
+        WHERE o.order_status = 'delivered'
+          AND CAST(o.order_delivered_customer_date AS DATE)
+              > CAST(o.order_estimated_delivery_date AS DATE)
+        """
+    ).n.iloc[0]
+    assert np.allclose(df.share_of_all_late, df.late_orders / all_late)

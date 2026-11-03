@@ -40,12 +40,19 @@ by_lane AS (
     FROM lanes
     GROUP BY lane, seller_state, customer_state
 ),
+with_share AS (
+    -- Share over every lane, before the 200-order filter: a window in the filtered
+    -- SELECT below would only see the late orders of lanes that pass the filter.
+    SELECT
+        *,
+        1.0 * late_orders / SUM(late_orders) OVER () AS share_of_all_late
+    FROM by_lane
+),
 ranked AS (
     SELECT
         *,
-        1.0 * late_orders / SUM(late_orders) OVER () AS share_of_all_late,
         ROW_NUMBER() OVER (ORDER BY late_rate DESC, orders DESC, lane) AS hotspot_rank
-    FROM by_lane
+    FROM with_share
     WHERE orders >= 200
 )
 SELECT
