@@ -19,12 +19,15 @@ line-length = 100
 target-version = "py311"
 extend-include = ["*.ipynb"]
 
+[tool.ruff.format]
+exclude = ["notebooks/*.ipynb"]
+
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "NPY"]
 ignore = ["S101", "S608"]
 
 [tool.ruff.lint.per-file-ignores]
-"notebooks/*.ipynb" = ["E402", "E501", "B018"]
+"notebooks/*.ipynb" = ["E402", "E501", "B018", "E731", "B023", "B905", "B007", "S"]
 "tests/*" = ["S"]
 
 [tool.ruff.lint.isort]

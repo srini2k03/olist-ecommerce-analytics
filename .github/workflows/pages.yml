@@ -1,0 +1,39 @@
+name: Pages
+
+# Publishes the executed notebooks as HTML, the executive summary and the README
+# (with its figures) to the gh-pages branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "notebooks/**"
+      - "results/figures/**"
+      - "README.md"
+      - "EXECUTIVE_SUMMARY.md"
+      - "scripts/build_site.py"
+  workflow_run:
+    workflows: ["Build data"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install nbconvert==7.17.2 nbformat==5.11.1 Markdown==3.11.2
+      - run: python scripts/build_site.py
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
