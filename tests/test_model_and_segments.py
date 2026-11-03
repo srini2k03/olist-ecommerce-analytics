@@ -55,9 +55,9 @@ def test_segment_naming_rules():
     names = name_segments(profile)
     assert names == {
         0: "At-risk big spenders",
-        1: "Recent big spenders",
+        1: "Recent mid-value buyers",
         2: "Champions",
-        3: "Recent low spenders",
+        3: "Recent low-value buyers",
         4: "One-and-done (lapsed, low value)",
     }
 

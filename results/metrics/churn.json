@@ -1,0 +1,210 @@
+{
+  "horizon_days": 180,
+  "train_cutoffs": [
+    "2017-06-01",
+    "2017-09-01"
+  ],
+  "test_cutoff": "2018-03-01",
+  "selected_params": {},
+  "validation": [
+    {
+      "model": "lgbm default (15 leaves, 400 trees, lr 0.02)",
+      "roc_auc": 0.6283017807342415,
+      "pr_auc": 0.03416260578329731,
+      "base_rate": 0.016109436169734058,
+      "capture_top10": 0.25139664804469275,
+      "lift_top10": 2.5139664804469275
+    },
+    {
+      "model": "lgbm 7 leaves, 300 trees",
+      "roc_auc": 0.6191841250333752,
+      "pr_auc": 0.030454417405823962,
+      "base_rate": 0.016109436169734058,
+      "capture_top10": 0.19273743016759776,
+      "lift_top10": 1.9273743016759775
+    },
+    {
+      "model": "lgbm 4 leaves, 200 trees, lr 0.03",
+      "roc_auc": 0.6050845270687191,
+      "pr_auc": 0.029483976883712078,
+      "base_rate": 0.016109436169734058,
+      "capture_top10": 0.18156424581005587,
+      "lift_top10": 1.8156424581005586
+    },
+    {
+      "model": "lgbm 15 leaves, 150 trees",
+      "roc_auc": 0.6240843699338373,
+      "pr_auc": 0.029402349943821307,
+      "base_rate": 0.016109436169734058,
+      "capture_top10": 0.18994413407821228,
+      "lift_top10": 1.8994413407821227
+    },
+    {
+      "model": "logistic regression",
+      "roc_auc": 0.5862164603259973,
+      "pr_auc": 0.026566715560148616,
+      "base_rate": 0.016109436169734058,
+      "capture_top10": 0.164804469273743,
+      "lift_top10": 1.64804469273743
+    },
+    {
+      "model": "recency rule",
+      "roc_auc": 0.5675278211779495,
+      "pr_auc": 0.020172025832407063,
+      "base_rate": 0.016109436169734058,
+      "capture_top10": 0.1564245810055866,
+      "lift_top10": 1.5642458100558658
+    }
+  ],
+  "test": [
+    {
+      "model": "Recency rule",
+      "roc_auc": 0.5674273333771989,
+      "roc_auc_ci": "0.548-0.589",
+      "pr_auc": 0.015461948593260595,
+      "pr_auc_ci": "0.0137-0.0173",
+      "base_rate": 0.011815195507046732,
+      "capture_top10": 0.15396113602391628,
+      "lift_top10": 1.5396113602391628
+    },
+    {
+      "model": "Logistic regression",
+      "roc_auc": 0.5909759784777727,
+      "roc_auc_ci": "0.571-0.616",
+      "pr_auc": 0.027701289130708746,
+      "pr_auc_ci": "0.0211-0.0401",
+      "base_rate": 0.011815195507046732,
+      "capture_top10": 0.18535127055306427,
+      "lift_top10": 1.8535127055306426
+    },
+    {
+      "model": "LightGBM",
+      "roc_auc": 0.5831227612903922,
+      "roc_auc_ci": "0.562-0.606",
+      "pr_auc": 0.020483106051614606,
+      "pr_auc_ci": "0.0167-0.0265",
+      "base_rate": 0.011815195507046732,
+      "capture_top10": 0.19581464872944693,
+      "lift_top10": 1.9581464872944692
+    }
+  ],
+  "test_rows": 56622,
+  "test_positives": 669,
+  "gains_lightgbm": [
+    {
+      "decile": 1,
+      "customers": 5663,
+      "positives": 131,
+      "response_rate": 0.023132615221613986,
+      "lift": 1.957869864093015,
+      "cumulative_population": 0.10001412878386493,
+      "cumulative_gain": 0.19581464872944693
+    },
+    {
+      "decile": 2,
+      "customers": 5663,
+      "positives": 86,
+      "response_rate": 0.015186297015716051,
+      "lift": 1.285319147419842,
+      "cumulative_population": 0.20002825756772985,
+      "cumulative_gain": 0.3243647234678625
+    },
+    {
+      "decile": 3,
+      "customers": 5662,
+      "positives": 61,
+      "response_rate": 0.010773578240904275,
+      "lift": 0.9118408776629026,
+      "cumulative_population": 0.3000247253717636,
+      "cumulative_gain": 0.4155455904334828
+    },
+    {
+      "decile": 4,
+      "customers": 5662,
+      "positives": 71,
+      "response_rate": 0.01253973860826563,
+      "lift": 1.0613229887551816,
+      "cumulative_population": 0.4000211931757974,
+      "cumulative_gain": 0.5216741405082213
+    },
+    {
+      "decile": 5,
+      "customers": 5662,
+      "positives": 59,
+      "response_rate": 0.010420346167432003,
+      "lift": 0.8819444554444467,
+      "cumulative_population": 0.5000176609798311,
+      "cumulative_gain": 0.6098654708520179
+    },
+    {
+      "decile": 6,
+      "customers": 5662,
+      "positives": 55,
+      "response_rate": 0.00971388202048746,
+      "lift": 0.8221516110075351,
+      "cumulative_population": 0.600014128783865,
+      "cumulative_gain": 0.6920777279521674
+    },
+    {
+      "decile": 7,
+      "customers": 5662,
+      "positives": 54,
+      "response_rate": 0.009537265983751325,
+      "lift": 0.8072033998983071,
+      "cumulative_population": 0.7000105965878987,
+      "cumulative_gain": 0.772795216741405
+    },
+    {
+      "decile": 8,
+      "customers": 5662,
+      "positives": 49,
+      "response_rate": 0.008654185800070647,
+      "lift": 0.7324623443521676,
+      "cumulative_population": 0.8000070643919325,
+      "cumulative_gain": 0.8460388639760837
+    },
+    {
+      "decile": 9,
+      "customers": 5662,
+      "positives": 50,
+      "response_rate": 0.008830801836806783,
+      "lift": 0.7474105554613956,
+      "cumulative_population": 0.9000035321959662,
+      "cumulative_gain": 0.9207772795216741
+    },
+    {
+      "decile": 10,
+      "customers": 5662,
+      "positives": 53,
+      "response_rate": 0.009360649947015189,
+      "lift": 0.7922551887890792,
+      "cumulative_population": 1.0,
+      "cumulative_gain": 1.0
+    }
+  ],
+  "top10_sentence": "Targeting the top 10% of customers ranked by the LightGBM model (5,663 of 56,622) captures 19.6% of the customers who actually purchased again within 180 days (131 of 669), a 1.96x lift over random targeting, versus 15.4% for the recency rule.",
+  "shap_importance": {
+    "last_category": 0.2675825010420683,
+    "recency_days": 0.22131733530456005,
+    "avg_freight_ratio": 0.14573123085691056,
+    "customer_state": 0.14264380895540005,
+    "avg_installments": 0.1333088866712912,
+    "last_delay_days": 0.11247332319829487,
+    "total_spend": 0.08405396508871825,
+    "avg_order_value": 0.06879912087708895,
+    "last_review_score": 0.06348035591498714,
+    "last_delivery_days": 0.04860973937642415,
+    "max_order_value": 0.037727570609243276,
+    "min_review_score": 0.035059392570924476,
+    "tenure_days": 0.030925226896202213,
+    "n_orders": 0.024776018764137833,
+    "any_comment": 0.023064837599763556,
+    "n_items": 0.020399559057122495,
+    "used_voucher": 0.017816098274462375,
+    "any_late_known": 0.01649279633445505,
+    "last_payment_type": 0.0063554788877967045,
+    "n_categories": 0.0019252144378760086,
+    "n_reviews_known": 0.0006422455044324013,
+    "pending_delivery": 0.00034305137233557576
+  }
+}

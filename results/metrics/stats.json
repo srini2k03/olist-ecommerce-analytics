@@ -1,0 +1,140 @@
+{
+  "late_vs_ontime": {
+    "n_a": 6381,
+    "n_b": 89443,
+    "mean_a": 2.2718225983388183,
+    "mean_b": 4.290589164793965,
+    "mean_diff": -2.0187665664551466,
+    "mean_diff_ci": [
+      -2.0609887240064646,
+      -1.9746867089504005
+    ],
+    "welch_t": -100.74439736523395,
+    "welch_p": 0.0,
+    "mannwhitney_u": 103308952.5,
+    "mannwhitney_p": 0.0,
+    "cohens_d": -1.709613315780406,
+    "cohens_d_ci": [
+      -1.7492878353210113,
+      -1.6706562245133796
+    ],
+    "cliffs_delta": -0.6379797602422275,
+    "cliffs_delta_ci": [
+      -0.6500667242200933,
+      -0.6261434819656296
+    ],
+    "cliffs_label": "large"
+  },
+  "ordinal_late_coef": -2.6864799832379913,
+  "ordinal_late_or": 0.06812030245004215,
+  "ordinal_late_or_ci": [
+    0.06288300817370517,
+    0.07379379168800028
+  ],
+  "ordinal_n": 40000,
+  "ab_baseline_p0": 0.09904726321688773,
+  "ab_daily_orders": 222.11618257261412,
+  "ab_mde": 0.15,
+  "ab_n_per_arm": 6763,
+  "ab_weeks": 9,
+  "ab_n_total": 13993,
+  "ab_srm_p": 0.7416322511949757,
+  "ab_sim": {
+    "n_a": 7016,
+    "x_a": 702,
+    "n_b": 6977,
+    "x_b": 798
+  },
+  "ab_frequentist": {
+    "p_a": 0.10005701254275941,
+    "p_b": 0.11437580622043858,
+    "abs_diff": 0.014318793677679173,
+    "abs_diff_ci": [
+      0.004068239348157461,
+      0.024569348007200884
+    ],
+    "rel_lift": 0.14310634820882775,
+    "z": 2.7375496244432798,
+    "p_value": 0.006189878054225516
+  },
+  "ab_bayes": {
+    "prob_b_better": 0.996985,
+    "expected_loss_choose_b": 5.2037969782471616e-06,
+    "expected_loss_choose_a": 0.014323800309468511,
+    "lift_ci": [
+      0.0380830570462325,
+      0.25844526011143776
+    ]
+  },
+  "ab_guardrails": [
+    {
+      "index": "mean review score",
+      "A (control)": 4.09905929304447,
+      "B (free shipping)": 4.0885767521857534,
+      "B - A": -0.010482540858716582,
+      "Welch p": 0.6455305878402204
+    },
+    {
+      "index": "average order value (R$)",
+      "A (control)": 161.88355900798177,
+      "B (free shipping)": 160.5933037121972,
+      "B - A": -1.2902552957845614,
+      "Welch p": 0.715201401627395
+    },
+    {
+      "index": "freight subsidy per order (R$)",
+      "A (control)": 0.0,
+      "B (free shipping)": 9.604891787301131,
+      "B - A": 9.604891787301131,
+      "Welch p": NaN
+    }
+  ],
+  "ab_economics": {
+    "incremental_gmv_per_order": 1.4354326654298928,
+    "subsidy_per_order": 9.604891787301131,
+    "share_already_above_threshold": 0.25714552587334205
+  },
+  "ab_peeking": [
+    {
+      "fixed_horizon_fpr": 0.0465,
+      "peeking_fpr": 0.0465,
+      "n_looks": 1,
+      "n_sims": 2000
+    },
+    {
+      "fixed_horizon_fpr": 0.0465,
+      "peeking_fpr": 0.0755,
+      "n_looks": 2,
+      "n_sims": 2000
+    },
+    {
+      "fixed_horizon_fpr": 0.0455,
+      "peeking_fpr": 0.1365,
+      "n_looks": 5,
+      "n_sims": 2000
+    },
+    {
+      "fixed_horizon_fpr": 0.049,
+      "peeking_fpr": 0.194,
+      "n_looks": 10,
+      "n_sims": 2000
+    },
+    {
+      "fixed_horizon_fpr": 0.0475,
+      "peeking_fpr": 0.231,
+      "n_looks": 20,
+      "n_sims": 2000
+    },
+    {
+      "fixed_horizon_fpr": 0.0535,
+      "peeking_fpr": 0.283,
+      "n_looks": 40,
+      "n_sims": 2000
+    }
+  ],
+  "ab_novelty": {
+    "week1_mean": 0.26616124339439684,
+    "end_mean": 0.13341042393375707,
+    "steady_state": 0.1
+  }
+}

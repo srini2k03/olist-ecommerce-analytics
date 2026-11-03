@@ -77,19 +77,15 @@ class Comparison:
     cliffs_label: str
 
 
-def compare_groups(
-    a: np.ndarray, b: np.ndarray, n_boot: int = 2000, boot_size: int | None = 5000, seed: int = 0
-) -> Comparison:
+def compare_groups(a: np.ndarray, b: np.ndarray, n_boot: int = 1000, seed: int = 0) -> Comparison:
     """Full two-group comparison of ``a`` vs ``b``.
 
-    Tests use all rows. Bootstrap CIs for d and Cliff's delta resample at most
-    ``boot_size`` rows per group (they are slow statistics); the mean-difference
-    CI uses the full groups.
+    All statistics and their percentile-bootstrap CIs use the full groups. (Sub-
+    sampling the groups to equal sizes would bias Cohen's d, whose pooled SD is
+    weighted by group size.)
     """
     a, b = np.asarray(a, float), np.asarray(b, float)
-    rng = np.random.default_rng(seed)
-    sa = rng.choice(a, min(len(a), boot_size), replace=False) if boot_size else a
-    sb = rng.choice(b, min(len(b), boot_size), replace=False) if boot_size else b
+    sa, sb = a, b
     t = stats.ttest_ind(a, b, equal_var=False)
     u = stats.mannwhitneyu(a, b, alternative="two-sided")
     delta = cliffs_delta(a, b)
@@ -105,8 +101,8 @@ def compare_groups(
         mannwhitney_u=float(u.statistic),
         mannwhitney_p=float(u.pvalue),
         cohens_d=cohens_d(a, b),
-        cohens_d_ci=bootstrap_ci(sa, sb, cohens_d, min(n_boot, 1000), seed=seed),
+        cohens_d_ci=bootstrap_ci(sa, sb, cohens_d, n_boot, seed=seed),
         cliffs_delta=delta,
-        cliffs_delta_ci=bootstrap_ci(sa, sb, cliffs_delta, min(n_boot, 1000), seed=seed),
+        cliffs_delta_ci=bootstrap_ci(sa, sb, cliffs_delta, n_boot, seed=seed),
         cliffs_label=cliffs_label(delta),
     )
