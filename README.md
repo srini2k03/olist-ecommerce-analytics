@@ -6,7 +6,7 @@
 
 This project runs SQL, statistics, segmentation and a churn model on the **real** Olist Brazilian e-commerce dataset: 99,441 orders across 9 tables, from Sept 2016 to Oct 2018. It ends with a Streamlit dashboard and a one-page [executive summary](EXECUTIVE_SUMMARY.md).
 
-- **Dashboard:** Streamlit Community Cloud (link added after deploy; see [Deploy](#deploy-the-dashboard)). The free tier sleeps when idle, so the first visit takes 30 to 60 s.
+- **Live dashboard:** https://srini2k03.github.io/olist-ecommerce-analytics/app/ runs Streamlit entirely in your browser via [stlite](https://github.com/whitphx/stlite), with no server. The first visit takes 10 to 30 s while Python starts.
 - **Rendered notebooks and summary:** https://srini2k03.github.io/olist-ecommerce-analytics/
 
 ## Key findings
@@ -141,7 +141,9 @@ It reads only `app/data/` (about 4 MB of parquet and JSON, built by `scripts/bui
 
 ### Deploy the dashboard
 
-The repository is set up for **Streamlit Community Cloud**:
+**GitHub Pages (live, the default).** `scripts/build_site.py` copies the app and its prebuilt data into `site/app/` with a [stlite](https://github.com/whitphx/stlite) loader, which runs Streamlit on Pyodide in the browser. Before publishing, the Pages workflow renders it in headless Chromium (`scripts/smoke_browser_app.py`) and fails if it does not load.
+
+**Streamlit Community Cloud (optional).** The repository also works as a normal Streamlit app:
 
 1. `requirements.txt` sits **at the repository root** and contains only the app's runtime dependencies (streamlit, pandas, pyarrow, altair). The full analysis stack is in `requirements-dev.txt`.
 2. The entry point is **`app/streamlit_app.py`**.
