@@ -3,6 +3,7 @@ summary, the README and its figures. Output goes to site/."""
 
 from __future__ import annotations
 
+import re
 import shutil
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from nbconvert import HTMLExporter
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "site"
+REPO_TREE = "https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/"
 NOTEBOOKS = ["01_eda", "02_stats", "03_segmentation", "04_churn"]
 TITLES = {
     "01_eda": "01 · Exploratory analysis",
@@ -97,6 +99,20 @@ def md_to_html(path: Path) -> str:
     return markdown.markdown(text, extensions=["tables", "fenced_code", "sane_lists"])
 
 
+def link_missing_to_repo(html: str) -> str:
+    """Point relative links that are not published on the site (results/sql, LICENSE,
+    the notebooks folder, ...) at the GitHub repository instead of a 404."""
+
+    def fix(m: re.Match) -> str:
+        target = m.group(1)
+        path = OUT / target.split("#")[0]
+        if re.match(r"[a-z]+:|#", target) or path.is_file() or (path / "index.html").is_file():
+            return m.group(0)
+        return f'href="{REPO_TREE}{target}"'
+
+    return re.sub(r'href="([^"]*)"', fix, html)
+
+
 def main() -> None:
     if OUT.exists():
         shutil.rmtree(OUT)
@@ -114,16 +130,18 @@ def main() -> None:
     for name in NOTEBOOKS:
         readme = readme.replace(f"notebooks/{name}.ipynb", f"notebooks/{name}.html")
     readme = readme.replace('href="EXECUTIVE_SUMMARY.md"', 'href="executive_summary.html"')
-    (OUT / "index.html").write_text(
-        PAGE.format(title="Olist e-commerce analytics", nav=nav, body=readme), encoding="utf-8"
-    )
     summary = md_to_html(ROOT / "EXECUTIVE_SUMMARY.md")
     for name in NOTEBOOKS:
         summary = summary.replace(f"notebooks/{name}.ipynb", f"notebooks/{name}.html")
-    (OUT / "executive_summary.html").write_text(
-        PAGE.format(title="Executive summary", nav=nav, body=summary), encoding="utf-8"
-    )
     build_browser_app()
+    (OUT / "executive_summary.html").write_text(
+        PAGE.format(title="Executive summary", nav=nav, body=link_missing_to_repo(summary)),
+        encoding="utf-8",
+    )
+    (OUT / "index.html").write_text(
+        PAGE.format(title="Olist e-commerce analytics", nav=nav, body=link_missing_to_repo(readme)),
+        encoding="utf-8",
+    )
     (OUT / ".nojekyll").write_text("")
     print(f"site built in {OUT}: {sorted(p.name for p in OUT.iterdir())}")
 
