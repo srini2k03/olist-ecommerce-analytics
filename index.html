@@ -26,7 +26,7 @@ nav { margin-bottom: 24px; color: var(--muted); }
 <a href="https://github.com/srini2k03/olist-ecommerce-analytics/actions/workflows/pages.yml"><img alt="Pages" src="https://github.com/srini2k03/olist-ecommerce-analytics/actions/workflows/pages.yml/badge.svg" /></a></p>
 <p>This project runs SQL, statistics, segmentation and a churn model on the <strong>real</strong> Olist Brazilian e-commerce dataset: 99,441 orders across 9 tables, from Sept 2016 to Oct 2018. It ends with a Streamlit dashboard and a one-page <a href="executive_summary.html">executive summary</a>.</p>
 <ul>
-<li><strong>Dashboard:</strong> Streamlit Community Cloud (link added after deploy; see <a href="#deploy-the-dashboard">Deploy</a>). The free tier sleeps when idle, so the first visit takes 30 to 60 s.</li>
+<li><strong>Live dashboard:</strong> https://srini2k03.github.io/olist-ecommerce-analytics/app/ runs Streamlit entirely in your browser via <a href="https://github.com/whitphx/stlite">stlite</a>, with no server. The first visit takes 10 to 30 s while Python starts.</li>
 <li><strong>Rendered notebooks and summary:</strong> https://srini2k03.github.io/olist-ecommerce-analytics/</li>
 </ul>
 <h2>Key findings</h2>
@@ -226,7 +226,8 @@ make app            # streamlit run app/streamlit_app.py
 <p align="center"><img src="results/figures/app_churn.png" width="80%" alt="Churn-risk lookup in the dashboard"></p>
 
 <h3>Deploy the dashboard</h3>
-<p>The repository is set up for <strong>Streamlit Community Cloud</strong>:</p>
+<p><strong>GitHub Pages (live, the default).</strong> <code>scripts/build_site.py</code> copies the app and its prebuilt data into <code>site/app/</code> with a <a href="https://github.com/whitphx/stlite">stlite</a> loader, which runs Streamlit on Pyodide in the browser. Before publishing, the Pages workflow renders it in headless Chromium (<code>scripts/smoke_browser_app.py</code>) and fails if it does not load.</p>
+<p><strong>Streamlit Community Cloud (optional).</strong> The repository also works as a normal Streamlit app:</p>
 <ol>
 <li><code>requirements.txt</code> sits <strong>at the repository root</strong> and contains only the app's runtime dependencies (streamlit, pandas, pyarrow, altair). The full analysis stack is in <code>requirements-dev.txt</code>.</li>
 <li>The entry point is <strong><code>app/streamlit_app.py</code></strong>.</li>
