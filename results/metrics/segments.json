@@ -4,49 +4,49 @@
   "diagnostics": [
     {
       "k": 2,
-      "inertia": 190671.29901809833,
+      "inertia": 190671.29901809862,
       "silhouette": 0.7130747363012934,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 3,
-      "inertia": 125690.03190494372,
+      "inertia": 125690.03190494284,
       "silhouette": 0.35911832659291704,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 4,
-      "inertia": 84493.7826090327,
+      "inertia": 84493.78260903354,
       "silhouette": 0.3702102908833005,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 5,
-      "inertia": 68800.6248581283,
+      "inertia": 68800.62485812831,
       "silhouette": 0.352815215319577,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 6,
-      "inertia": 57551.37378488349,
+      "inertia": 57551.37378488343,
       "silhouette": 0.34279765988627825,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 7,
-      "inertia": 48830.929357900575,
+      "inertia": 48830.92935790084,
       "silhouette": 0.3568707074578598,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 8,
-      "inertia": 43165.80930843874,
+      "inertia": 43165.80930843875,
       "silhouette": 0.3474920938705501,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 9,
-      "inertia": 39264.306221208884,
+      "inertia": 39264.30622120887,
       "silhouette": 0.3471111529423734,
       "smallest_cluster_share": 0.03038438457408168
     }
