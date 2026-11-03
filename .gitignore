@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Data: raw Olist CSVs are CC BY-NC-SA 4.0 and are never committed
+data/raw/
+data/*.duckdb
+data/*.duckdb.wal
+*.csv.zip
+
+# Build outputs
+site/
+playwright-report/
+.streamlit/secrets.toml
