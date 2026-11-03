@@ -33,6 +33,9 @@ rev AS (
     SELECT order_id,
            AVG(review_score) AS review_score,
            MIN(review_creation_date) AS review_created_at,
+           -- The score is known once the customer answers the survey (creation_date is
+           -- when the survey was sent). AVG(score) is only complete after the last answer.
+           MAX(review_answer_timestamp) AS review_answered_at,
            MAX(CASE WHEN review_comment_message IS NOT NULL THEN 1 ELSE 0 END) AS has_comment
     FROM order_reviews GROUP BY order_id
 )
@@ -60,6 +63,7 @@ SELECT
               CAST(o.order_delivered_customer_date AS DATE)) AS delay_days,
     r.review_score,
     r.review_created_at,
+    r.review_answered_at,
     r.has_comment
 FROM orders o
 JOIN customers c ON c.customer_id = o.customer_id

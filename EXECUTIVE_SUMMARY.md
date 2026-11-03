@@ -29,7 +29,7 @@
   - read results by week of exposure to strip out novelty effects.
 
 **5. Use the churn score only to prioritise cheap retention actions, and prove uplift first.**
-- **Finding:** repeat purchase is hard to predict. On a later, held-out window, LightGBM reaches ROC-AUC **0.583** and PR-AUC **0.020** against a 1.18% base rate. Logistic regression performs about as well. Still, **targeting the top 10% of customers ranked by the model captures 19.6% of next-180-day repeat buyers (1.96x lift)**, against 15.4% for a "most recent first" rule.
+- **Finding:** repeat purchase is hard to predict. On a later, held-out window, LightGBM reaches ROC-AUC **0.581** and PR-AUC **0.020** against a 1.18% base rate. Logistic regression performs about as well. Still, **targeting the top 10% of customers ranked by the model captures 19.4% of next-180-day repeat buyers (1.94x lift)**, against 15.4% for a "most recent first" rule.
 - **Action:** use the score for email and push to the top 10–20%. Run a randomised holdout before attaching discounts.
 
 ## Caveats

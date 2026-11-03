@@ -7,7 +7,8 @@ about an order placed before it:
 * a delivery outcome counts only if the parcel arrived before the cutoff (an
   order already past its estimated date but still undelivered *is* known to be
   late at the cutoff, so that counts too);
-* a review counts only if it was written before the cutoff.
+* a review counts only if it was answered (written) before the cutoff; the survey's
+  creation date is when it was sent, not when the score became known.
 
 The label is whether the customer places any order in
 ``[cutoff, cutoff + horizon_days)``.
@@ -83,7 +84,7 @@ REQUIRED_COLUMNS = [
     "used_voucher",
     "category",
     "review_score",
-    "review_created_at",
+    "review_answered_at",
     "has_comment",
 ]
 
@@ -116,7 +117,7 @@ def build_snapshot(
     overdue_undelivered = ~delivered_known & (hist["estimated_at"] < cutoff)
     hist["late_known"] = ((hist["delay_days"] > 0) | overdue_undelivered).astype(float)
     hist["pending"] = (~delivered_known).astype(float)
-    review_known = hist["review_created_at"].notna() & (hist["review_created_at"] < cutoff)
+    review_known = hist["review_answered_at"].notna() & (hist["review_answered_at"] < cutoff)
     hist["review_known"] = hist["review_score"].where(review_known)
     hist["comment_known"] = hist["has_comment"].where(review_known, 0).fillna(0)
     hist["freight_ratio"] = hist["freight_value"] / hist["items_value"].where(
