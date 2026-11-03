@@ -8,7 +8,7 @@
 
 **1. Make "delivered by the promised date" the top customer-experience KPI, and fix it lane by lane.**
 - **Finding:** late orders average **2.27★**, against **4.29★** for on-time orders. Controlling for category, state, basket and value, being late cuts the odds of a better review about 15-fold (odds ratio **0.068**, 95% CI 0.063–0.074).
-- **Where:** late rates reach **21.4%** in Alagoas against **4.5%** in São Paulo, and the SP → RJ lane alone accounts for **19.4% of all late orders**.
+- **Where:** late rates reach **21.4%** in Alagoas against **4.5%** in São Paulo, and the SP → RJ lane alone accounts for **17.6% of all late orders**.
 - **Action:** pad promised dates on high-risk north-east lanes. Customers tolerate slow delivery but punish late delivery; arriving 1–3 days late already drops the mean to 3.29★. Renegotiate or switch the SP → RJ carrier.
 - **Size of the prize:** if the 6.7% of late orders were reviewed like on-time ones, the platform's mean review would rise by about **0.13★** (6.7% × 2.02★).
 
