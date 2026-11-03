@@ -152,6 +152,9 @@ def build_snapshot(
     feats["last_category"] = last["category"]
     feats["last_payment_type"] = last["main_payment_type"]
 
+    # Plain float64 (not nullable Float64) so downstream tools treat them uniformly.
+    feats[NUMERIC_FEATURES] = feats[NUMERIC_FEATURES].astype("float64")
+
     future = o[(o["purchased_at"] >= cutoff) & (o["purchased_at"] < end)]
     repeaters = set(future["customer_unique_id"])
     feats["label"] = feats.index.isin(repeaters).astype(int)

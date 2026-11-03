@@ -75,8 +75,10 @@ SEGMENT_ACTIONS = {
         "VIP treatment: early access, loyalty points, referral asks. Protect, don't discount."
     ),
     "At-risk big spenders": "Personal win-back offer on the category they bought, before day 365.",
-    "Recent big spenders": "Second-order nudge within 30-90 days: complementary-category bundle.",
-    "Recent low spenders": "Cheap reactivation: free-shipping-threshold reminder, cross-sell.",
+    "Recent mid-value buyers": (
+        "Second-order nudge within 30-90 days: complementary-category bundle."
+    ),
+    "Recent low-value buyers": "Cheap reactivation: free-shipping-threshold reminder, cross-sell.",
     "One-and-done (lapsed, low value)": (
         "Low-cost channels only (email/newsletter); do not pay to reacquire."
     ),
@@ -103,9 +105,9 @@ def name_segments(profile: pd.DataFrame) -> dict[int, str]:
         recent = row["recency_days"] <= rec_med
         big = row["monetary"] >= mon_med
         if recent and big:
-            names[cid] = "Recent big spenders"
+            names[cid] = "Recent mid-value buyers"
         elif recent:
-            names[cid] = "Recent low spenders"
+            names[cid] = "Recent low-value buyers"
         elif big:
             names[cid] = "At-risk big spenders"
         else:

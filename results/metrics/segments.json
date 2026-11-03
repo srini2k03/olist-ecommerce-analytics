@@ -1,0 +1,111 @@
+{
+  "k": 5,
+  "as_of": "2018-09-01",
+  "diagnostics": [
+    {
+      "k": 2,
+      "inertia": 190671.29901809833,
+      "silhouette": 0.7130747363012934,
+      "smallest_cluster_share": 0.03038438457408168
+    },
+    {
+      "k": 3,
+      "inertia": 125690.03190494372,
+      "silhouette": 0.35911832659291704,
+      "smallest_cluster_share": 0.03038438457408168
+    },
+    {
+      "k": 4,
+      "inertia": 84493.7826090327,
+      "silhouette": 0.3702102908833005,
+      "smallest_cluster_share": 0.03038438457408168
+    },
+    {
+      "k": 5,
+      "inertia": 68800.6248581283,
+      "silhouette": 0.352815215319577,
+      "smallest_cluster_share": 0.03038438457408168
+    },
+    {
+      "k": 6,
+      "inertia": 57551.37378488349,
+      "silhouette": 0.34279765988627825,
+      "smallest_cluster_share": 0.03038438457408168
+    },
+    {
+      "k": 7,
+      "inertia": 48830.929357900575,
+      "silhouette": 0.3568707074578598,
+      "smallest_cluster_share": 0.03038438457408168
+    },
+    {
+      "k": 8,
+      "inertia": 43165.80930843874,
+      "silhouette": 0.3474920938705501,
+      "smallest_cluster_share": 0.03038438457408168
+    },
+    {
+      "k": 9,
+      "inertia": 39264.306221208884,
+      "silhouette": 0.3471111529423734,
+      "smallest_cluster_share": 0.03038438457408168
+    }
+  ],
+  "segments": [
+    {
+      "segment": "At-risk big spenders",
+      "customers": 11781,
+      "customer_share": 0.12403272164492593,
+      "revenue_share": 0.3857995615435914,
+      "recency_days": 297.8509464391817,
+      "frequency": 1.0,
+      "monetary": 515.4489915966387,
+      "avg_review": 3.9515299562869632,
+      "action": "Personal win-back offer on the category they bought, before day 365."
+    },
+    {
+      "segment": "Recent mid-value buyers",
+      "customers": 29664,
+      "customer_share": 0.3123085183664445,
+      "revenue_share": 0.3140657261183483,
+      "recency_days": 133.0836030204962,
+      "frequency": 1.0,
+      "monetary": 166.6467900485437,
+      "avg_review": 4.0774504480043445,
+      "action": "Second-order nudge within 30-90 days: complementary-category bundle."
+    },
+    {
+      "segment": "One-and-done (lapsed, low value)",
+      "customers": 24810,
+      "customer_share": 0.26120463661918447,
+      "revenue_share": 0.1545278393252827,
+      "recency_days": 426.16436920596533,
+      "frequency": 1.0,
+      "monetary": 98.03611406690851,
+      "avg_review": 4.179764323445753,
+      "action": "Low-cost channels only (email/newsletter); do not pay to reacquire."
+    },
+    {
+      "segment": "Recent low-value buyers",
+      "customers": 25842,
+      "customer_share": 0.2720697387953634,
+      "revenue_share": 0.08902195597597724,
+      "recency_days": 160.69464437737017,
+      "frequency": 1.0,
+      "monetary": 54.222199520160984,
+      "avg_review": 4.161383902496008,
+      "action": "Cheap reactivation: free-shipping-threshold reminder, cross-sell."
+    },
+    {
+      "segment": "Champions",
+      "customers": 2886,
+      "customer_share": 0.03038438457408168,
+      "revenue_share": 0.056584917036800325,
+      "recency_days": 223.524255024255,
+      "frequency": 2.113998613998614,
+      "monetary": 308.610343035343,
+      "avg_review": 4.1680396246089675,
+      "action": "VIP treatment: early access, loyalty points, referral asks. Protect, don't discount."
+    }
+  ]
+}
