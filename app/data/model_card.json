@@ -1,0 +1,50 @@
+{
+  "horizon_days": 180,
+  "scoring_date": "2018-09-01",
+  "final_train_cutoffs": [
+    "2017-06-01",
+    "2017-09-01",
+    "2017-12-01",
+    "2018-03-01"
+  ],
+  "final_train_rows": 127892,
+  "final_train_positives": 1718,
+  "eval_train_cutoffs": [
+    "2017-06-01",
+    "2017-09-01"
+  ],
+  "eval_test_cutoff": "2018-03-01",
+  "test_metrics": {
+    "roc_auc": 0.5831227612903922,
+    "pr_auc": 0.020483106051614606,
+    "base_rate": 0.011815195507046732,
+    "capture_top10": 0.19581464872944693,
+    "lift_top10": 1.9581464872944692
+  },
+  "test_rows": 56622,
+  "test_positives": 669,
+  "mean_abs_shap": {
+    "recency_days": 0.255138592306069,
+    "last_category": 0.16787184883849465,
+    "customer_state": 0.12942881513619106,
+    "avg_installments": 0.12153345799453394,
+    "avg_freight_ratio": 0.08216745493798586,
+    "avg_order_value": 0.05099280751319454,
+    "last_review_score": 0.050415113669442964,
+    "last_delay_days": 0.04323601346901842,
+    "last_delivery_days": 0.03904555783440697,
+    "min_review_score": 0.038728262296724374,
+    "n_orders": 0.03341167640720046,
+    "max_order_value": 0.032485410798120666,
+    "tenure_days": 0.030819202812520416,
+    "total_spend": 0.03035467286772543,
+    "n_items": 0.013662548634519937,
+    "any_comment": 0.012107202989048556,
+    "last_payment_type": 0.008691804714809537,
+    "used_voucher": 0.008540814185207088,
+    "n_reviews_known": 0.007258291543047336,
+    "any_late_known": 0.0044530226450707165,
+    "n_categories": 0.00026840238302870787,
+    "pending_delivery": 0.0
+  }
+}

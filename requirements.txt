@@ -1,0 +1,6 @@
+# Runtime for the Streamlit app (this is what Streamlit Community Cloud installs).
+# The app reads the prebuilt artefacts in app/data, so it needs no ML libraries.
+streamlit==1.66.1
+pandas==3.1.0
+pyarrow==26.0.1
+altair==6.3.0
