@@ -9,43 +9,43 @@
   "validation": [
     {
       "model": "lgbm default (15 leaves, 400 trees, lr 0.02)",
-      "roc_auc": 0.6283017807342415,
-      "pr_auc": 0.03416260578329731,
+      "roc_auc": 0.6291963636688823,
+      "pr_auc": 0.03436691244727035,
       "base_rate": 0.016109436169734058,
-      "capture_top10": 0.25139664804469275,
-      "lift_top10": 2.5139664804469275
+      "capture_top10": 0.25977653631284914,
+      "lift_top10": 2.597765363128491
     },
     {
       "model": "lgbm 7 leaves, 300 trees",
-      "roc_auc": 0.6191841250333752,
-      "pr_auc": 0.030454417405823962,
+      "roc_auc": 0.6186344723270143,
+      "pr_auc": 0.030316427170401918,
       "base_rate": 0.016109436169734058,
-      "capture_top10": 0.19273743016759776,
-      "lift_top10": 1.9273743016759775
-    },
-    {
-      "model": "lgbm 4 leaves, 200 trees, lr 0.03",
-      "roc_auc": 0.6050845270687191,
-      "pr_auc": 0.029483976883712078,
-      "base_rate": 0.016109436169734058,
-      "capture_top10": 0.18156424581005587,
-      "lift_top10": 1.8156424581005586
+      "capture_top10": 0.19832402234636873,
+      "lift_top10": 1.9832402234636872
     },
     {
       "model": "lgbm 15 leaves, 150 trees",
-      "roc_auc": 0.6240843699338373,
-      "pr_auc": 0.029402349943821307,
+      "roc_auc": 0.6259946446388261,
+      "pr_auc": 0.029499507254226266,
       "base_rate": 0.016109436169734058,
       "capture_top10": 0.18994413407821228,
       "lift_top10": 1.8994413407821227
     },
     {
-      "model": "logistic regression",
-      "roc_auc": 0.5862164603259973,
-      "pr_auc": 0.026566715560148616,
+      "model": "lgbm 4 leaves, 200 trees, lr 0.03",
+      "roc_auc": 0.6049355683108766,
+      "pr_auc": 0.028893951174500276,
       "base_rate": 0.016109436169734058,
-      "capture_top10": 0.164804469273743,
-      "lift_top10": 1.64804469273743
+      "capture_top10": 0.16759776536312848,
+      "lift_top10": 1.6759776536312847
+    },
+    {
+      "model": "logistic regression",
+      "roc_auc": 0.5850644572395106,
+      "pr_auc": 0.026949892339676255,
+      "base_rate": 0.016109436169734058,
+      "capture_top10": 0.1787709497206704,
+      "lift_top10": 1.7877094972067038
     },
     {
       "model": "recency rule",
@@ -69,23 +69,23 @@
     },
     {
       "model": "Logistic regression",
-      "roc_auc": 0.5909759784777727,
-      "roc_auc_ci": "0.571-0.616",
-      "pr_auc": 0.027701289130708746,
-      "pr_auc_ci": "0.0211-0.0401",
+      "roc_auc": 0.5890317351283268,
+      "roc_auc_ci": "0.569-0.613",
+      "pr_auc": 0.02809287489714742,
+      "pr_auc_ci": "0.0210-0.0402",
       "base_rate": 0.011815195507046732,
-      "capture_top10": 0.18535127055306427,
-      "lift_top10": 1.8535127055306426
+      "capture_top10": 0.17787742899850523,
+      "lift_top10": 1.7787742899850523
     },
     {
       "model": "LightGBM",
-      "roc_auc": 0.5831227612903922,
-      "roc_auc_ci": "0.562-0.606",
-      "pr_auc": 0.020483106051614606,
-      "pr_auc_ci": "0.0167-0.0265",
+      "roc_auc": 0.5806619088297922,
+      "roc_auc_ci": "0.561-0.602",
+      "pr_auc": 0.020502008350625087,
+      "pr_auc_ci": "0.0165-0.0267",
       "base_rate": 0.011815195507046732,
-      "capture_top10": 0.19581464872944693,
-      "lift_top10": 1.9581464872944692
+      "capture_top10": 0.19431988041853512,
+      "lift_top10": 1.9431988041853512
     }
   ],
   "test_rows": 56622,
@@ -94,56 +94,56 @@
     {
       "decile": 1,
       "customers": 5663,
-      "positives": 131,
-      "response_rate": 0.023132615221613986,
-      "lift": 1.957869864093015,
+      "positives": 130,
+      "response_rate": 0.02295603037259403,
+      "lift": 1.9429242926113888,
       "cumulative_population": 0.10001412878386493,
-      "cumulative_gain": 0.19581464872944693
+      "cumulative_gain": 0.19431988041853512
     },
     {
       "decile": 2,
       "customers": 5663,
-      "positives": 86,
-      "response_rate": 0.015186297015716051,
-      "lift": 1.285319147419842,
+      "positives": 75,
+      "response_rate": 0.013243863676496557,
+      "lift": 1.1209178611219552,
       "cumulative_population": 0.20002825756772985,
-      "cumulative_gain": 0.3243647234678625
+      "cumulative_gain": 0.3064275037369208
     },
     {
       "decile": 3,
       "customers": 5662,
-      "positives": 61,
-      "response_rate": 0.010773578240904275,
-      "lift": 0.9118408776629026,
+      "positives": 86,
+      "response_rate": 0.015188979159307664,
+      "lift": 1.2855461553936003,
       "cumulative_population": 0.3000247253717636,
-      "cumulative_gain": 0.4155455904334828
+      "cumulative_gain": 0.4349775784753363
     },
     {
       "decile": 4,
       "customers": 5662,
-      "positives": 71,
-      "response_rate": 0.01253973860826563,
-      "lift": 1.0613229887551816,
+      "positives": 61,
+      "response_rate": 0.010773578240904275,
+      "lift": 0.9118408776629026,
       "cumulative_population": 0.4000211931757974,
-      "cumulative_gain": 0.5216741405082213
+      "cumulative_gain": 0.5261584454409567
     },
     {
       "decile": 5,
       "customers": 5662,
-      "positives": 59,
-      "response_rate": 0.010420346167432003,
-      "lift": 0.8819444554444467,
+      "positives": 53,
+      "response_rate": 0.009360649947015189,
+      "lift": 0.7922551887890792,
       "cumulative_population": 0.5000176609798311,
-      "cumulative_gain": 0.6098654708520179
+      "cumulative_gain": 0.6053811659192825
     },
     {
       "decile": 6,
       "customers": 5662,
-      "positives": 55,
-      "response_rate": 0.00971388202048746,
-      "lift": 0.8221516110075351,
+      "positives": 53,
+      "response_rate": 0.009360649947015189,
+      "lift": 0.7922551887890792,
       "cumulative_population": 0.600014128783865,
-      "cumulative_gain": 0.6920777279521674
+      "cumulative_gain": 0.6846038863976084
     },
     {
       "decile": 7,
@@ -152,59 +152,59 @@
       "response_rate": 0.009537265983751325,
       "lift": 0.8072033998983071,
       "cumulative_population": 0.7000105965878987,
-      "cumulative_gain": 0.772795216741405
+      "cumulative_gain": 0.7653213751868461
     },
     {
       "decile": 8,
       "customers": 5662,
-      "positives": 49,
-      "response_rate": 0.008654185800070647,
-      "lift": 0.7324623443521676,
+      "positives": 51,
+      "response_rate": 0.009007417873542917,
+      "lift": 0.7623587665706234,
       "cumulative_population": 0.8000070643919325,
-      "cumulative_gain": 0.8460388639760837
+      "cumulative_gain": 0.8415545590433483
     },
     {
       "decile": 9,
       "customers": 5662,
-      "positives": 50,
-      "response_rate": 0.008830801836806783,
-      "lift": 0.7474105554613956,
+      "positives": 46,
+      "response_rate": 0.008124337689862239,
+      "lift": 0.6876177110244838,
       "cumulative_population": 0.9000035321959662,
-      "cumulative_gain": 0.9207772795216741
+      "cumulative_gain": 0.9103139013452914
     },
     {
       "decile": 10,
       "customers": 5662,
-      "positives": 53,
-      "response_rate": 0.009360649947015189,
-      "lift": 0.7922551887890792,
+      "positives": 60,
+      "response_rate": 0.010596962204168139,
+      "lift": 0.8968926665536746,
       "cumulative_population": 1.0,
       "cumulative_gain": 1.0
     }
   ],
-  "top10_sentence": "Targeting the top 10% of customers ranked by the LightGBM model (5,663 of 56,622) captures 19.6% of the customers who actually purchased again within 180 days (131 of 669), a 1.96x lift over random targeting, versus 15.4% for the recency rule.",
+  "top10_sentence": "Targeting the top 10% of customers ranked by the LightGBM model (5,663 of 56,622) captures 19.4% of the customers who actually purchased again within 180 days (130 of 669), a 1.94x lift over random targeting, versus 15.4% for the recency rule.",
   "shap_importance": {
-    "last_category": 0.2675825010420683,
-    "recency_days": 0.22131733530456005,
-    "avg_freight_ratio": 0.14573123085691056,
-    "customer_state": 0.14264380895540005,
-    "avg_installments": 0.1333088866712912,
-    "last_delay_days": 0.11247332319829487,
-    "total_spend": 0.08405396508871825,
-    "avg_order_value": 0.06879912087708895,
-    "last_review_score": 0.06348035591498714,
-    "last_delivery_days": 0.04860973937642415,
-    "max_order_value": 0.037727570609243276,
-    "min_review_score": 0.035059392570924476,
-    "tenure_days": 0.030925226896202213,
-    "n_orders": 0.024776018764137833,
-    "any_comment": 0.023064837599763556,
-    "n_items": 0.020399559057122495,
-    "used_voucher": 0.017816098274462375,
-    "any_late_known": 0.01649279633445505,
-    "last_payment_type": 0.0063554788877967045,
-    "n_categories": 0.0019252144378760086,
-    "n_reviews_known": 0.0006422455044324013,
-    "pending_delivery": 0.00034305137233557576
+    "last_category": 0.2646284224498011,
+    "recency_days": 0.24270658544169674,
+    "customer_state": 0.14134706225168908,
+    "avg_freight_ratio": 0.14109650647401967,
+    "avg_installments": 0.13481739848890759,
+    "last_delay_days": 0.10408991196485062,
+    "total_spend": 0.08557366381265114,
+    "last_review_score": 0.07052113856382684,
+    "avg_order_value": 0.058491757023444745,
+    "last_delivery_days": 0.048108356850361446,
+    "max_order_value": 0.04509622666614487,
+    "min_review_score": 0.040962256841018715,
+    "tenure_days": 0.0336325077632785,
+    "n_orders": 0.02577863736910398,
+    "n_items": 0.021362646902250197,
+    "any_comment": 0.01900734782608646,
+    "used_voucher": 0.017289401107148064,
+    "any_late_known": 0.014219113537467212,
+    "last_payment_type": 0.008528777864245827,
+    "n_categories": 0.0009676194146377924,
+    "n_reviews_known": 0.0002555305677428755,
+    "pending_delivery": 0.0
   }
 }

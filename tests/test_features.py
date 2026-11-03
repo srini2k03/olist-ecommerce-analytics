@@ -42,8 +42,8 @@ def test_features_ignore_everything_after_cutoff(synthetic_orders):
     # 2. Deliveries that happened after the cutoff are changed.
     late_info = o.delivered_at >= cutoff
     o.loc[late_info, "delivered_at"] = o.loc[late_info, "delivered_at"] + pd.Timedelta(days=40)
-    # 3. Reviews written after the cutoff are changed.
-    late_rev = o.review_created_at >= cutoff
+    # 3. Reviews answered after the cutoff are changed.
+    late_rev = o.review_answered_at >= cutoff
     o.loc[late_rev, "review_score"] = 1.0
 
     after_snap = build_snapshot(o, cutoff)
@@ -60,6 +60,23 @@ def test_post_cutoff_delivery_is_not_used(synthetic_orders):
     snap = build_snapshot(o, cutoff).set_index("customer_unique_id")
     cust = straddle.customer_unique_id.iloc[0]
     assert snap.loc[cust, "pending_delivery"] == 1
+
+
+def test_review_sent_before_but_answered_after_cutoff_is_not_used(synthetic_orders):
+    """review_creation_date is when the survey was sent; the score is only known once
+    it is answered, so a survey sent before the cutoff and answered after must not count."""
+    cutoff = pd.Timestamp(CUTOFF)
+    o = synthetic_orders.copy()
+    has_rev = (o.purchased_at < cutoff) & o.review_score.notna()
+    last = o[has_rev].sort_values("purchased_at").groupby("customer_unique_id").tail(1)
+    one_order = o[o.purchased_at < cutoff].customer_unique_id.value_counts() == 1
+    row = last[last.customer_unique_id.map(one_order).fillna(False)].index[0]
+    o.loc[row, "review_created_at"] = cutoff - pd.Timedelta(days=1)
+    o.loc[row, "review_answered_at"] = cutoff + pd.Timedelta(days=1)
+    snap = build_snapshot(o, cutoff).set_index("customer_unique_id")
+    cust = o.loc[row, "customer_unique_id"]
+    assert np.isnan(snap.loc[cust, "last_review_score"])
+    assert snap.loc[cust, "n_reviews_known"] == 0
 
 
 def test_training_windows_must_not_reach_test_period():
