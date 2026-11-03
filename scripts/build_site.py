@@ -39,10 +39,57 @@ th, td {{ border-bottom: 1px solid var(--line); padding: 4px 10px; text-align: l
 code {{ font-size: 0.92em; }}
 nav {{ margin-bottom: 24px; color: var(--muted); }}
 </style></head><body>
-<nav><a href="index.html">Home</a> · <a href="executive_summary.html">Executive summary</a> ·
+<nav><a href="index.html">Home</a> · <a href="app/">Live dashboard</a> ·
+<a href="executive_summary.html">Executive summary</a> ·
 {nav}</nav>
 {body}
 </body></html>"""
+
+
+# The Streamlit dashboard also runs fully in the browser on GitHub Pages via stlite
+# (Streamlit on Pyodide), so it works without a server or a Streamlit Cloud account.
+STLITE_VERSION = "1.10.0"
+APP_PAGE = """<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Olist dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser@{version}/build/stlite.css">
+<style>
+#loading {{ font: 16px/1.6 system-ui, sans-serif; padding: 24px 16px; color: #52514e; }}
+</style>
+</head><body>
+<div id="root"><p id="loading">Loading the dashboard: Python is starting in your browser,
+which takes 10&ndash;30 seconds on the first visit.</p></div>
+<script type="module">
+import {{ mount }} from "https://cdn.jsdelivr.net/npm/@stlite/browser@{version}/build/stlite.js";
+const files = {files};
+mount(
+  {{
+    requirements: ["altair", "pyarrow"],
+    entrypoint: "streamlit_app.py",
+    files: Object.fromEntries(files.map((f) => [f, {{ url: f }}])),
+  }},
+  document.getElementById("root"),
+);
+</script>
+</body></html>"""
+
+
+def build_browser_app() -> None:
+    """Copy the dashboard and its prebuilt data into site/app and add a stlite loader."""
+    import json
+
+    app_out = OUT / "app"
+    (app_out / "data").mkdir(parents=True)
+    shutil.copy2(ROOT / "app" / "streamlit_app.py", app_out / "streamlit_app.py")
+    files = ["streamlit_app.py"]
+    for f in sorted((ROOT / "app" / "data").iterdir()):
+        if f.is_file():
+            shutil.copy2(f, app_out / "data" / f.name)
+            files.append(f"data/{f.name}")
+    (app_out / "index.html").write_text(
+        APP_PAGE.format(version=STLITE_VERSION, files=json.dumps(files)), encoding="utf-8"
+    )
 
 
 def md_to_html(path: Path) -> str:
@@ -76,6 +123,7 @@ def main() -> None:
     (OUT / "executive_summary.html").write_text(
         PAGE.format(title="Executive summary", nav=nav, body=summary), encoding="utf-8"
     )
+    build_browser_app()
     (OUT / ".nojekyll").write_text("")
     print(f"site built in {OUT}: {sorted(p.name for p in OUT.iterdir())}")
 

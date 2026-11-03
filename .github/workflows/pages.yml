@@ -1,7 +1,7 @@
 name: Pages
 
-# Publishes the executed notebooks as HTML, the executive summary and the README
-# (with its figures) to the gh-pages branch.
+# Publishes the executed notebooks as HTML, the executive summary, the README
+# (with its figures) and the in-browser Streamlit dashboard to the gh-pages branch.
 on:
   workflow_dispatch:
   push:
@@ -12,6 +12,8 @@ on:
       - "README.md"
       - "EXECUTIVE_SUMMARY.md"
       - "scripts/build_site.py"
+      - "scripts/smoke_browser_app.py"
+      - "app/**"
   workflow_run:
     workflows: ["Build data"]
     types: [completed]
@@ -32,6 +34,15 @@ jobs:
           python-version: "3.13"
       - run: pip install nbconvert==7.17.2 nbformat==5.11.1 Markdown==3.11.2
       - run: python scripts/build_site.py
+      # The in-browser dashboard (stlite) must actually render before publishing.
+      - run: pip install playwright==1.55.0 && python -m playwright install --with-deps chromium
+      - run: python scripts/smoke_browser_app.py --screenshot site/app-screenshot.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-app-screenshot
+          path: site/app-screenshot.png
+          if-no-files-found: ignore
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
