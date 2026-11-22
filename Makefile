@@ -1,7 +1,8 @@
 PY ?= python
 NOTEBOOKS := 01_eda 02_stats 03_segmentation 04_churn
 
-.PHONY: setup data warehouse postgres sql sql-compare notebooks app-data app test lint smoke site all
+.PHONY: setup data warehouse postgres sql sql-compare notebooks app-data app test lint smoke site all \
+	recsys-setup recsys-data recsys-baselines recsys-synthetic
 
 setup:            ## install everything (editable package + dev tools)
 	$(PY) -m pip install -r requirements-dev.txt -e .
@@ -47,3 +48,19 @@ site:             ## build the GitHub Pages site into site/
 	$(PY) scripts/build_site.py
 
 all: warehouse sql notebooks app-data test
+
+# ---- Recommender (H&M data, see docs/recsys.md) ----------------------------------------------
+
+recsys-setup:     ## install the recommender's extra dependencies (Kaggle CLI)
+	$(PY) -m pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
+
+recsys-data:      ## H&M: download (needs KAGGLE_* and accepted rules), convert, subset, split
+	$(PY) -m recsys fetch
+	$(PY) -m recsys subset
+	$(PY) -m recsys split
+
+recsys-baselines: ## evaluate every baseline on the validation week -> results/recsys/
+	$(PY) -m recsys baselines --split validation
+
+recsys-synthetic: ## the whole recommender pipeline on synthetic data (no download)
+	$(PY) -m recsys --synthetic
