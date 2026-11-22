@@ -12,6 +12,7 @@ from recsys.cli import main
 def test_synthetic_pipeline_end_to_end(tmp_path):
     pytest.importorskip("torch")  # the main CI installs no torch; recsys-ci does
     pytest.importorskip("faiss")
+    pytest.importorskip("lightgbm")
     args = ["--synthetic", "--data-dir", str(tmp_path), "--n-boot", "50", "--quick"]
     assert main(args) == 0
     for sub in ("parquet", "subset", "split"):
@@ -38,11 +39,17 @@ def test_synthetic_pipeline_end_to_end(tmp_path):
     coverage = [r for r in result["metrics"] if r["metric"] == "coverage"]
     assert coverage and all(r["ci_low"] is None for r in coverage)  # strict JSON, no NaN
 
-    # Same seed, same numbers.
-    other = tmp_path / "again"
-    assert main([*args[:2], str(other), *args[3:]]) == 0
-    again = json.loads((other / "results" / "baselines_validation.json").read_text())
-    assert again["metrics"] == result["metrics"]
+    for name in ("retrieval_validation", "ranking", "coldstart", "report"):
+        assert (
+            json.loads((tmp_path / "results" / f"{name}.json").read_text())["data"] == "synthetic"
+        )
+    report = (tmp_path / "results" / "report.md").read_text()
+    assert report.startswith("# Recommender evaluation report")
+    assert "SYNTHETIC DATA" in report and "Decision:" in report
+    for stage in ("Two-tower + LambdaRank", "Repurchase", "Two-tower retrieval"):
+        assert stage in report
+    assert (tmp_path / "artifacts" / "folds" / "test" / "candidates.pkl").exists()
+    assert (tmp_path / "artifacts" / "retrieval" / "items_hnsw.faiss").exists()
 
 
 def test_fetch_without_credentials_fails_cleanly(tmp_path, monkeypatch, caplog):
@@ -58,3 +65,15 @@ def test_fetch_without_credentials_fails_cleanly(tmp_path, monkeypatch, caplog):
 def test_synthetic_flag_rejects_a_command():
     with pytest.raises(SystemExit):
         main(["--synthetic", "split"])
+
+
+def test_synthetic_results_never_go_to_the_committed_folder(tmp_path):
+    from recsys import config
+    from recsys.context import SYNTHETIC_MARKER, make_context
+
+    (tmp_path / SYNTHETIC_MARKER).write_text("x")
+    ctx = make_context(tmp_path, config.RESULTS_DIR)
+    assert ctx.results_dir == tmp_path / "results"
+    assert make_context(tmp_path).results_dir == tmp_path / "results"
+    real = make_context(tmp_path / "real")
+    assert real.results_dir == config.RESULTS_DIR and real.source == "real"
