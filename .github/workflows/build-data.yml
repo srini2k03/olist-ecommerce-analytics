@@ -12,6 +12,10 @@ on:
       - "sql/**"
       - "scripts/**"
       - "requirements*.txt"
+      # The recommender has its own workflow and never touches the Olist artefacts.
+      - "!src/recsys/**"
+      - "!tests/recsys/**"
+      - "!requirements-recsys.txt"
 
 permissions:
   contents: write
