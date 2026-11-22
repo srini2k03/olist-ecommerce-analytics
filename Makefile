@@ -2,7 +2,7 @@ PY ?= python
 NOTEBOOKS := 01_eda 02_stats 03_segmentation 04_churn
 
 .PHONY: setup data warehouse postgres sql sql-compare notebooks app-data app test lint smoke site all \
-	recsys-setup recsys-data recsys-baselines recsys-synthetic
+	recsys-setup recsys-data recsys-baselines recsys-retrieval recsys-synthetic
 
 setup:            ## install everything (editable package + dev tools)
 	$(PY) -m pip install -r requirements-dev.txt -e .
@@ -51,7 +51,8 @@ all: warehouse sql notebooks app-data test
 
 # ---- Recommender (H&M data, see docs/recsys.md) ----------------------------------------------
 
-recsys-setup:     ## install the recommender's extra dependencies (Kaggle CLI)
+recsys-setup:     ## install the recommender's dependencies (CPU-only torch, FAISS, Kaggle CLI)
+	$(PY) -m pip install -r requirements-torch-cpu.txt
 	$(PY) -m pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
 
 recsys-data:      ## H&M: download (needs KAGGLE_* and accepted rules), convert, subset, split
@@ -61,6 +62,9 @@ recsys-data:      ## H&M: download (needs KAGGLE_* and accepted rules), convert,
 
 recsys-baselines: ## evaluate every baseline on the validation week -> results/recsys/
 	$(PY) -m recsys baselines --split validation
+
+recsys-retrieval: ## train the two-tower model, build FAISS indexes -> results/recsys/
+	$(PY) -m recsys retrieval
 
 recsys-synthetic: ## the whole recommender pipeline on synthetic data (no download)
 	$(PY) -m recsys --synthetic

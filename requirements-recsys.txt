@@ -1,5 +1,7 @@
 # Recommender (src/recsys), installed on top of requirements-dev.txt, which already pins
 # pandas, numpy, pyarrow, scipy, scikit-learn, lightgbm, pytest and ruff.
+# PyTorch comes from the CPU-only index, so install requirements-torch-cpu.txt first:
+#   pip install -r requirements-torch-cpu.txt
 #   pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
-# Only `python -m recsys fetch` needs it; tests and --synthetic runs work without it.
 kaggle==2.2.5
+faiss-cpu==1.16.0

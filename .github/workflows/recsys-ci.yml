@@ -8,12 +8,14 @@ on:
       - "src/recsys/**"
       - "tests/recsys/**"
       - "requirements-recsys.txt"
+      - "requirements-torch-cpu.txt"
       - ".github/workflows/recsys-ci.yml"
   pull_request:
     paths:
       - "src/recsys/**"
       - "tests/recsys/**"
       - "requirements-recsys.txt"
+      - "requirements-torch-cpu.txt"
       - ".github/workflows/recsys-ci.yml"
   workflow_dispatch:
 
@@ -36,9 +38,13 @@ jobs:
           python-version: "3.13"
           cache: pip
           cache-dependency-path: requirements*.txt
-      - run: pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
+      - name: Install (CPU-only torch from the PyTorch index, then the rest)
+        run: |
+          pip install -r requirements-torch-cpu.txt
+          pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
+          python -c "import torch; assert not torch.cuda.is_available(); print(torch.__version__)"
       - run: ruff check src/recsys tests/recsys
       - run: ruff format --check src/recsys tests/recsys
       - run: pytest -v tests/recsys
       - name: End-to-end synthetic run (python -m recsys --synthetic)
-        run: python -m recsys --synthetic --data-dir "$RUNNER_TEMP/hm" --n-boot 200
+        run: python -m recsys --synthetic --quick --data-dir "$RUNNER_TEMP/hm" --n-boot 200

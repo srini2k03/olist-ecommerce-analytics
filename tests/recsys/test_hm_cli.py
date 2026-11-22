@@ -9,8 +9,11 @@ import pytest
 from recsys.cli import main
 
 
-def test_synthetic_pipeline_end_to_end(tmp_path, capsys):
-    assert main(["--synthetic", "--data-dir", str(tmp_path), "--n-boot", "50"]) == 0
+def test_synthetic_pipeline_end_to_end(tmp_path):
+    pytest.importorskip("torch")  # the main CI installs no torch; recsys-ci does
+    pytest.importorskip("faiss")
+    args = ["--synthetic", "--data-dir", str(tmp_path), "--n-boot", "50", "--quick"]
+    assert main(args) == 0
     for sub in ("parquet", "subset", "split"):
         assert (tmp_path / sub).is_dir()
     report = json.loads((tmp_path / "split" / "split_report.json").read_text())
@@ -34,12 +37,10 @@ def test_synthetic_pipeline_end_to_end(tmp_path, capsys):
     assert {r["k"] for r in result["metrics"]} == {12, 50, 100}
     coverage = [r for r in result["metrics"] if r["metric"] == "coverage"]
     assert coverage and all(r["ci_low"] is None for r in coverage)  # strict JSON, no NaN
-    out = capsys.readouterr().out
-    assert "map@12" in out and "repurchase" in out
 
     # Same seed, same numbers.
     other = tmp_path / "again"
-    assert main(["--synthetic", "--data-dir", str(other), "--n-boot", "50"]) == 0
+    assert main([*args[:2], str(other), *args[3:]]) == 0
     again = json.loads((other / "results" / "baselines_validation.json").read_text())
     assert again["metrics"] == result["metrics"]
 

@@ -149,7 +149,7 @@ def test_stable_uniform_is_deterministic_and_seeded():
     assert abs((u < 0.25).mean() - 0.25) < 0.01
 
 
-def test_subset_samples_customers_and_keeps_referenced_rows(hm_data):
+def test_subset_samples_customers_and_keeps_referenced_customers(hm_data):
     sub = make_subset(hm_data, n_weeks=8, customer_frac=0.5, seed=3)
     tx = sub.transactions
     window = last_n_weeks(hm_data.transactions, 8)
@@ -159,7 +159,7 @@ def test_subset_samples_customers_and_keeps_referenced_rows(hm_data):
     # A sampled customer keeps all of their rows in the window.
     kept = window[window.customer_id.isin(tx.customer_id)]
     assert len(kept) == len(tx)
-    assert set(sub.articles.article_id) == set(tx.article_id)
+    assert len(sub.articles) == len(hm_data.articles)  # the catalogue is kept whole
     assert set(sub.customers.customer_id) == set(tx.customer_id)
     again = make_subset(hm_data, n_weeks=8, customer_frac=0.5, seed=3)
     pd.testing.assert_frame_equal(tx, again.transactions)

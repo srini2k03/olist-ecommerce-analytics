@@ -138,6 +138,19 @@ class HMData:
         return cls(**frames)
 
 
+def _clean(obj):
+    """NaN/inf -> None and numpy scalars -> Python, so the output is strict JSON."""
+    if isinstance(obj, dict):
+        return {str(k): _clean(v) for k, v in obj.items()}
+    if isinstance(obj, list | tuple):
+        return [_clean(v) for v in obj]
+    if isinstance(obj, np.generic):
+        obj = obj.item()
+    if isinstance(obj, float) and not np.isfinite(obj):
+        return None
+    return obj
+
+
 def write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, default=str) + "\n")
+    path.write_text(json.dumps(_clean(payload), indent=2, default=str, allow_nan=False) + "\n")

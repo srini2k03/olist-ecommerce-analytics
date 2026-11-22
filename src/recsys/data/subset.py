@@ -1,10 +1,12 @@
 """A recent, customer-sampled subset of H&M that fits comfortably in memory.
 
 Keeps the last ``n_weeks`` of transactions and a seeded fraction of the
-customers active in that window, then keeps every article and customer row the
-remaining transactions reference. The customer sample is a hash of the
-customer id and the seed, so the same customer is in or out regardless of the
-window length.
+customers active in that window, then keeps every customer row the remaining
+transactions reference. The articles table is kept whole: it is the product
+catalogue, and filtering it by the kept transactions would leak which articles
+sell in the validation and test weeks into the cold-start candidate pool. The
+customer sample is a hash of the customer id and the seed, so the same customer
+is in or out regardless of the window length.
 """
 
 from __future__ import annotations
@@ -56,7 +58,7 @@ def make_subset(
         keep = stable_uniform(tx["customer_id"].to_numpy(), seed) < customer_frac
         tx = tx[keep]
     tx = tx.sort_values(["t_dat", "customer_id", "article_id"], kind="stable")
-    articles = data.articles[data.articles["article_id"].isin(tx["article_id"].unique())]
+    articles = data.articles
     customers = data.customers[data.customers["customer_id"].isin(tx["customer_id"].unique())]
     out = HMData(tx, articles, customers).coerced()
     counts = out.counts()
@@ -66,7 +68,9 @@ def make_subset(
         100 * customer_frac,
         ", ".join(f"{k}={v:,}" for k, v in counts.items()),
     )
-    missing_articles = counts["active_articles"] - len(out.articles)
+    missing_articles = int((~tx["article_id"].isin(out.articles["article_id"])).sum())
     if missing_articles:
-        log.warning("%d transacted articles have no row in articles", missing_articles)
+        log.warning(
+            "%d transactions reference articles missing from the catalogue", missing_articles
+        )
     return out

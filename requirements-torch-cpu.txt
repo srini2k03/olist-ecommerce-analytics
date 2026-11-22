@@ -1,0 +1,5 @@
+# CPU-only PyTorch for the recommender's two-tower model (no CUDA wheels).
+# Install this file first:  pip install -r requirements-torch-cpu.txt
+# then:                     pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
+--index-url https://download.pytorch.org/whl/cpu
+torch==2.15.0
