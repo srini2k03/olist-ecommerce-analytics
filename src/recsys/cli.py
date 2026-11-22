@@ -172,11 +172,18 @@ def _ranking(ctx: Context) -> pd.DataFrame:
     return run_ranking(ctx)
 
 
+def _coldstart(ctx: Context) -> pd.DataFrame:
+    from recsys.coldstart.run import run_coldstart
+
+    return run_coldstart(ctx)
+
+
 STAGES: dict[str, Callable[[Context], pd.DataFrame | dict]] = {
     "baselines": lambda ctx: run_baselines(ctx, "validation"),
     "baselines_test": lambda ctx: run_baselines(ctx, "test"),
     "retrieval": _retrieval,
     "ranking": _ranking,
+    "coldstart": _coldstart,
 }
 
 
