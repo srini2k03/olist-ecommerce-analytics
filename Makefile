@@ -2,7 +2,8 @@ PY ?= python
 NOTEBOOKS := 01_eda 02_stats 03_segmentation 04_churn
 
 .PHONY: setup data warehouse postgres sql sql-compare notebooks app-data app test lint smoke site all \
-	recsys-setup recsys-data recsys-baselines recsys-retrieval recsys-ranking recsys-coldstart recsys-report recsys-synthetic
+	recsys-setup recsys-data recsys-baselines recsys-retrieval recsys-ranking recsys-coldstart recsys-report recsys-all \
+	recsys-serve recsys-bench recsys-demo recsys-docker recsys-synthetic
 
 setup:            ## install everything (editable package + dev tools)
 	$(PY) -m pip install -r requirements-dev.txt -e .
@@ -75,6 +76,22 @@ recsys-coldstart: ## cold users (blend chosen on validation) and new articles ->
 recsys-report:    ## test-week report of every stage + simulated A/B test -> results/recsys/
 	$(PY) -m recsys baselines --split test
 	$(PY) -m recsys report
+
+recsys-all:       ## every modelling stage after split, then the README section
+	$(PY) -m recsys all
+	$(PY) -m recsys readme
+
+recsys-serve:     ## run the API on the exported bundle (data/hm/artifacts/serving)
+	$(PY) -m uvicorn recsys.serve.api:app --port 8000
+
+recsys-bench:     ## p50/p95/p99 latency of the in-process service
+	$(PY) -m recsys.serve.benchmark --n 1000
+
+recsys-demo:      ## Streamlit demo against the running API ($$RECSYS_API_URL)
+	$(PY) -m streamlit run app_recsys/streamlit_app.py
+
+recsys-docker:    ## build the CPU-only API image
+	docker build -f docker/recsys.Dockerfile -t recsys-api .
 
 recsys-synthetic: ## the whole recommender pipeline on synthetic data (no download)
 	$(PY) -m recsys --synthetic

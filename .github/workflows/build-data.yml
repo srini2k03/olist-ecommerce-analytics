@@ -17,6 +17,7 @@ on:
       - "!tests/recsys/**"
       - "!requirements-recsys.txt"
       - "!requirements-torch-cpu.txt"
+      - "!requirements-serve.txt"
 
 permissions:
   contents: write

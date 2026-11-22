@@ -2,16 +2,17 @@
 
 Commands (real data, run in this order)::
 
-    python -m recsys fetch                     # Kaggle download -> data/hm/raw, parquet
+    python -m recsys fetch            # Kaggle download -> data/hm/raw, parquet
     python -m recsys subset --weeks 16 --frac 0.25
     python -m recsys split
-    python -m recsys baselines --split validation
-    python -m recsys retrieval                 # two-tower + FAISS
-    python -m recsys all                       # every modelling stage after split
+    python -m recsys all              # baselines, baselines_test, retrieval, ranking,
+                                      # coldstart, report, export, benchmark
+    python -m recsys readme           # regenerate the README section
 
-``python -m recsys --synthetic`` runs the same pipeline end to end on generated
-data under ``data/hm/synthetic/`` (results included), for tests and CI. Its
-numbers describe the generator, not H&M, and never go to ``results/recsys/``.
+Each stage of ``all`` is also its own command. ``python -m recsys --synthetic``
+runs the whole pipeline on generated data under ``data/hm/synthetic/`` for tests
+and CI. Its numbers describe the generator, not H&M, and never go to
+``results/recsys/``.
 """
 
 from __future__ import annotations
@@ -184,6 +185,22 @@ def _report(ctx: Context) -> dict:
     return run_report(ctx)
 
 
+def _export(ctx: Context) -> dict:
+    from recsys.serve.bundle import export_bundle
+
+    return {"bundle": str(export_bundle(ctx))}
+
+
+def _benchmark(ctx: Context) -> dict:
+    from recsys.serve.benchmark import bench_in_process
+
+    n = 200 if ctx.quick else 1000
+    res = bench_in_process(ctx.artifacts_dir / "serving", n, seed=ctx.seed)
+    log.info("serving latency (in process): p50 %.1f ms, p95 %.1f ms", res["p50_ms"], res["p95_ms"])
+    ctx.write_result("serving_latency", res)
+    return res
+
+
 STAGES: dict[str, Callable[[Context], pd.DataFrame | dict]] = {
     "baselines": lambda ctx: run_baselines(ctx, "validation"),
     "baselines_test": lambda ctx: run_baselines(ctx, "test"),
@@ -191,6 +208,8 @@ STAGES: dict[str, Callable[[Context], pd.DataFrame | dict]] = {
     "ranking": _ranking,
     "coldstart": _coldstart,
     "report": _report,
+    "export": _export,
+    "benchmark": _benchmark,
 }
 
 
@@ -263,6 +282,8 @@ def build_parser() -> argparse.ArgumentParser:
         if not name.startswith("baselines"):
             sub.add_parser(name, help=f"run the {name} stage")
     sub.add_parser("all", help="run every modelling stage (after split)")
+    rd = sub.add_parser("readme", help="regenerate the recommender section of README.md")
+    rd.add_argument("--check", action="store_true", help="fail if README.md is out of date")
     return p
 
 
@@ -295,6 +316,16 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "split":
         run_split(data_dir, args.val_weeks, args.test_weeks, args.train_weeks)
+        return 0
+    if args.command == "readme":
+        from recsys import readme
+
+        results = args.results_dir or config.RESULTS_DIR
+        if args.check:
+            ok = readme.is_current(results_dir=results)
+            log.info("README.md recommender section is %s", "current" if ok else "OUT OF DATE")
+            return 0 if ok else 1
+        log.info("README.md %s", "updated" if readme.update(results_dir=results) else "unchanged")
         return 0
     ctx = make_context(data_dir, args.results_dir, args.seed, args.n_boot, args.quick)
     if args.command == "baselines":

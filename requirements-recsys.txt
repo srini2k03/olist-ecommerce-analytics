@@ -5,3 +5,7 @@
 #   pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
 kaggle==2.2.5
 faiss-cpu==1.16.0
+# API, its tests (TestClient needs httpx) and the demo's HTTP client
+fastapi==0.162.2
+uvicorn==0.54.0
+httpx==0.28.1

@@ -1,0 +1,7 @@
+{
+  "_comment": "Copy to .github/recsys-request.json and push to main to run the real-data training (recsys-train.yml). Needs the KAGGLE_USERNAME / KAGGLE_KEY secrets of an account that accepted the H&M competition rules.",
+  "subset_weeks": 16,
+  "customer_frac": 0.25,
+  "n_boot": 1000,
+  "seed": 42
+}

@@ -1,0 +1,6 @@
+# Keep the build context small and free of data (the bundle is mounted at run time).
+*
+!requirements-torch-cpu.txt
+!requirements-serve.txt
+!src/recsys/
+**/__pycache__

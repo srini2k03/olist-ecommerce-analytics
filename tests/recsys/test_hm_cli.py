@@ -9,12 +9,8 @@ import pytest
 from recsys.cli import main
 
 
-def test_synthetic_pipeline_end_to_end(tmp_path):
-    pytest.importorskip("torch")  # the main CI installs no torch; recsys-ci does
-    pytest.importorskip("faiss")
-    pytest.importorskip("lightgbm")
-    args = ["--synthetic", "--data-dir", str(tmp_path), "--n-boot", "50", "--quick"]
-    assert main(args) == 0
+def test_synthetic_pipeline_end_to_end(synthetic_pipeline):
+    tmp_path = synthetic_pipeline
     for sub in ("parquet", "subset", "split"):
         assert (tmp_path / sub).is_dir()
     report = json.loads((tmp_path / "split" / "split_report.json").read_text())

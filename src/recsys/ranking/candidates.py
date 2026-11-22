@@ -11,7 +11,7 @@ import logging
 import pickle
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 import numpy as np
 import pandas as pd
@@ -22,7 +22,9 @@ from recsys.baselines import (
     RepurchaseRecommender,
 )
 from recsys.data.split import check_strictly_before
-from recsys.retrieval.retriever import TwoTowerRetriever, exact_topk
+
+if TYPE_CHECKING:  # PyTorch stays optional for code that only unpickles a generator
+    from recsys.retrieval.retriever import TwoTowerRetriever
 
 log = logging.getLogger(__name__)
 
@@ -65,6 +67,8 @@ class CandidateGenerator:
         self, users: list[int], retriever: TwoTowerRetriever, history: pd.DataFrame
     ) -> pd.DataFrame:
         """Exact two-tower search with fresh user vectors (evaluation)."""
+        from recsys.retrieval.retriever import exact_topk
+
         user_vecs = retriever.user_vectors(users, history)
         ids, _ = exact_topk(user_vecs, self.item_vecs_, self.items_, self.config.n_two_tower)
         return self.generate(users, user_vecs, ids)
@@ -118,6 +122,11 @@ class CandidateGenerator:
             )
             .reset_index()
         )
+        # Empty per-source frames (e.g. one user without co-occurrences) arrive as object
+        # columns; pin every dtype so features are numeric whatever the batch.
+        cands = cands.astype({"customer_id": np.int64, "article_id": np.int64})
+        num = ["tt_rank", "cooc_score", "agepop_rank"]
+        cands[num] = cands[num].astype(np.float64)
         cands[SOURCE_COLUMNS] = cands[SOURCE_COLUMNS].fillna(0).astype(np.int8)
         cands["tt_score"] = self._tt_scores(cands, users, user_vecs)
         cands["sources"] = [

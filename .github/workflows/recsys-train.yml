@@ -1,0 +1,126 @@
+name: Recsys train (real H&M data)
+
+# Runs the whole recommender on the real H&M data and commits results/recsys/
+# plus the regenerated README section. Start it by hand, or push
+# .github/recsys-request.json (copy .github/recsys-request.example.json) to main.
+# Needs the KAGGLE_USERNAME / KAGGLE_KEY secrets of an account that has accepted
+# the competition rules; without them it skips with a notice.
+#
+# Sizing for a standard runner (4 vCPU, 16 GB RAM, 6 h limit): the CSVs are
+# streamed into parquet in 2M-row chunks and the models train on the last 16
+# weeks for 25% of customers, about a million transactions; expect roughly
+# 1.5 to 3 hours end to end.
+on:
+  workflow_dispatch:
+    inputs:
+      subset_weeks:
+        description: "Weeks of history to keep"
+        default: "16"
+      customer_frac:
+        description: "Share of active customers to sample"
+        default: "0.25"
+  push:
+    branches: [main]
+    paths:
+      - ".github/recsys-request.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recsys-train
+  cancel-in-progress: false
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+    steps:
+      - name: Check the Kaggle secrets
+        id: secrets
+        run: |
+          if [ -z "$KAGGLE_USERNAME" ] || [ -z "$KAGGLE_KEY" ]; then
+            echo "::notice title=Recsys train skipped::KAGGLE_USERNAME / KAGGLE_KEY secrets are not set; add them (and accept the H&M competition rules) to run on real data."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.secrets.outputs.ok == 'true'
+      - uses: actions/setup-python@v5
+        if: steps.secrets.outputs.ok == 'true'
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Install (CPU-only torch)
+        if: steps.secrets.outputs.ok == 'true'
+        run: |
+          pip install -r requirements-torch-cpu.txt
+          pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
+      - name: Read the run parameters
+        if: steps.secrets.outputs.ok == 'true'
+        id: params
+        env:
+          IN_WEEKS: ${{ github.event.inputs.subset_weeks }}
+          IN_FRAC: ${{ github.event.inputs.customer_frac }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          req = pathlib.Path(".github/recsys-request.json")
+          p = json.loads(req.read_text()) if req.exists() else {}
+          weeks = int(os.environ.get("IN_WEEKS") or p.get("subset_weeks", 16))
+          frac = float(os.environ.get("IN_FRAC") or p.get("customer_frac", 0.25))
+          n_boot = int(p.get("n_boot", 1000))
+          seed = int(p.get("seed", 42))
+          assert 4 <= weeks <= 104 and 0 < frac <= 1, (weeks, frac)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"weeks={weeks}\nfrac={frac}\nn_boot={n_boot}\nseed={seed}\n")
+          print(dict(weeks=weeks, frac=frac, n_boot=n_boot, seed=seed))
+          PY
+      - uses: actions/cache@v4
+        if: steps.secrets.outputs.ok == 'true'
+        with:
+          path: data/hm/raw
+          key: hm-raw-v1
+      - name: Fetch and convert (Kaggle API)
+        if: steps.secrets.outputs.ok == 'true'
+        run: python -m recsys fetch
+      - name: Subset and split
+        if: steps.secrets.outputs.ok == 'true'
+        run: |
+          python -m recsys --seed ${{ steps.params.outputs.seed }} subset --weeks ${{ steps.params.outputs.weeks }} --frac ${{ steps.params.outputs.frac }}
+          python -m recsys split
+      - name: Baselines, retrieval, ranking, cold start, report + A/B, export, latency
+        if: steps.secrets.outputs.ok == 'true'
+        run: python -m recsys --seed ${{ steps.params.outputs.seed }} --n-boot ${{ steps.params.outputs.n_boot }} all
+      - name: Regenerate the README section
+        if: steps.secrets.outputs.ok == 'true'
+        run: python -m recsys readme
+      - uses: actions/upload-artifact@v4
+        if: steps.secrets.outputs.ok == 'true'
+        with:
+          name: recsys-results
+          path: |
+            results/recsys
+            data/hm/subset/manifest.json
+            data/hm/split/split_report.json
+      - name: Commit results
+        if: steps.secrets.outputs.ok == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/recsys README.md
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Recommender results from the real H&M data (${GITHUB_SHA::7})"
+            for i in 1 2 3; do
+              git pull --rebase origin main && git push && exit 0
+              sleep $((i * 5))
+            done
+            echo "::error::could not push the results"; exit 1
+          fi

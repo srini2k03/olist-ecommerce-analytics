@@ -1,0 +1,10 @@
+# Runtime of the recommender API (docker/recsys.Dockerfile). PyTorch comes from the
+# CPU-only index in requirements-torch-cpu.txt and is installed first.
+numpy==2.5.4
+pandas==3.1.0
+pyarrow==26.0.1
+scipy==1.18.1
+lightgbm==4.7.0
+faiss-cpu==1.16.0
+fastapi==0.162.2
+uvicorn==0.54.0

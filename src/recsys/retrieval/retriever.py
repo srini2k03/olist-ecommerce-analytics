@@ -157,15 +157,23 @@ class TwoTowerRetriever(Recommender):
 
     @torch.no_grad()
     def user_vectors(
-        self, user_ids: Sequence[int], history: pd.DataFrame | None = None
+        self,
+        user_ids: Sequence[int],
+        history: pd.DataFrame | None = None,
+        ages: Sequence[float | None] | None = None,
     ) -> np.ndarray:
+        """``ages`` overrides the customers table (e.g. an age given to the API)."""
         self._check_fitted()
         history = self.history_ if history is None else history
         users = list(user_ids)
         hist = history_matrix(history, users, self.config.history_len, self.item_vocab_)
+        if ages is None:
+            age_idx = self._ages(users)
+        else:
+            age_idx = age_bucket_index(pd.Series(ages, dtype="float64"))
         out = self.model_.user_vec(
             torch.from_numpy(self.user_vocab_.encode(users)),
-            torch.from_numpy(self._ages(users)),
+            torch.from_numpy(age_idx),
             torch.from_numpy(hist),
         )
         return out.numpy().astype(np.float32)

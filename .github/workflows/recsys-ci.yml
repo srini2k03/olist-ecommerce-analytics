@@ -1,20 +1,28 @@
 name: Recsys CI
 
-# Lint and test the H&M recommender (src/recsys) on synthetic data only: no
-# network, no Kaggle credentials. Real-data runs happen locally (make recsys-data).
+# Lint and test the H&M recommender on synthetic data only: no network data,
+# no Kaggle credentials. Real-data runs go through recsys-train.yml.
 on:
   push:
     paths:
       - "src/recsys/**"
       - "tests/recsys/**"
+      - "app_recsys/**"
+      - "docker/**"
+      - ".dockerignore"
       - "requirements-recsys.txt"
+      - "requirements-serve.txt"
       - "requirements-torch-cpu.txt"
       - ".github/workflows/recsys-ci.yml"
   pull_request:
     paths:
       - "src/recsys/**"
       - "tests/recsys/**"
+      - "app_recsys/**"
+      - "docker/**"
+      - ".dockerignore"
       - "requirements-recsys.txt"
+      - "requirements-serve.txt"
       - "requirements-torch-cpu.txt"
       - ".github/workflows/recsys-ci.yml"
   workflow_dispatch:
@@ -30,7 +38,7 @@ jobs:
   lint-test:
     name: Ruff + pytest tests/recsys + synthetic pipeline
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -43,8 +51,49 @@ jobs:
           pip install -r requirements-torch-cpu.txt
           pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
           python -c "import torch; assert not torch.cuda.is_available(); print(torch.__version__)"
-      - run: ruff check src/recsys tests/recsys
-      - run: ruff format --check src/recsys tests/recsys
+      - run: ruff check src/recsys tests/recsys app_recsys
+      - run: ruff format --check src/recsys tests/recsys app_recsys
       - run: pytest -v tests/recsys
+      - name: README recommender section is up to date
+        run: python -m recsys readme --check
       - name: End-to-end synthetic run (python -m recsys --synthetic)
         run: python -m recsys --synthetic --quick --data-dir "$RUNNER_TEMP/hm" --n-boot 200
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-serving-bundle
+          path: ${{ runner.temp }}/hm/artifacts/serving
+          retention-days: 3
+
+  docker:
+    name: Docker build + API smoke test (synthetic bundle)
+    needs: lint-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: synthetic-serving-bundle
+          path: bundle
+      - name: Build the image
+        run: docker build -f docker/recsys.Dockerfile -t recsys-api:ci .
+      - name: Run the API on the synthetic bundle and wait for the healthcheck
+        run: |
+          chmod -R a+rX bundle
+          docker run -d --name api -p 8000:8000 -v "$PWD/bundle:/artifacts:ro" recsys-api:ci
+          for i in $(seq 1 60); do
+            status=$(docker inspect --format '{{.State.Health.Status}}' api)
+            [ "$status" = healthy ] && break
+            sleep 3
+          done
+          docker logs api
+          [ "$(docker inspect --format '{{.State.Health.Status}}' api)" = healthy ]
+      - name: Smoke-test the endpoints
+        run: |
+          set -euo pipefail
+          curl -fsS localhost:8000/health
+          cid=$(curl -fsS "localhost:8000/users/sample?n=1" | python3 -c "import json,sys; print(json.load(sys.stdin)['customer_ids'][0])")
+          curl -fsS "localhost:8000/recommend/${cid}?k=12" | python3 -c "import json,sys; r=json.load(sys.stdin); assert len(r['items'])==12, r; print(r['strategy'])"
+          curl -fsS "localhost:8000/recommend/123?k=5&age=25" | python3 -c "import json,sys; r=json.load(sys.stdin); assert r['strategy'].startswith('cold'), r; print(r['strategy'])"
+      - name: Container runs as non-root
+        run: test "$(docker exec api id -u)" = 10001
