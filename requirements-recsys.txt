@@ -1,0 +1,5 @@
+# Recommender (src/recsys), installed on top of requirements-dev.txt, which already pins
+# pandas, numpy, pyarrow, scipy, scikit-learn, lightgbm, pytest and ruff.
+#   pip install -r requirements-dev.txt -r requirements-recsys.txt -e .
+# Only `python -m recsys fetch` needs it; tests and --synthetic runs work without it.
+kaggle==2.2.5

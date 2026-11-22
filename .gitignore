@@ -12,6 +12,8 @@ data/raw/
 data/*.duckdb
 data/*.duckdb.wal
 *.csv.zip
+# H&M competition data (rules forbid redistribution) and synthetic runs
+data/hm/
 
 # Build outputs
 site/
