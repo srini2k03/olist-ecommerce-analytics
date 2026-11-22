@@ -71,15 +71,26 @@ class ItemCooccurrenceRecommender(Recommender):
         self.fitted_ = True
         return self
 
+    def seeds(self, user: int) -> list[int]:
+        return [a for a, _, _ in self.histories_.get(int(user), [])[: self.n_seed_items]]
+
+    def neighbour_scores(self, user: int) -> dict[int, float]:
+        """Recency-weighted co-occurrence score of every neighbour of the user's seeds."""
+        self._check_fitted()
+        seeds = self.seeds(user)
+        scores: dict[int, float] = defaultdict(float)
+        for rank, seed in enumerate(seeds):
+            for b, w in self.neighbours_.get(seed, ()):
+                scores[b] += w / (1 + rank)
+        for seed in seeds:
+            scores.pop(seed, None)
+        return dict(scores)
+
     def recommend(self, user_ids: Iterable[int], k: int) -> dict[int, list[int]]:
         self._check_fitted()
         out = {}
         for u in user_ids:
-            seeds = [a for a, _, _ in self.histories_.get(int(u), [])[: self.n_seed_items]]
-            scores: dict[int, float] = defaultdict(float)
-            for rank, seed in enumerate(seeds):
-                for b, w in self.neighbours_.get(seed, ()):
-                    scores[b] += w / (1 + rank)
+            scores = self.neighbour_scores(u)
             ranked = sorted(scores, key=lambda b: (-scores[b], b))
-            out[int(u)] = fill(ranked, self.popular_, k, exclude=seeds)
+            out[int(u)] = fill(ranked, self.popular_, k, exclude=self.seeds(u))
         return out

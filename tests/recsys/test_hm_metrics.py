@@ -18,6 +18,7 @@ from recsys.evaluate.metrics import (
     map_at_k,
     mean_popularity_percentile,
     ndcg_at_k,
+    paired_bootstrap_diff,
     recall_at_k,
     recommendation_gini,
 )
@@ -135,3 +136,14 @@ def test_evaluate_returns_a_tidy_table():
     assert table[table.metric == "coverage"].ci_low.isna().all()
     no_pop = evaluate(recs, truth, ks=(12,), n_boot=50)
     assert set(no_pop.metric) == {"recall", "ndcg", "map", "hit_rate"}
+
+
+def test_paired_bootstrap_diff():
+    a = np.array([0.0, 0.5, 1.0, 0.2] * 50)
+    d = paired_bootstrap_diff(a, a + 0.1, n_boot=200)
+    assert d["diff"] == pytest.approx(0.1)
+    assert d["ci_low"] == pytest.approx(0.1) and d["ci_high"] == pytest.approx(0.1)
+    rng = np.random.default_rng(3)
+    b = a + rng.normal(0, 0.1, len(a))
+    d2 = paired_bootstrap_diff(a, b, n_boot=300)
+    assert d2["ci_low"] < d2["diff"] < d2["ci_high"] and d2["n_users"] == len(a)

@@ -199,17 +199,7 @@ class TwoTowerRetriever(Recommender):
     ) -> tuple[np.ndarray, np.ndarray]:
         """Exact top-``k`` (article ids, cosine scores) per user, best first."""
         items = self.index_items() if items is None else np.asarray(items)
-        v = torch.from_numpy(self.item_vectors(items))
-        u = torch.from_numpy(self.user_vectors(user_ids, history))
-        k = min(k, len(items))
-        ids, scores = [], []
-        for s in range(0, len(u), CHUNK):
-            sc, ix = torch.topk(u[s : s + CHUNK] @ v.T, k, dim=1)
-            ids.append(items[ix.numpy()])
-            scores.append(sc.numpy())
-        if not ids:
-            return np.empty((0, k), dtype=items.dtype), np.empty((0, k), dtype=np.float32)
-        return np.vstack(ids), np.vstack(scores)
+        return exact_topk(self.user_vectors(user_ids, history), self.item_vectors(items), items, k)
 
     def recommend(
         self, user_ids: Iterable[int], k: int, history: pd.DataFrame | None = None
@@ -277,3 +267,20 @@ class TwoTowerRetriever(Recommender):
         )
         obj.fitted_ = True
         return obj
+
+
+def exact_topk(
+    user_vecs: np.ndarray, item_vecs: np.ndarray, items: np.ndarray, k: int
+) -> tuple[np.ndarray, np.ndarray]:
+    """Brute-force top-``k`` by inner product, in user chunks to bound memory."""
+    v = torch.from_numpy(np.ascontiguousarray(item_vecs, dtype=np.float32))
+    u = torch.from_numpy(np.ascontiguousarray(user_vecs, dtype=np.float32))
+    k = min(k, len(items))
+    ids, scores = [], []
+    for s in range(0, len(u), CHUNK):
+        sc, ix = torch.topk(u[s : s + CHUNK] @ v.T, k, dim=1)
+        ids.append(items[ix.numpy()])
+        scores.append(sc.numpy())
+    if not ids:
+        return np.empty((0, k), dtype=items.dtype), np.empty((0, k), dtype=np.float32)
+    return np.vstack(ids), np.vstack(scores)

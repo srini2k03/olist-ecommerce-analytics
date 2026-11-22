@@ -166,10 +166,17 @@ def _retrieval(ctx: Context) -> pd.DataFrame:
     return run_retrieval(ctx)
 
 
+def _ranking(ctx: Context) -> pd.DataFrame:
+    from recsys.ranking.run import run_ranking
+
+    return run_ranking(ctx)
+
+
 STAGES: dict[str, Callable[[Context], pd.DataFrame | dict]] = {
     "baselines": lambda ctx: run_baselines(ctx, "validation"),
     "baselines_test": lambda ctx: run_baselines(ctx, "test"),
     "retrieval": _retrieval,
+    "ranking": _ranking,
 }
 
 

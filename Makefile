@@ -2,7 +2,7 @@ PY ?= python
 NOTEBOOKS := 01_eda 02_stats 03_segmentation 04_churn
 
 .PHONY: setup data warehouse postgres sql sql-compare notebooks app-data app test lint smoke site all \
-	recsys-setup recsys-data recsys-baselines recsys-retrieval recsys-synthetic
+	recsys-setup recsys-data recsys-baselines recsys-retrieval recsys-ranking recsys-synthetic
 
 setup:            ## install everything (editable package + dev tools)
 	$(PY) -m pip install -r requirements-dev.txt -e .
@@ -65,6 +65,9 @@ recsys-baselines: ## evaluate every baseline on the validation week -> results/r
 
 recsys-retrieval: ## train the two-tower model, build FAISS indexes -> results/recsys/
 	$(PY) -m recsys retrieval
+
+recsys-ranking:   ## candidates + features per fold, LambdaRank, ablation -> results/recsys/
+	$(PY) -m recsys ranking
 
 recsys-synthetic: ## the whole recommender pipeline on synthetic data (no download)
 	$(PY) -m recsys --synthetic

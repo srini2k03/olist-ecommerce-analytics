@@ -207,3 +207,25 @@ def evaluate(
             value = mean_popularity_percentile(recs, item_counts, k)
             rows.append(("popularity_pct", k, value, np.nan, np.nan, len(recs)))
     return pd.DataFrame(rows, columns=["metric", "k", "value", "ci_low", "ci_high", "n_users"])
+
+
+def paired_bootstrap_diff(
+    a: np.ndarray,
+    b: np.ndarray,
+    n_boot: int = 1000,
+    alpha: float = 0.05,
+    seed: int = RANDOM_SEED,
+) -> dict[str, float]:
+    """Mean of ``b - a`` over the same users, with a paired percentile bootstrap CI.
+
+    Resampling users (not the two systems separately) keeps the pairing, so the CI
+    reflects the per-user difference rather than two independent spreads.
+    """
+    diff = np.asarray(b, dtype=float) - np.asarray(a, dtype=float)
+    low, high = bootstrap_mean_ci(diff, n_boot, alpha, seed)
+    return {
+        "diff": float(diff.mean()) if len(diff) else float("nan"),
+        "ci_low": float(low[0]),
+        "ci_high": float(high[0]),
+        "n_users": len(diff),
+    }
