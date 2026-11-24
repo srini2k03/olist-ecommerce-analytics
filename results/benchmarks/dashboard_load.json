@@ -3,7 +3,7 @@
   "streamlit_run_local": {
     "source": "python scripts/smoke_app.py --width 1280 --report ...",
     "machine": "dev sandbox (4 vCPU, 15 GB)",
-    "git_sha": "680d2a1",
+    "git_sha": "eeaf14d",
     "date_utc": "2026-11-24",
     "timings_s": {
       "first_render_s": 4.21,

@@ -181,7 +181,7 @@ def _classification_metrics(y, score) -> dict:
 
     y, score = np.asarray(y, int), np.asarray(score, float)
     k = max(1, int(round(0.1 * len(y))))
-    top = np.argsort(-score)[:k]
+    top = np.argsort(-score, kind="stable")[:k]  # ties (lane rates) break by row order
     return {
         "pr_auc": float(average_precision_score(y, score)),
         "pr_auc_ci": _bootstrap(average_precision_score, y, score),

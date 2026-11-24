@@ -161,7 +161,7 @@ Sidebar filters (purchase months, customer state, category, seller state, seller
 
 ## Benchmarks
 
-`python scripts/benchmark.py` times every stage in a fresh process (so peak memory is per stage) and every query as a median of 10 runs after a warm-up. Numbers below: [`results/benchmarks/benchmark_local.json`](results/benchmarks/benchmark_local.json) (commit 680d2a1, dev sandbox, 4 vCPU), [`benchmark_local_e70f19e.json`](results/benchmarks/benchmark_local_e70f19e.json) (before the two optimisations below, with the Postgres slow paths) and [`dashboard_load.json`](results/benchmarks/dashboard_load.json). `benchmark.yml` reruns it on a GitHub runner.
+`python scripts/benchmark.py` times every stage in a fresh process (so peak memory is per stage) and every query as a median of 10 runs after a warm-up. Numbers below: [`results/benchmarks/benchmark_local.json`](results/benchmarks/benchmark_local.json) (commit eeaf14d, dev sandbox, 4 vCPU), [`benchmark_local_e70f19e.json`](results/benchmarks/benchmark_local_e70f19e.json) (before the two optimisations below, with the Postgres slow paths) and [`dashboard_load.json`](results/benchmarks/dashboard_load.json). `benchmark.yml` reruns it on a GitHub runner.
 
 | Stage | DuckDB | Postgres 16 |
 |---|---:|---:|
@@ -205,7 +205,7 @@ CI also runs ruff, executes the notebooks, and drives `streamlit run` with Playw
 
 ## Honesty notes
 
-- All results come from the real, checksum-verified dataset (Olist commit `d9e4980`); CI recomputes them, and analysis reruns are byte-identical.
+- All results come from the real, checksum-verified dataset (Olist commit `d9e4980`); the `build-data` workflow recomputes them. Reruns on the same machine are byte-identical; a rebuild on a GitHub runner differs only in the 6th-7th significant digit of optimiser outputs (CLV, the notebooks' ordinal regression).
 - **The A/B test is simulated.** Only its baskets and volumes are real; effects are assumptions, labelled as such in every output.
 - **Estimates are labelled.** Marketplace revenue and contribution rest on an assumed take rate and payment cost; the dataset has no commission or cost data.
 - Associations are not causal effects: the late-delivery link holds in every stratum and with controls, but a promise-date experiment is the proper confirmation. Scenarios that borrow an association say they treat it as causal (an upper bound).

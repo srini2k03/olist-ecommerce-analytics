@@ -145,7 +145,9 @@ dashboard shows their committed results, labelled "full data".
 - Inputs: the 9 CSVs are fetched from a pinned commit of Olist's public repository and
   checked against SHA-256 checksums (`scripts/fetch_data.py`).
 - Every generated JSON carries `run_metadata` (library versions, seed, a fingerprint of the
-  raw files) but no timestamp, so a rebuild from the same code and data is byte-identical
-  (verified by running the analysis twice); the git commit records when and from which code.
+  raw files) but no timestamp, so a rebuild from the same code and data on the same machine
+  is byte-identical (verified by running the analysis twice); on another CPU, optimiser
+  outputs (the CLV fits) can differ in the 6th-7th significant digit. The git commit records
+  when and from which code.
 - Seeds: `olist.config.RANDOM_SEED`; LightGBM runs single-threaded and deterministic; inputs
   are loaded in a fixed order because resampling and bagging depend on row order.

@@ -149,8 +149,8 @@
       ],
       "roc_auc": 0.631448,
       "brier": 0.0408638,
-      "precision_top10pct": 0.0662791,
-      "recall_top10pct": 0.166342,
+      "precision_top10pct": 0.0666667,
+      "recall_top10pct": 0.167315,
       "base_rate": 0.0398465
     },
     "lightgbm": {

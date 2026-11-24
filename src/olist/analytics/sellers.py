@@ -182,7 +182,7 @@ def rank_sellers(
     }
     draws["log_revenue"] = np.broadcast_to(point["log_revenue"][idx], (n_draws, len(idx)))
     scores = composite(draws)
-    ranks = (-scores).argsort(axis=1).argsort(axis=1) + 1
+    ranks = (-scores).argsort(axis=1, kind="stable").argsort(axis=1, kind="stable") + 1
     top = max(1, int(round(0.1 * len(idx))))
     c["rank_p05"] = np.nan
     c["rank_p95"] = np.nan
