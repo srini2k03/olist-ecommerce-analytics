@@ -1,0 +1,528 @@
+{
+  "baseline_period": "2018-01-01 to 2018-08-31",
+  "scenarios": {
+    "Faster delivery": {
+      "scenario": "Faster delivery",
+      "hypothetical": true,
+      "inputs": [
+        {
+          "name": "orders_per_month",
+          "value": 6691.25,
+          "label": "Valid orders per month",
+          "source": "observed"
+        },
+        {
+          "name": "aov",
+          "value": 160.577,
+          "label": "GMV per order (R$)",
+          "source": "observed"
+        },
+        {
+          "name": "take_rate",
+          "value": 0.1,
+          "label": "Marketplace take rate",
+          "source": "assumption"
+        },
+        {
+          "name": "payment_cost_rate",
+          "value": 0.02,
+          "label": "Payment cost share",
+          "source": "assumption"
+        },
+        {
+          "name": "late_rate",
+          "value": 0.0772685,
+          "label": "Late-delivery rate",
+          "source": "observed"
+        },
+        {
+          "name": "late_reduction",
+          "value": 0.5,
+          "label": "Share of late deliveries fixed",
+          "source": "assumption"
+        },
+        {
+          "name": "review_gap",
+          "value": 2.05402,
+          "label": "On-time minus late review",
+          "source": "observed"
+        },
+        {
+          "name": "repeat_gap",
+          "value": 0.00527662,
+          "label": "Repeat within 180 days after an on-time vs a late first order",
+          "source": "observed"
+        }
+      ],
+      "monthly": [
+        {
+          "metric": "orders",
+          "baseline": 6691.25,
+          "scenario": 6692.67,
+          "change": 1.42283
+        },
+        {
+          "metric": "gmv",
+          "baseline": 1074458.91,
+          "scenario": 1074687.38,
+          "change": 228.474
+        },
+        {
+          "metric": "item_revenue",
+          "baseline": 917630.0,
+          "scenario": 917825.0,
+          "change": 195.126
+        },
+        {
+          "metric": "marketplace_revenue_estimate",
+          "baseline": 91763.0,
+          "scenario": 91782.5,
+          "change": 19.5126
+        },
+        {
+          "metric": "contribution_estimate",
+          "baseline": 70273.8,
+          "scenario": 70288.7,
+          "change": 14.9431
+        }
+      ],
+      "notes": "Treats the observed review and repeat gaps between on-time and late first orders as causal, so this is an upper bound. Extra repeat orders accrue over the following months; the cost of faster logistics is not modelled.",
+      "late_rate_after": 0.0386343,
+      "avg_review_change": 0.0793556
+    },
+    "Shipping subsidy": {
+      "scenario": "Shipping subsidy",
+      "hypothetical": true,
+      "inputs": [
+        {
+          "name": "orders_per_month",
+          "value": 6691.25,
+          "label": "Valid orders per month",
+          "source": "observed"
+        },
+        {
+          "name": "aov",
+          "value": 160.577,
+          "label": "GMV per order (R$)",
+          "source": "observed"
+        },
+        {
+          "name": "take_rate",
+          "value": 0.1,
+          "label": "Marketplace take rate",
+          "source": "assumption"
+        },
+        {
+          "name": "payment_cost_rate",
+          "value": 0.02,
+          "label": "Payment cost share",
+          "source": "assumption"
+        },
+        {
+          "name": "qualifying_share",
+          "value": 0.244909,
+          "label": "Orders with item value >= R$ 150",
+          "source": "observed"
+        },
+        {
+          "name": "freight_qualifying",
+          "value": 36.6626,
+          "label": "Mean freight of qualifying orders (R$)",
+          "source": "observed"
+        },
+        {
+          "name": "threshold",
+          "value": 150.0,
+          "label": "Free-shipping threshold (R$)",
+          "source": "assumption"
+        },
+        {
+          "name": "subsidy_share",
+          "value": 1.0,
+          "label": "Share of freight paid by the marketplace",
+          "source": "assumption"
+        },
+        {
+          "name": "order_lift",
+          "value": 0.03,
+          "label": "Relative lift in orders from the offer",
+          "source": "assumption"
+        }
+      ],
+      "monthly": [
+        {
+          "metric": "orders",
+          "baseline": 6691.25,
+          "scenario": 6891.99,
+          "change": 200.738
+        },
+        {
+          "metric": "gmv",
+          "baseline": 1074458.91,
+          "scenario": 1044809.42,
+          "change": -29649.5
+        },
+        {
+          "metric": "item_revenue",
+          "baseline": 917630.0,
+          "scenario": 945159.0,
+          "change": 27528.9
+        },
+        {
+          "metric": "marketplace_revenue_estimate",
+          "baseline": 91763.0,
+          "scenario": 94515.9,
+          "change": 2752.89
+        },
+        {
+          "metric": "contribution_estimate",
+          "baseline": 70273.8,
+          "scenario": 11736.4,
+          "change": -58537.4
+        }
+      ],
+      "notes": "Customers stop paying the subsidised freight (GMV falls by that amount) and the marketplace pays it to carriers. Orders that already qualified get the subsidy too.",
+      "subsidy_per_month": 61883.3
+    },
+    "More repeat purchases": {
+      "scenario": "More repeat purchases",
+      "hypothetical": true,
+      "inputs": [
+        {
+          "name": "orders_per_month",
+          "value": 6691.25,
+          "label": "Valid orders per month",
+          "source": "observed"
+        },
+        {
+          "name": "aov",
+          "value": 160.577,
+          "label": "GMV per order (R$)",
+          "source": "observed"
+        },
+        {
+          "name": "take_rate",
+          "value": 0.1,
+          "label": "Marketplace take rate",
+          "source": "assumption"
+        },
+        {
+          "name": "payment_cost_rate",
+          "value": 0.02,
+          "label": "Payment cost share",
+          "source": "assumption"
+        },
+        {
+          "name": "new_customers_per_month",
+          "value": 6458.5,
+          "label": "New customers per month",
+          "source": "observed"
+        },
+        {
+          "name": "orders_per_repeater",
+          "value": 1.08067,
+          "label": "Repeat orders per returning customer",
+          "source": "observed"
+        },
+        {
+          "name": "repeat_uplift_pp",
+          "value": 0.01,
+          "label": "Extra share of new customers who return",
+          "source": "assumption"
+        }
+      ],
+      "monthly": [
+        {
+          "metric": "orders",
+          "baseline": 6691.25,
+          "scenario": 6761.05,
+          "change": 69.7953
+        },
+        {
+          "metric": "gmv",
+          "baseline": 1074458.91,
+          "scenario": 1085666.41,
+          "change": 11207.5
+        },
+        {
+          "metric": "item_revenue",
+          "baseline": 917630.0,
+          "scenario": 927201.0,
+          "change": 9571.64
+        },
+        {
+          "metric": "marketplace_revenue_estimate",
+          "baseline": 91763.0,
+          "scenario": 92720.1,
+          "change": 957.164
+        },
+        {
+          "metric": "contribution_estimate",
+          "baseline": 70273.8,
+          "scenario": 71006.8,
+          "change": 733.014
+        }
+      ],
+      "notes": "Steady state: each month's new customers return at the higher rate. The cost of the retention programme is not modelled."
+    },
+    "Fewer cancellations": {
+      "scenario": "Fewer cancellations",
+      "hypothetical": true,
+      "inputs": [
+        {
+          "name": "orders_per_month",
+          "value": 6691.25,
+          "label": "Valid orders per month",
+          "source": "observed"
+        },
+        {
+          "name": "aov",
+          "value": 160.577,
+          "label": "GMV per order (R$)",
+          "source": "observed"
+        },
+        {
+          "name": "take_rate",
+          "value": 0.1,
+          "label": "Marketplace take rate",
+          "source": "assumption"
+        },
+        {
+          "name": "payment_cost_rate",
+          "value": 0.02,
+          "label": "Payment cost share",
+          "source": "assumption"
+        },
+        {
+          "name": "cancellation_rate",
+          "value": 0.00851994,
+          "label": "Cancelled or unavailable / placed",
+          "source": "observed"
+        },
+        {
+          "name": "cancellation_reduction",
+          "value": 0.3,
+          "label": "Share of cancellations avoided",
+          "source": "assumption"
+        }
+      ],
+      "monthly": [
+        {
+          "metric": "orders",
+          "baseline": 6691.25,
+          "scenario": 6708.5,
+          "change": 17.25
+        },
+        {
+          "metric": "gmv",
+          "baseline": 1074458.91,
+          "scenario": 1077228.86,
+          "change": 2769.95
+        },
+        {
+          "metric": "item_revenue",
+          "baseline": 917630.0,
+          "scenario": 919995.0,
+          "change": 2365.64
+        },
+        {
+          "metric": "marketplace_revenue_estimate",
+          "baseline": 91763.0,
+          "scenario": 91999.5,
+          "change": 236.564
+        },
+        {
+          "metric": "contribution_estimate",
+          "baseline": 70273.8,
+          "scenario": 70455.0,
+          "change": 181.165
+        }
+      ],
+      "notes": "Assumes recovered orders look like average orders (most cancelled orders are 'unavailable', i.e. stock-outs)."
+    },
+    "Better sellers": {
+      "scenario": "Better sellers",
+      "hypothetical": true,
+      "inputs": [
+        {
+          "name": "orders_per_month",
+          "value": 6691.25,
+          "label": "Valid orders per month",
+          "source": "observed"
+        },
+        {
+          "name": "aov",
+          "value": 160.577,
+          "label": "GMV per order (R$)",
+          "source": "observed"
+        },
+        {
+          "name": "take_rate",
+          "value": 0.1,
+          "label": "Marketplace take rate",
+          "source": "assumption"
+        },
+        {
+          "name": "payment_cost_rate",
+          "value": 0.02,
+          "label": "Payment cost share",
+          "source": "assumption"
+        },
+        {
+          "name": "late_rate",
+          "value": 0.0772685,
+          "label": "Late-delivery rate",
+          "source": "observed"
+        },
+        {
+          "name": "late_reduction",
+          "value": 0.107452,
+          "label": "Share of late deliveries fixed",
+          "source": "assumption"
+        },
+        {
+          "name": "review_gap",
+          "value": 2.05402,
+          "label": "On-time minus late review",
+          "source": "observed"
+        },
+        {
+          "name": "repeat_gap",
+          "value": 0.00527662,
+          "label": "Repeat within 180 days after an on-time vs a late first order",
+          "source": "observed"
+        },
+        {
+          "name": "percentile",
+          "value": 90.0,
+          "label": "Sellers above this late-rate percentile are brought to the median",
+          "source": "assumption"
+        }
+      ],
+      "monthly": [
+        {
+          "metric": "orders",
+          "baseline": 6691.25,
+          "scenario": 6691.56,
+          "change": 0.305772
+        },
+        {
+          "metric": "gmv",
+          "baseline": 1074458.91,
+          "scenario": 1074508.01,
+          "change": 49.0998
+        },
+        {
+          "metric": "item_revenue",
+          "baseline": 917630.0,
+          "scenario": 917672.0,
+          "change": 41.9331
+        },
+        {
+          "metric": "marketplace_revenue_estimate",
+          "baseline": 91763.0,
+          "scenario": 91767.2,
+          "change": 4.19331
+        },
+        {
+          "metric": "contribution_estimate",
+          "baseline": 70273.8,
+          "scenario": 70277.0,
+          "change": 3.21132
+        }
+      ],
+      "notes": "Only the worst sellers (by late rate, 10+ delivered orders) improve; the rest is the faster-delivery logic, with the same causal caveat.",
+      "late_rate_after": 0.0689659,
+      "avg_review_change": 0.0170538
+    },
+    "Conversion and AOV": {
+      "scenario": "Conversion and AOV",
+      "hypothetical": true,
+      "inputs": [
+        {
+          "name": "orders_per_month",
+          "value": 6691.25,
+          "label": "Valid orders per month",
+          "source": "observed"
+        },
+        {
+          "name": "aov",
+          "value": 160.577,
+          "label": "GMV per order (R$)",
+          "source": "observed"
+        },
+        {
+          "name": "take_rate",
+          "value": 0.1,
+          "label": "Marketplace take rate",
+          "source": "assumption"
+        },
+        {
+          "name": "payment_cost_rate",
+          "value": 0.02,
+          "label": "Payment cost share",
+          "source": "assumption"
+        },
+        {
+          "name": "order_change",
+          "value": 0.05,
+          "label": "Relative change in orders (conversion)",
+          "source": "assumption"
+        },
+        {
+          "name": "aov_change",
+          "value": 0.0,
+          "label": "Relative change in item value per order",
+          "source": "assumption"
+        }
+      ],
+      "monthly": [
+        {
+          "metric": "orders",
+          "baseline": 6691.25,
+          "scenario": 7025.81,
+          "change": 334.562
+        },
+        {
+          "metric": "gmv",
+          "baseline": 1074458.91,
+          "scenario": 1128181.85,
+          "change": 53722.9
+        },
+        {
+          "metric": "item_revenue",
+          "baseline": 917630.0,
+          "scenario": 963511.0,
+          "change": 45881.5
+        },
+        {
+          "metric": "marketplace_revenue_estimate",
+          "baseline": 91763.0,
+          "scenario": 96351.1,
+          "change": 4588.15
+        },
+        {
+          "metric": "contribution_estimate",
+          "baseline": 70273.8,
+          "scenario": 73787.5,
+          "change": 3513.69
+        }
+      ],
+      "notes": "Visits are not in the dataset, so conversion is expressed as a change in orders. Freight per order is held constant."
+    }
+  },
+  "run_metadata": {
+    "data_fingerprint": "aa7b7c3b78b98584",
+    "versions": {
+      "python": "3.13.18",
+      "duckdb": "2.0.0",
+      "pandas": "3.1.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "lightgbm": "4.7.0",
+      "statsmodels": "0.15.0"
+    },
+    "seed": 42
+  }
+}

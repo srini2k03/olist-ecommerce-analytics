@@ -1,7 +1,7 @@
 PY ?= python
 NOTEBOOKS := 01_eda 02_stats 03_segmentation 04_churn
 
-.PHONY: setup data warehouse postgres sql sql-compare notebooks app-data app test lint smoke site all
+.PHONY: setup data warehouse postgres sql sql-compare analysis notebooks app-data app test lint smoke site all
 
 setup:            ## install everything (editable package + dev tools)
 	$(PY) -m pip install -r requirements-dev.txt -e .
@@ -20,6 +20,9 @@ sql:              ## run all analytics queries on DuckDB and snapshot results/sq
 
 sql-compare:      ## run all queries on DuckDB and Postgres and require identical results
 	$(PY) scripts/run_sql.py --postgres --no-snapshot
+
+analysis:         ## metrics, cohorts, RFM, CLV, sellers, delivery model, A/B, scenarios -> results/analytics
+	$(PY) scripts/run_analysis.py
 
 notebooks:        ## execute every notebook in place (real outputs)
 	cd notebooks && for nb in $(NOTEBOOKS); do \
@@ -46,4 +49,4 @@ smoke:            ## streamlit run + Playwright end-to-end check
 site:             ## build the GitHub Pages site into site/
 	$(PY) scripts/build_site.py
 
-all: warehouse sql notebooks app-data test
+all: warehouse sql analysis notebooks app-data test

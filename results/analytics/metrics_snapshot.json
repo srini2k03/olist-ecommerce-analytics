@@ -1,0 +1,247 @@
+{
+  "window": "2017-01-01 to 2018-09-01 (exclusive)",
+  "assumptions": {
+    "take_rate": 0.1,
+    "payment_cost_rate": 0.02
+  },
+  "metrics": {
+    "item_revenue": {
+      "value": 13449529.68,
+      "label": "Item revenue",
+      "unit": "BRL",
+      "kind": "observed",
+      "display": "R$ 13.45M"
+    },
+    "freight_value": {
+      "value": 2238866.96,
+      "label": "Freight charged",
+      "unit": "BRL",
+      "kind": "observed",
+      "display": "R$ 2.24M"
+    },
+    "gmv": {
+      "value": 15688396.64,
+      "label": "GMV",
+      "unit": "BRL",
+      "kind": "observed",
+      "display": "R$ 15.69M"
+    },
+    "payment_value": {
+      "value": 15686469.07,
+      "label": "Payment value",
+      "unit": "BRL",
+      "kind": "observed",
+      "display": "R$ 15.69M"
+    },
+    "aov": {
+      "value": 160.241,
+      "label": "Average order value",
+      "unit": "BRL",
+      "kind": "observed",
+      "display": "R$ 160.24"
+    },
+    "freight_share_of_gmv": {
+      "value": 0.142708,
+      "label": "Freight share of GMV",
+      "unit": "share",
+      "kind": "observed",
+      "display": "14.3%"
+    },
+    "gmv_mom_growth": {
+      "value": -0.0411388,
+      "label": "GMV growth, last month vs previous",
+      "unit": "share",
+      "kind": "observed",
+      "display": "-4.1%"
+    },
+    "marketplace_revenue_estimate": {
+      "value": 1344952.97,
+      "label": "Marketplace revenue (estimate)",
+      "unit": "BRL",
+      "kind": "estimate",
+      "display": "R$ 1.34M"
+    },
+    "contribution_estimate": {
+      "value": 1031223.59,
+      "label": "Contribution (estimate)",
+      "unit": "BRL",
+      "kind": "estimate",
+      "display": "R$ 1.03M"
+    },
+    "orders": {
+      "value": 97905.0,
+      "label": "Orders",
+      "unit": "count",
+      "kind": "observed",
+      "display": "97,905"
+    },
+    "orders_placed": {
+      "value": 99092.0,
+      "label": "Orders placed",
+      "unit": "count",
+      "kind": "observed",
+      "display": "99,092"
+    },
+    "cancellation_rate": {
+      "value": 0.0119283,
+      "label": "Cancellation rate",
+      "unit": "share",
+      "kind": "observed",
+      "display": "1.2%"
+    },
+    "delivery_completion_rate": {
+      "value": 0.970845,
+      "label": "Delivery completion",
+      "unit": "share",
+      "kind": "observed",
+      "display": "97.1%"
+    },
+    "items_per_order": {
+      "value": 1.14143,
+      "label": "Items per order",
+      "unit": "count",
+      "kind": "observed",
+      "display": "1.14"
+    },
+    "credit_card_share": {
+      "value": 0.754691,
+      "label": "Orders paid mainly by credit card",
+      "unit": "share",
+      "kind": "observed",
+      "display": "75.5%"
+    },
+    "avg_installments": {
+      "value": 2.92925,
+      "label": "Average instalments",
+      "unit": "count",
+      "kind": "observed",
+      "display": "2.93"
+    },
+    "customers": {
+      "value": 94703.0,
+      "label": "Customers",
+      "unit": "count",
+      "kind": "observed",
+      "display": "94,703"
+    },
+    "new_customers": {
+      "value": 94693.0,
+      "label": "New customers",
+      "unit": "count",
+      "kind": "observed",
+      "display": "94,693"
+    },
+    "returning_customers": {
+      "value": 2883.0,
+      "label": "Returning customers",
+      "unit": "count",
+      "kind": "observed",
+      "display": "2,883"
+    },
+    "repeat_rate": {
+      "value": 0.0303402,
+      "label": "Repeat-customer rate",
+      "unit": "share",
+      "kind": "observed",
+      "display": "3.0%"
+    },
+    "gmv_per_customer": {
+      "value": 165.659,
+      "label": "GMV per customer (observed)",
+      "unit": "BRL",
+      "kind": "observed",
+      "display": "R$ 165.66"
+    },
+    "orders_per_customer": {
+      "value": 1.03381,
+      "label": "Orders per customer",
+      "unit": "count",
+      "kind": "observed",
+      "display": "1.03"
+    },
+    "avg_delivery_days": {
+      "value": 12.4768,
+      "label": "Average delivery time",
+      "unit": "days",
+      "kind": "observed",
+      "display": "12.5 days"
+    },
+    "avg_promised_days": {
+      "value": 24.2848,
+      "label": "Average promised time",
+      "unit": "days",
+      "kind": "observed",
+      "display": "24.3 days"
+    },
+    "late_rate": {
+      "value": 0.0678877,
+      "label": "Late deliveries",
+      "unit": "share",
+      "kind": "observed",
+      "display": "6.8%"
+    },
+    "avg_days_late_when_late": {
+      "value": 10.6166,
+      "label": "Days late when late",
+      "unit": "days",
+      "kind": "observed",
+      "display": "10.6 days"
+    },
+    "avg_review": {
+      "value": 4.1177,
+      "label": "Average review",
+      "unit": "stars",
+      "kind": "observed",
+      "display": "4.12\u2605"
+    },
+    "bad_review_rate": {
+      "value": 0.138004,
+      "label": "1-2 star reviews",
+      "unit": "share",
+      "kind": "observed",
+      "display": "13.8%"
+    },
+    "review_gap_late": {
+      "value": 2.01941,
+      "label": "Review gap, on time minus late",
+      "unit": "stars",
+      "kind": "observed",
+      "display": "2.02\u2605"
+    },
+    "active_categories": {
+      "value": 74.0,
+      "label": "Categories sold",
+      "unit": "count",
+      "kind": "observed",
+      "display": "74"
+    },
+    "active_sellers": {
+      "value": 3029.0,
+      "label": "Active sellers",
+      "unit": "count",
+      "kind": "observed",
+      "display": "3,029"
+    },
+    "item_revenue_per_seller": {
+      "value": 4440.25,
+      "label": "Item revenue per active seller",
+      "unit": "BRL",
+      "kind": "observed",
+      "display": "R$ 4,440.25"
+    }
+  },
+  "run_metadata": {
+    "data_fingerprint": "aa7b7c3b78b98584",
+    "versions": {
+      "python": "3.13.18",
+      "duckdb": "2.0.0",
+      "pandas": "3.1.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "lightgbm": "4.7.0",
+      "statsmodels": "0.15.0"
+    },
+    "seed": 42
+  }
+}

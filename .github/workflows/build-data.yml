@@ -1,8 +1,8 @@
 name: Build data
 
 # Fetches the real Olist data, rebuilds every derived artefact and commits the
-# result: SQL snapshots, executed notebooks, metrics, figures and the small
-# app/data bundle the Streamlit app reads.
+# result: data-quality report, SQL snapshots, analytics results, executed
+# notebooks, metrics, figures and the small app/data bundle the dashboard reads.
 on:
   workflow_dispatch:
   push:
@@ -41,8 +41,11 @@ jobs:
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
-      - run: python scripts/build_warehouse.py
+      - name: Layered warehouse with data-quality checks
+        run: python scripts/build_warehouse.py
       - run: python scripts/run_sql.py
+      - name: Analytics (metrics, cohorts, RFM, CLV, sellers, delivery model, A/B, scenarios)
+        run: python scripts/run_analysis.py
       - run: make notebooks
       - run: python scripts/build_app_data.py
       - name: Refresh app screenshots for the README

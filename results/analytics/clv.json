@@ -1,0 +1,110 @@
+{
+  "method": "BG/NBD (repeat purchase occasions, same-day orders merged) + Gamma-Gamma (GMV per repeat occasion); weeks as the time unit",
+  "holdout_validation": {
+    "calibration_end": "2018-03-01",
+    "holdout_end": "2018-09-01",
+    "holdout_weeks": 26.2857,
+    "customers": 56622,
+    "calibration_repeaters": 1012,
+    "bgnbd": {
+      "r": 0.0163442,
+      "alpha": 9.29924,
+      "a": 1.34293,
+      "b": 0.222027,
+      "log_likelihood": -8692.2,
+      "n_customers": 56622
+    },
+    "gamma_gamma": {
+      "p": 6.6035,
+      "q": 2.69348,
+      "v": 38.4297,
+      "n_customers": 1012,
+      "corr_frequency_monetary": 0.00182237
+    },
+    "actual": {
+      "repeat_purchases": 720,
+      "customers_with_purchase": 670,
+      "gmv": 107072.0
+    },
+    "model": {
+      "repeat_purchases": 739.232,
+      "gmv": 110763.0,
+      "count_errors": {
+        "mae": 0.0250917,
+        "rmse": 0.122037
+      },
+      "gmv_errors": {
+        "mae": 3.75888,
+        "rmse": 24.8943
+      },
+      "ranking": {
+        "roc_auc": 0.587697,
+        "pr_auc": 0.032202,
+        "base_rate": 0.0118329
+      }
+    },
+    "baseline_constant_rate": {
+      "repeat_purchases": 1273.82,
+      "gmv": 188158.0,
+      "count_errors": {
+        "mae": 0.0346805,
+        "rmse": 0.123117
+      },
+      "gmv_errors": {
+        "mae": 5.13541,
+        "rmse": 24.874
+      },
+      "ranking": {
+        "roc_auc": 0.5,
+        "pr_auc": 0.0118329
+      }
+    }
+  },
+  "final_fit": {
+    "bgnbd": {
+      "r": 0.0157714,
+      "alpha": 9.57259,
+      "a": 2.03071,
+      "b": 0.35031,
+      "log_likelihood": -18335.1,
+      "n_customers": 94983
+    },
+    "gamma_gamma": {
+      "p": 5.91086,
+      "q": 2.80751,
+      "v": 46.7098,
+      "n_customers": 2063,
+      "corr_frequency_monetary": -0.000947206
+    },
+    "horizon_weeks": 52,
+    "as_of": "2018-09-01",
+    "customers": 94983
+  },
+  "observed": {
+    "customers": 94983,
+    "observed_gmv_total": 15740050.47,
+    "observed_gmv_per_customer": 165.714,
+    "first_order_share_of_observed_gmv": 0.978061,
+    "repeat_customers_share": 0.0217197
+  },
+  "predicted_12m": {
+    "predicted_gmv_total": 235783.0,
+    "predicted_gmv_per_customer": 2.48237,
+    "expected_repeat_orders_total": 1545.37,
+    "customers_with_expected_repeat_above_0_1": 323
+  },
+  "run_metadata": {
+    "data_fingerprint": "aa7b7c3b78b98584",
+    "versions": {
+      "python": "3.13.18",
+      "duckdb": "2.0.0",
+      "pandas": "3.1.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "lightgbm": "4.7.0",
+      "statsmodels": "0.15.0"
+    },
+    "seed": 42
+  }
+}

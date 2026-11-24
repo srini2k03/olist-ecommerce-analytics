@@ -1,0 +1,8 @@
+segment,customers,revenue,orders,avg_recency_days,avg_frequency,avg_monetary,repeat_rate,avg_review,customer_share,revenue_share,aov,rule,action
+Champions,1234,397293.17,2662,91.524311,2.157212,321.955567,1.0,4.264436,0.012992,0.025241,149.246119,2+ orders and recency score 4-5 (ordered recently),"Protect: early access, loyalty perks, referral asks. No discounts needed."
+"Loyal, lapsing",1652,493356.28,3439,323.871671,2.081719,298.641816,1.0,4.095742,0.017393,0.031344,143.459227,"2+ orders, recency score 1-3",Win back with a personal reminder of the categories they buy.
+New big spenders,14643,4438047.04,14643,94.652325,1.0,303.083182,0.0,4.092084,0.154164,0.281959,303.083182,"1 order, recency 4-5, monetary 4-5",Second-order nudge within 30-60 days; complementary category.
+New low spenders,22115,1616036.88,22115,92.688356,1.0,73.074243,0.0,4.223134,0.232831,0.10267,73.074243,"1 order, recency 4-5, monetary 1-3","Cheap reactivation: free-shipping-threshold reminder, cross-sell."
+Fading one-timers,18374,2794727.97,18374,223.235496,1.0,152.102317,0.0,3.970436,0.193445,0.177555,152.102317,"1 order, recency 3",Low-cost email touch before they lapse.
+At-risk big spenders,13998,4328795.85,13998,397.817903,1.0,309.243881,0.0,4.068624,0.147374,0.275018,309.243881,"1 order, recency 1-2, monetary 4-5","Targeted win-back on the category they bought, before day 365."
+Lost one-timers,22967,1671793.28,22967,399.203118,1.0,72.791104,0.0,4.159009,0.241801,0.106213,72.791104,"1 order, recency 1-2, monetary 1-3",Low-cost channels only; do not pay to reacquire.
