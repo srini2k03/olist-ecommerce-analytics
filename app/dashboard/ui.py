@@ -51,11 +51,14 @@ BADGES = {
 
 
 def palette() -> dict:
+    """Chart and accent colours for the configured theme (.streamlit/config.toml, also passed
+    to stlite). Not st.context.theme: on a first page load it reports the visitor's OS
+    colour scheme, not the app's theme, which put light cards on the dark dashboard."""
     try:
-        kind = st.context.theme.type
-    except AttributeError:  # older Streamlit
-        kind = "dark"
-    return LIGHT if kind == "light" else DARK
+        base = st.get_option("theme.base")
+    except Exception:  # noqa: BLE001 - unknown option on an older Streamlit
+        base = None
+    return LIGHT if base == "light" else DARK
 
 
 def inject_css() -> None:
@@ -64,10 +67,11 @@ def inject_css() -> None:
         f"""<style>
 h1, h2, h3 {{ letter-spacing: -0.03em; }}
 h1 {{ font-weight: 600 !important; }}
-[data-testid="stMetric"] {{ background: {p["elev"]}; border: 1px solid {p["border"]};
-  border-radius: 16px; padding: 0.85rem 1.05rem; height: 100%; }}
+[data-testid="stMetric"] {{ background: rgba(127, 127, 127, 0.07);
+  border: 1px solid rgba(127, 127, 127, 0.24); border-radius: 16px; padding: 0.85rem 1.05rem;
+  height: 100%; }}
 [data-testid="stMetricLabel"] p {{ font-family: "Geist Mono", ui-monospace, monospace;
-  font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: {p["muted"]};
+  font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.72;
   white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.35; }}
 [data-testid="stMetricLabel"], [data-testid="stMetricLabel"] > div {{ overflow: visible; }}
 [data-testid="stMetricValue"] {{ font-variant-numeric: tabular-nums; letter-spacing: -0.03em;
