@@ -1,13 +1,13 @@
 {
-  "first_render_s": 10.8,
-  "page:Revenue": 2.0,
-  "page:Customers": 1.85,
-  "page:Cohort retention": 1.82,
-  "page:RFM segments": 1.97,
-  "page:Sellers": 2.06,
-  "page:Delivery": 2.0,
-  "page:Products": 1.82,
-  "page:A/B testing": 2.31,
+  "first_render_s": 9.8,
+  "page:Revenue": 1.97,
+  "page:Customers": 1.82,
+  "page:Cohort retention": 1.84,
+  "page:RFM segments": 1.86,
+  "page:Sellers": 2.02,
+  "page:Delivery": 1.97,
+  "page:Products": 1.83,
+  "page:A/B testing": 2.33,
   "page:Business simulation": 1.81,
   "page:Executive overview": 1.81
 }
