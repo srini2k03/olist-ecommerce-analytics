@@ -62,9 +62,12 @@ jobs:
             echo "No changes."
           else
             git commit -m "Rebuild data artefacts from the real Olist dataset (${GITHUB_SHA::7})"
-            # main may have moved while this job ran; rebase onto it before pushing.
+            # main may have moved while this job ran (another rebuild or a push); rebase onto
+            # it before pushing. Runs are serialised, so on a conflict in a generated file this
+            # run's (newer) artefact wins: -X theirs keeps the commit being replayed.
             for i in 1 2 3; do
-              git pull --rebase origin main && git push && exit 0
+              git pull --rebase -X theirs origin main && git push && exit 0
+              git rebase --abort 2>/dev/null || true
               sleep $((i * 5))
             done
             echo "::error::could not push the rebuilt artefacts"; exit 1
