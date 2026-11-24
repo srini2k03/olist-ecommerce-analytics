@@ -1,0 +1,189 @@
+"""Run the warehouse pipeline: load -> raw checks -> staging -> checks -> marts -> checks.
+
+    python -m olist.pipeline                 # DuckDB at data/olist.duckdb + DQ report
+    python -m olist.pipeline --postgres      # also build the same layers in $OLIST_PG_DSN
+
+Writes ``results/data_quality/report.json`` and ``report.md`` (DuckDB run only) and exits
+non-zero if an error-severity check fails.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import resource
+import sys
+import time
+from pathlib import Path
+
+from olist import provenance
+from olist.config import DQ_DIR, RAW_DIR, WAREHOUSE_PATH
+from olist.db import DuckDBEngine, Engine, PostgresEngine, build_duckdb, build_postgres
+from olist.logging_utils import get_logger
+from olist.pipeline.checks import CheckResult, DataQualityError, run_checks
+from olist.pipeline.models import build_models
+from olist.schema import TABLES
+
+log = get_logger(__name__)
+
+
+def _checks(engine: Engine, layer: str, results: list[CheckResult]) -> None:
+    t0 = time.perf_counter()
+    res = run_checks(engine, layer)
+    results.extend(res)
+    counts = {s: sum(r.status == s for r in res) for s in ("pass", "warn", "fail")}
+    log.info(
+        "checks run",
+        extra={"fields": {"layer": layer, **counts, "s": time.perf_counter() - t0}},
+    )
+    for r in res:
+        if r.status == "fail":
+            log.error("check failed", extra={"fields": {"check": r.name, "failing": r.failing}})
+
+
+def build_layers(engine: Engine) -> tuple[dict, list[CheckResult]]:
+    """Raw checks, staging, staging checks, marts, mart checks on an engine with raw tables."""
+    results: list[CheckResult] = []
+    _checks(engine, "raw", results)
+    models = build_models(engine)
+    staging = {k: v for k, v in models.items() if v["layer"] == "staging"}
+    marts = {k: v for k, v in models.items() if v["layer"] == "marts"}
+    _checks(engine, "staging", results)
+    _checks(engine, "marts", results)
+    return {"staging": staging, "marts": marts}, results
+
+
+def run_duckdb(
+    db_path: Path = WAREHOUSE_PATH, raw_dir: Path = RAW_DIR, report_dir: Path | None = DQ_DIR
+) -> dict:
+    t0 = time.perf_counter()
+    parse_stats: dict[str, int] = {}
+    build_duckdb(db_path, raw_dir, parse_stats=parse_stats)
+    load_s = time.perf_counter() - t0
+    log.info("raw layer loaded", extra={"fields": {"engine": "duckdb", "s": load_s}})
+    eng = DuckDBEngine(db_path, read_only=False)
+    try:
+        raw_rows = {
+            t.name: int(eng.query(f"SELECT COUNT(*) AS n FROM {t.name}")["n"].iloc[0])
+            for t in TABLES
+        }
+        layers, results = build_layers(eng)
+    finally:
+        eng.close()
+    report = make_report(raw_rows, parse_stats, layers, results, raw_dir)
+    report["timings_s"] = {"load_raw": round(load_s, 2), "total": time.perf_counter() - t0}
+    if report_dir is not None:
+        write_report(report, Path(report_dir))
+    _raise_on_fail(results)
+    return report
+
+
+def run_postgres(dsn: str, raw_dir: Path = RAW_DIR) -> None:
+    t0 = time.perf_counter()
+    build_postgres(dsn, raw_dir)
+    log.info(
+        "raw layer loaded", extra={"fields": {"engine": "postgres", "s": time.perf_counter() - t0}}
+    )
+    eng = PostgresEngine(dsn)
+    try:
+        _, results = build_layers(eng)
+    finally:
+        eng.close()
+    _raise_on_fail(results)
+
+
+def _raise_on_fail(results: list[CheckResult]) -> None:
+    failed = [r.name for r in results if r.status == "fail"]
+    if failed:
+        raise DataQualityError(f"{len(failed)} data-quality check(s) failed: {failed}")
+
+
+def make_report(
+    raw_rows: dict, parse_stats: dict, layers: dict, results: list[CheckResult], raw_dir: Path
+) -> dict:
+    summary = {s: sum(r.status == s for r in results) for s in ("pass", "warn", "fail")}
+    return {
+        "status": "fail" if summary["fail"] else ("warn" if summary["warn"] else "pass"),
+        "summary": {**summary, "checks": len(results)},
+        "row_counts": {
+            "raw": raw_rows,
+            "staging": {k: v["rows"] for k, v in layers["staging"].items()},
+            "marts": {k: v["rows"] for k, v in layers["marts"].items()},
+        },
+        "timestamp_parse_failures": {k: v for k, v in sorted(parse_stats.items()) if v},
+        "checks": [r.to_dict() for r in results],
+        "run_metadata": provenance.run_metadata(raw_dir),
+    }
+
+
+def write_report(report: dict, out_dir: Path) -> None:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stable = {k: v for k, v in report.items() if k != "timings_s"}  # keep reruns diff-free
+    (out_dir / "report.json").write_text(json.dumps(stable, indent=2) + "\n")
+    (out_dir / "report.md").write_text(render_markdown(stable))
+
+
+def render_markdown(report: dict) -> str:
+    s = report["summary"]
+    lines = [
+        "# Data-quality report",
+        "",
+        "Generated by `python -m olist.pipeline` from the pinned Olist CSVs "
+        f"(data checksum `{report['run_metadata']['data_fingerprint']}`).",
+        "",
+        f"**Status: {report['status'].upper()}**: {s['checks']} checks, {s['pass']} pass, "
+        f"{s['warn']} warn (known source issues handled in staging), {s['fail']} fail.",
+        "",
+        "## Row counts by layer",
+        "",
+        "| Layer | Table | Rows |",
+        "|---|---|---:|",
+    ]
+    for layer, tables in report["row_counts"].items():
+        for t, n in tables.items():
+            lines.append(f"| {layer} | `{t}` | {n:,} |")
+    lines += ["", "## Checks", "", "| Layer | Check | Kind | Severity | Failing | Share | Status |"]
+    lines.append("|---|---|---|---|---:|---:|---|")
+    for c in report["checks"]:
+        lines.append(
+            f"| {c['layer']} | {c['name']} | {c['kind']} | {c['severity']} | {c['failing']:,} "
+            f"| {c['failing_share']:.2%} | {c['status']} |"
+        )
+    warn = [c for c in report["checks"] if c["status"] != "pass"]
+    if warn:
+        lines += ["", "## Notes on non-passing checks", ""]
+        lines += [f"- **{c['name']}** ({c['failing']:,} rows): {c['description']}" for c in warn]
+    if report["timestamp_parse_failures"]:
+        lines += ["", "## Timestamps that did not parse", ""]
+        lines += [f"- `{k}`: {v}" for k, v in report["timestamp_parse_failures"].items()]
+    return "\n".join(lines) + "\n"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--db", type=Path, default=WAREHOUSE_PATH)
+    parser.add_argument("--raw-dir", type=Path, default=RAW_DIR)
+    parser.add_argument("--postgres", action="store_true", help="also build in $OLIST_PG_DSN")
+    parser.add_argument("--no-report", action="store_true")
+    args = parser.parse_args(argv)
+    try:
+        report = run_duckdb(args.db, args.raw_dir, None if args.no_report else DQ_DIR)
+        if args.postgres:
+            dsn = os.environ.get("OLIST_PG_DSN")
+            if not dsn:
+                parser.error("--postgres needs OLIST_PG_DSN")
+            run_postgres(dsn, args.raw_dir)
+    except DataQualityError as exc:
+        log.error("pipeline stopped", extra={"fields": {"reason": str(exc)}})
+        return 1
+    peak_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
+    log.info(
+        "pipeline done",
+        extra={"fields": {"status": report["status"], **report["summary"], "peak_rss_mb": peak_mb}},
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

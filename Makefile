@@ -9,13 +9,13 @@ setup:            ## install everything (editable package + dev tools)
 data:             ## download the 9 Olist CSVs (Kaggle if KAGGLE_* set, else pinned mirror)
 	$(PY) scripts/fetch_data.py
 
-warehouse: data   ## build data/olist.duckdb
-	$(PY) scripts/build_warehouse.py
+warehouse: data   ## layered build: typed raw load, DQ/RI checks, staging, marts (data/olist.duckdb)
+	$(PY) -m olist.pipeline
 
-postgres:         ## also load the tables into $$OLIST_PG_DSN
-	$(PY) scripts/build_warehouse.py --postgres
+postgres:         ## same layers also built in $$OLIST_PG_DSN (portability check)
+	$(PY) -m olist.pipeline --postgres
 
-sql:              ## run all 16 queries on DuckDB and snapshot results/sql/*.csv
+sql:              ## run all analytics queries on DuckDB and snapshot results/sql/*.csv
 	$(PY) scripts/run_sql.py
 
 sql-compare:      ## run all queries on DuckDB and Postgres and require identical results

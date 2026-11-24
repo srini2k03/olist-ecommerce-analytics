@@ -1,4 +1,9 @@
-"""Discover, run, snapshot and cross-check the queries in ``sql/``."""
+"""Discover, run, snapshot and cross-check the analytics queries in ``sql/analytics/``.
+
+Queries are organised by business domain (``sql/analytics/<domain>/NN_name.sql``) and read
+the marts built by ``python -m olist.pipeline``. File stems are unique across domains, and
+snapshots go to ``results/sql/NN_name.csv``.
+"""
 
 from __future__ import annotations
 
@@ -14,6 +19,7 @@ from olist.config import SQL_DIR, SQL_RESULTS_DIR
 from olist.db import Engine
 
 REQUIRED_HEADERS = ("Business question:", "Method:", "Expected output:")
+DOMAINS = ("revenue", "customer", "order", "delivery", "payment", "product", "seller", "review")
 
 
 @dataclass(frozen=True)
@@ -23,6 +29,10 @@ class Query:
     @property
     def name(self) -> str:
         return self.path.stem
+
+    @property
+    def domain(self) -> str:
+        return self.path.parent.name
 
     @property
     def sql(self) -> str:
@@ -47,7 +57,9 @@ class Query:
 
 
 def list_queries(sql_dir: Path = SQL_DIR) -> list[Query]:
-    return [Query(p) for p in sorted(Path(sql_dir).glob("[0-9][0-9]_*.sql"))]
+    """Every analytics query, ordered by its number."""
+    paths = Path(sql_dir).glob("analytics/*/[0-9][0-9]_*.sql")
+    return [Query(p) for p in sorted(paths, key=lambda p: p.name)]
 
 
 def normalise(df: pd.DataFrame) -> pd.DataFrame:

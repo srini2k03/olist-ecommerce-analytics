@@ -5,15 +5,31 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from olist.sql_runner import REQUIRED_HEADERS, frames_match, list_queries, run
+from olist.sql_runner import DOMAINS, REQUIRED_HEADERS, frames_match, list_queries, run
 
 QUERIES = list_queries()
 BY_NAME = {q.name: q for q in QUERIES}
 
 
-def test_there_are_sixteen_queries():
-    assert len(QUERIES) == 16
-    assert [q.name[:2] for q in QUERIES] == [f"{i:02d}" for i in range(1, 17)]
+def test_queries_are_numbered_and_organised_by_domain():
+    assert len(QUERIES) == 26
+    assert [q.name[:2] for q in QUERIES] == [f"{i:02d}" for i in range(1, 27)]
+    assert len({q.name for q in QUERIES}) == len(QUERIES)
+    assert {q.domain for q in QUERIES} == set(DOMAINS)
+    for domain in DOMAINS:
+        assert sum(q.domain == domain for q in QUERIES) >= 2, domain
+
+
+@pytest.mark.parametrize("query", QUERIES, ids=lambda q: q.name)
+def test_analytics_read_marts_not_raw_tables(query):
+    """Money and status logic lives in the marts; queries must not re-derive it."""
+    import re
+
+    body = "\n".join(ln for ln in query.sql.splitlines() if not ln.strip().startswith("--"))
+    body = re.sub(r"EXTRACT\([^)]*\)", "", body)
+    tables = set(re.findall(r"\b(?:FROM|JOIN)\s+([a-z_]+)", body))
+    ctes = set(re.findall(r"\b([a-z_]+)\s+AS\s*\(", body))
+    assert {t for t in tables - ctes if not t.startswith(("fct_", "dim_"))} == set()
 
 
 @pytest.mark.parametrize("query", QUERIES, ids=lambda q: q.name)
@@ -102,8 +118,39 @@ def test_hotspot_share_is_of_all_late_orders(duck):
         FROM orders AS o
         JOIN order_items AS oi ON oi.order_id = o.order_id AND oi.order_item_id = 1
         WHERE o.order_status = 'delivered'
+          AND o.order_delivered_customer_date IS NOT NULL
           AND CAST(o.order_delivered_customer_date AS DATE)
               > CAST(o.order_estimated_delivery_date AS DATE)
         """
     ).n.iloc[0]
     assert np.allclose(df.share_of_all_late, df.late_orders / all_late)
+
+
+def test_money_reconciliation_identities(duck):
+    r = _q(duck, "18_money_reconciliation")
+    assert np.allclose(r.gmv, r.item_revenue + r.freight_value)
+    assert np.allclose(r.payment_minus_gmv, r.payment_value - r.gmv)
+    assert r.freight_share_of_gmv.between(0, 1).all()
+
+
+def test_order_funnel_partitions_orders(duck):
+    f = _q(duck, "17_order_status_funnel")
+    total = f.orders_cancelled + f.orders_delivered + f.orders_in_progress
+    assert (total == f.orders_placed).all()
+    assert f.cancellation_rate.between(0, 1).all()
+
+
+def test_seller_scorecard_reconciles_with_items(duck):
+    s = _q(duck, "21_seller_scorecard")
+    revenue = duck.query("SELECT SUM(item_revenue) AS r FROM fct_order_items WHERE is_valid = 1")
+    assert s.item_revenue.sum() == pytest.approx(revenue.r.iloc[0])
+    assert (s.late_orders <= s.delivered_orders).all()
+    assert (s.bad_reviews <= s.reviewed_orders).all()
+
+
+def test_review_by_delivery_status_matches_buckets(duck):
+    status = _q(duck, "25_review_by_delivery_status").set_index("delivery_status")
+    buckets = _q(duck, "04_delivery_delay_vs_review")
+    late = buckets[buckets.bucket_order >= 4]
+    assert status.loc["late", "orders"] == late.orders.sum()
+    assert status.loc["late", "avg_review"] < status.loc["on time", "avg_review"]

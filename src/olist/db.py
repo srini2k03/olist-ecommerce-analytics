@@ -26,17 +26,34 @@ _PANDAS_TYPES = {
 }
 
 
-def read_csv(table: Table, raw_dir: Path = RAW_DIR) -> pd.DataFrame:
-    """Read one raw CSV with explicit types (zip prefixes stay text)."""
+class SchemaError(ValueError):
+    """A raw file does not match the declared schema (missing columns or bad types)."""
+
+
+def read_csv(
+    table: Table, raw_dir: Path = RAW_DIR, parse_stats: dict | None = None
+) -> pd.DataFrame:
+    """Read one raw CSV with explicit types (zip prefixes stay text).
+
+    Raises ``SchemaError`` when a declared column is missing or a numeric column holds
+    text. Timestamps that do not parse become NULL; if ``parse_stats`` is given, the
+    number of such values per column is recorded there (the data-quality report shows it).
+    """
     path = Path(raw_dir) / table.csv
     dtypes = {c: _PANDAS_TYPES[t] for c, t in table.columns if t in _PANDAS_TYPES}
     dates = [c for c, t in table.columns if t == "TIMESTAMP"]
-    df = pd.read_csv(path, dtype=dtypes, encoding="utf-8-sig", keep_default_na=True)
+    try:
+        df = pd.read_csv(path, dtype=dtypes, encoding="utf-8-sig", keep_default_na=True)
+    except ValueError as exc:  # e.g. text in an INTEGER column
+        raise SchemaError(f"{path.name}: {exc}") from exc
     missing = set(table.column_names) - set(df.columns)
     if missing:
-        raise ValueError(f"{path.name} is missing columns {sorted(missing)}")
+        raise SchemaError(f"{path.name} is missing columns {sorted(missing)}")
     for c in dates:
-        df[c] = pd.to_datetime(df[c], errors="coerce")
+        raw = df[c]
+        df[c] = pd.to_datetime(raw, errors="coerce", format="ISO8601")
+        if parse_stats is not None:
+            parse_stats[f"{table.name}.{c}"] = int((raw.notna() & df[c].isna()).sum())
     return df[table.column_names]
 
 
@@ -44,6 +61,8 @@ class Engine(Protocol):
     name: str
 
     def query(self, sql: str) -> pd.DataFrame: ...
+
+    def execute(self, sql: str) -> None: ...
 
     def close(self) -> None: ...
 
@@ -56,6 +75,9 @@ class DuckDBEngine:
 
     def query(self, sql: str) -> pd.DataFrame:
         return self.con.execute(sql).df()
+
+    def execute(self, sql: str) -> None:
+        self.con.execute(sql)
 
     def close(self) -> None:
         self.con.close()
@@ -81,6 +103,10 @@ class PostgresEngine:
                 df[c] = pd.to_numeric(df[c].map(lambda v: None if v is None else float(v)))
         return df
 
+    def execute(self, sql: str) -> None:
+        with self.con.cursor() as cur:
+            cur.execute(sql)
+
     def close(self) -> None:
         self.con.close()
 
@@ -89,8 +115,9 @@ def build_duckdb(
     db_path: str | Path = WAREHOUSE_PATH,
     raw_dir: Path = RAW_DIR,
     tables: Iterable[Table] = TABLES,
+    parse_stats: dict | None = None,
 ) -> Path:
-    """(Re)create the DuckDB warehouse from the raw CSVs."""
+    """(Re)create the DuckDB warehouse from the raw CSVs (the typed raw layer)."""
     db_path = Path(db_path)
     db_path.parent.mkdir(parents=True, exist_ok=True)
     if db_path.exists():
@@ -98,7 +125,7 @@ def build_duckdb(
     con = duckdb.connect(str(db_path))
     try:
         for table in tables:
-            df = read_csv(table, raw_dir)
+            df = read_csv(table, raw_dir, parse_stats)
             con.execute(table.ddl())
             con.register("_df", df)
             con.execute(f"INSERT INTO {table.name} SELECT * FROM _df")
@@ -130,7 +157,9 @@ def build_postgres(dsn: str, raw_dir: Path = RAW_DIR, tables: Iterable[Table] = 
 
 def connect(engine: str = "duckdb", **kwargs) -> Engine:
     if engine == "duckdb":
-        return DuckDBEngine(kwargs.get("path", WAREHOUSE_PATH))
+        return DuckDBEngine(
+            kwargs.get("path", WAREHOUSE_PATH), read_only=kwargs.get("read_only", True)
+        )
     if engine == "postgres":
         dsn = kwargs.get("dsn") or os.environ.get("OLIST_PG_DSN")
         if not dsn:

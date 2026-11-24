@@ -31,7 +31,7 @@ jobs:
         run: pytest -v
 
   sql-duckdb-postgres:
-    name: All SQL on real data, DuckDB vs Postgres
+    name: Layered warehouse + all SQL on real data, DuckDB vs Postgres
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -62,12 +62,12 @@ jobs:
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
-      - name: Load DuckDB and Postgres
-        run: python scripts/build_warehouse.py --postgres
-      - name: Run all 16 queries on both engines and require identical results
+      - name: Build raw -> staging -> marts with data-quality checks on DuckDB and Postgres
+        run: python -m olist.pipeline --postgres
+      - name: Run every analytics query on both engines and require identical results
         run: python scripts/run_sql.py --postgres
-      - name: Committed results/sql snapshots match a fresh run
-        run: git diff --exit-code results/sql
+      - name: Committed SQL snapshots and data-quality report match a fresh run
+        run: git diff --exit-code results/sql results/data_quality
       - name: Synthetic-fixture SQL tests on Postgres
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE olist_test"

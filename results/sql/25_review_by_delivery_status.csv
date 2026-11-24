@@ -1,0 +1,4 @@
+delivery_status,orders,avg_review,share_1_star,share_5_star
+late,6381,2.271823,0.536906,0.165335
+not delivered,1643,1.818016,0.680463,0.09434
+on time,89443,4.290589,0.065807,0.622095

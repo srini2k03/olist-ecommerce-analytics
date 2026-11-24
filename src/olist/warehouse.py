@@ -1,7 +1,7 @@
 """Analysis-ready frames pulled from the DuckDB warehouse.
 
-These helpers use DuckDB SQL directly (they feed Python, not the portable
-``sql/`` library) and are shared by notebooks, the model and the app build.
+They read the marts built by ``python -m olist.pipeline`` and are shared by the notebooks,
+the churn model and the analytics/app builds.
 """
 
 from __future__ import annotations
@@ -12,69 +12,34 @@ import pandas as pd
 from olist.config import WAREHOUSE_PATH
 
 ORDER_FACTS_SQL = """
-WITH items AS (
-    SELECT order_id,
-           COUNT(*) AS n_items,
-           SUM(price) AS items_value,
-           SUM(freight_value) AS freight_value,
-           MIN(CASE WHEN order_item_id = 1 THEN product_id END) AS first_product_id,
-           MIN(CASE WHEN order_item_id = 1 THEN seller_id END) AS first_seller_id
-    FROM order_items GROUP BY order_id
-),
-pay AS (
-    SELECT order_id,
-           SUM(payment_value) AS payment_value,
-           MAX(payment_installments) AS installments,
-           arg_max(payment_type, payment_value) AS main_payment_type,
-           MAX(CASE WHEN payment_type = 'voucher' THEN 1 ELSE 0 END) AS used_voucher
-    FROM order_payments GROUP BY order_id
-),
-rev AS (
-    SELECT order_id,
-           AVG(review_score) AS review_score,
-           MIN(review_creation_date) AS review_created_at,
-           -- The score is known once the customer answers the survey (creation_date is
-           -- when the survey was sent). AVG(score) is only complete after the last answer.
-           MAX(review_answer_timestamp) AS review_answered_at,
-           MAX(CASE WHEN review_comment_message IS NOT NULL THEN 1 ELSE 0 END) AS has_comment
-    FROM order_reviews GROUP BY order_id
-)
+-- Valid orders (not cancelled/unavailable, with items) from the fct_orders mart, with the
+-- column names the notebooks and the churn model use. order_value is GMV (items + freight).
 SELECT
-    o.order_id,
-    c.customer_unique_id,
-    c.customer_state,
-    o.order_status,
-    o.order_purchase_timestamp AS purchased_at,
-    o.order_delivered_customer_date AS delivered_at,
-    o.order_estimated_delivery_date AS estimated_at,
-    i.n_items,
-    i.items_value,
-    i.freight_value,
-    i.items_value + i.freight_value AS order_value,
-    p.payment_value,
-    p.installments,
-    p.main_payment_type,
-    p.used_voucher,
-    COALESCE(t.product_category_name_english, pr.product_category_name, 'unknown') AS category,
-    s.seller_state,
-    date_diff('day', CAST(o.order_purchase_timestamp AS DATE),
-              CAST(o.order_delivered_customer_date AS DATE)) AS delivery_days,
-    date_diff('day', CAST(o.order_estimated_delivery_date AS DATE),
-              CAST(o.order_delivered_customer_date AS DATE)) AS delay_days,
-    r.review_score,
-    r.review_created_at,
-    r.review_answered_at,
-    r.has_comment
-FROM orders o
-JOIN customers c ON c.customer_id = o.customer_id
-LEFT JOIN items i ON i.order_id = o.order_id
-LEFT JOIN pay p ON p.order_id = o.order_id
-LEFT JOIN rev r ON r.order_id = o.order_id
-LEFT JOIN products pr ON pr.product_id = i.first_product_id
-LEFT JOIN category_translation t ON t.product_category_name = pr.product_category_name
-LEFT JOIN sellers s ON s.seller_id = i.first_seller_id
-WHERE o.order_status NOT IN ('canceled', 'unavailable')
-  AND i.n_items IS NOT NULL
+    order_id,
+    customer_unique_id,
+    customer_state,
+    order_status,
+    purchased_at,
+    delivered_at,
+    estimated_delivery_at AS estimated_at,
+    n_items,
+    item_revenue AS items_value,
+    freight_value,
+    gmv AS order_value,
+    payment_value,
+    installments,
+    main_payment_type,
+    used_voucher,
+    category,
+    seller_state,
+    delivery_days,
+    delay_days,
+    review_score,
+    review_sent_at AS review_created_at,
+    review_answered_at,
+    has_comment
+FROM fct_orders
+WHERE is_valid = 1
 """
 
 

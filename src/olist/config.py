@@ -14,6 +14,11 @@ RESULTS_DIR = REPO_ROOT / "results"
 FIGURES_DIR = RESULTS_DIR / "figures"
 METRICS_DIR = RESULTS_DIR / "metrics"
 SQL_RESULTS_DIR = RESULTS_DIR / "sql"
+DQ_DIR = RESULTS_DIR / "data_quality"
+ANALYTICS_DIR = RESULTS_DIR / "analytics"
+BENCHMARK_DIR = RESULTS_DIR / "benchmarks"
+METRICS_SPEC = REPO_ROOT / "metrics" / "metrics.yml"
+DOCS_DIR = REPO_ROOT / "docs"
 APP_DATA_DIR = REPO_ROOT / "app" / "data"
 
 # Orders in these states never turned into revenue.
