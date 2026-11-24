@@ -540,12 +540,28 @@ STLITE_VERSION = "1.10.0"
 APP_TEMPLATE = Template((WEB / "app.html").read_text(encoding="utf-8"))
 
 
+FONT_KEYS = ("font", "headingFont", "codeFont")
+
+
 def streamlit_theme() -> dict:
     """The [theme] table of .streamlit/config.toml (also used by `streamlit run` and Streamlit
-    Cloud), flattened to stlite's streamlitConfig keys."""
+    Cloud), flattened to stlite's streamlitConfig keys.
+
+    Font values of the form ``Family:https://...`` make Streamlit's frontend inject the font
+    stylesheet through react-helmet, which crashes stlite 1.10.0 before the app renders
+    ("Cannot read properties of undefined (reading 'add')" in HelmetDispatcher). The stlite
+    page (web/app.html) loads the same Google Fonts itself, so only the family name is passed.
+    """
     cfg = ROOT / ".streamlit" / "config.toml"
     theme = tomllib.loads(cfg.read_text()).get("theme", {}) if cfg.exists() else {}
-    return {f"theme.{k}": v for k, v in theme.items() if not isinstance(v, dict | list)}
+    out = {}
+    for key, value in theme.items():
+        if isinstance(value, dict | list):
+            continue
+        if key in FONT_KEYS and isinstance(value, str) and ":http" in value:
+            value = value.split(":http", 1)[0].strip("'\"")
+        out[f"theme.{key}"] = value
+    return out
 
 
 def build_browser_app() -> None:
