@@ -17,3 +17,9 @@ data/*.duckdb.wal
 site/
 playwright-report/
 .streamlit/secrets.toml
+
+# Local configuration
+.env
+
+# Benchmark scratch database
+data/bench.duckdb

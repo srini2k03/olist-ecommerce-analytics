@@ -1,0 +1,117 @@
+# Column documentation for the marts (rendered into docs/data_dictionary.md by
+# scripts/build_docs.py). `common` describes columns that mean the same thing wherever they
+# appear; `tables` overrides per table. tests/test_docs.py requires every mart column to be
+# documented here.
+common:
+  order_id: Order identifier (one per checkout).
+  order_item_id: Position of the item within its order (1, 2, ...); one row per unit sold.
+  customer_id: Per-order customer key issued by Olist (a person gets a new one per order).
+  customer_unique_id: The person behind the order; use it for customer analytics.
+  customer_state: Two-letter state of the customer's address on the order.
+  customer_zip_prefix: Customer zip prefix, left-padded to 5 digits.
+  zip_prefix: Zip prefix, left-padded to 5 digits.
+  seller_id: Seller identifier.
+  seller_state: Two-letter state of the seller.
+  product_id: Product identifier.
+  category: Product category in English ('unknown' when the product has none).
+  category_pt: Original Portuguese category name.
+  order_status: Olist order status (delivered, shipped, canceled, unavailable, ...).
+  is_cancelled: 1 if the status is canceled or unavailable (never became a sale).
+  is_valid: 1 for a sale - not cancelled/unavailable and at least one item. Filter on it.
+  is_delivered: 1 if status is delivered AND a delivery timestamp exists.
+  is_late: 1 if delivered after the estimated date, 0 if on time; NULL when not delivered.
+  purchased_at: Purchase timestamp.
+  purchase_date: Purchase date.
+  purchase_month: First day of the purchase month.
+  item_revenue: Sum of item prices (merchandise value paid to sellers); excludes freight.
+  freight_value: Freight charged to the customer.
+  gmv: Gross merchandise value = item_revenue + freight_value.
+  payment_value: Amount charged by the payment provider (includes instalment interest, vouchers).
+  installments: Number of instalments (largest across the order's payments; 0 fixed to 1).
+  delivery_days: Calendar days from purchase to delivery (delivered orders only).
+  delay_days: Delivered date minus estimated date in days (positive = late).
+  review_score: Review score 1-5 (mean when an order has several reviews).
+  has_comment: 1 if the review(s) include a comment.
+  weight_g: Product weight in grams.
+  volume_cm3: Product volume (length x height x width) in cm3.
+  cohort_month: Month of the person's first valid order ever (acquisition cohort).
+  lat: Median latitude of the zip prefix (points outside Brazil dropped).
+  lng: Median longitude of the zip prefix.
+tables:
+  fct_orders:
+    customer_zip_prefix: Customer zip prefix on this order, left-padded to 5 digits.
+    approved_at: Payment approval timestamp.
+    shipped_at: Hand-over to the carrier.
+    delivered_at: Delivery to the customer.
+    estimated_delivery_at: Delivery date promised at checkout.
+    n_items: Items (units) in the order.
+    n_products: Distinct products in the order.
+    n_sellers: Distinct sellers in the order (1,278 real orders have more than one).
+    n_payments: Payment records of the order.
+    main_payment_type: Payment type of the largest payment.
+    used_voucher: 1 if any payment is a voucher.
+    main_product_id: Product of item 1.
+    main_seller_id: Seller of item 1 (used for lanes and seller history).
+    category: Category of item 1 (use fct_order_items for exact category revenue).
+    main_product_weight_g: Weight of item 1's product in grams.
+    main_product_volume_cm3: Volume of item 1's product in cm3.
+    seller_state: State of the seller of item 1.
+    n_reviews: Number of reviews attached to the order.
+    review_sent_at: When the satisfaction survey was sent (first review).
+    review_answered_at: When the last review answer arrived (the score is known from then).
+    customer_lat: Latitude of the customer's zip prefix.
+    customer_lng: Longitude of the customer's zip prefix.
+    seller_lat: Latitude of the main seller's zip prefix.
+    seller_lng: Longitude of the main seller's zip prefix.
+    dq_shipped_before_approved: Data-quality flag - carrier hand-over before approval.
+    dq_delivered_before_shipped: Data-quality flag - delivery before carrier hand-over.
+    payment_minus_gmv: payment_value - gmv (interest, vouchers, rounding).
+    estimated_days: Days from purchase to the promised date.
+    handling_days: Days from approval to carrier hand-over.
+    carrier_days: Days from carrier hand-over to delivery.
+    distance_km: Great-circle distance between the main seller's and the customer's zip prefix.
+    same_state: 1 if customer and main seller are in the same state.
+    customer_order_seq: 1 for the person's first valid order, 2 for the second, ... (NULL if invalid).
+    customer_first_purchase_at: Timestamp of the person's first valid order.
+    is_repeat_order: 1 for a person's second or later valid order.
+  fct_order_items:
+    item_revenue: Price of this item.
+    freight_value: Freight charged for this item.
+    gmv: price + freight of this item.
+    category: Category of this item's product.
+    seller_state: State of this item's seller.
+    is_late: Lateness of the order this item belongs to.
+    review_score: Review score of the order this item belongs to.
+  fct_payments:
+    payment_sequential: Sequence of the payment within the order.
+    payment_type: credit_card, boleto, voucher, debit_card or not_defined.
+    installments: Instalments of this payment (0 fixed to 1).
+    payment_value: Amount of this payment.
+  fct_reviews:
+    review_id: Survey identifier (not unique on its own - one survey can cover several orders).
+    review_score: Score 1-5 of this review.
+    comment_message: Free-text comment (Portuguese), NULL if none.
+    survey_sent_at: When the survey was sent.
+    answered_at: When the customer answered.
+    category: Category of the order's first item.
+  dim_customers:
+    customer_state: State of the person's first valid order.
+    zip_prefix: Zip prefix of the person's first valid order.
+    first_order_at: First valid order timestamp.
+    last_order_at: Last valid order timestamp.
+    n_orders: Valid orders of the person (0 if all were cancelled).
+    lifetime_gmv: GMV of the person's valid orders (observed value to date).
+    lifetime_item_revenue: Item revenue of the person's valid orders.
+    avg_review: Mean review of the person's valid orders.
+    is_repeat_customer: 1 if the person has 2+ valid orders.
+  dim_sellers:
+    city: Seller city (lower-case).
+    state: Seller state.
+    first_sale_at: Purchase timestamp of the seller's first valid sale.
+  dim_products:
+    name_length: Characters in the product name (source column product_name_lenght).
+    description_length: Characters in the description.
+    photos_qty: Number of product photos.
+    length_cm: Package length in cm.
+    height_cm: Package height in cm.
+    width_cm: Package width in cm.

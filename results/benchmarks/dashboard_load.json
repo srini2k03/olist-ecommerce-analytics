@@ -1,0 +1,39 @@
+{
+  "description": "Time to render each dashboard page after clicking it in the sidebar (Playwright, Chromium), including a fixed 1.2 s settle wait per page (smoke_app.py) or 1.0 s (smoke_browser_app.py). Subtract it for pure render time.",
+  "streamlit_run_local": {
+    "source": "python scripts/smoke_app.py --width 1280 --report ...",
+    "machine": "dev sandbox (4 vCPU, 15 GB)",
+    "git_sha": "680d2a1",
+    "date_utc": "2026-11-24",
+    "timings_s": {
+      "first_render_s": 4.21,
+      "page:Executive overview": 1.43,
+      "page:Revenue": 1.75,
+      "page:Customers": 1.5,
+      "page:Cohort retention": 1.68,
+      "page:RFM segments": 1.67,
+      "page:Sellers": 1.51,
+      "page:Delivery": 1.65,
+      "page:Products": 1.45,
+      "page:A/B testing": 1.65,
+      "page:Business simulation": 1.55
+    }
+  },
+  "stlite_pages_ci": {
+    "source": "GitHub Actions Pages workflow run 45380021360 (job 138396330084), commit e70f19e, scripts/smoke_browser_app.py on ubuntu-latest; the dashboard runs in Pyodide in Chromium",
+    "date_utc": "2026-11-24",
+    "timings_s": {
+      "first_render_s": 14.4,
+      "page:Revenue": 2.85,
+      "page:Customers": 2.49,
+      "page:Cohort retention": 2.4,
+      "page:RFM segments": 2.24,
+      "page:Sellers": 2.87,
+      "page:Delivery": 2.85,
+      "page:Products": 1.88,
+      "page:A/B testing": 2.37,
+      "page:Business simulation": 1.82,
+      "page:Executive overview": 2.33
+    }
+  }
+}

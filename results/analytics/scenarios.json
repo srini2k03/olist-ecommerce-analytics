@@ -48,9 +48,15 @@
           "source": "observed"
         },
         {
-          "name": "repeat_gap",
-          "value": 0.00527662,
-          "label": "Repeat within 180 days after an on-time vs a late first order",
+          "name": "repeat_after_on_time",
+          "value": 0.0195727,
+          "label": "Repeat within 180 days after an on-time first order",
+          "source": "observed"
+        },
+        {
+          "name": "repeat_after_late",
+          "value": 0.0142961,
+          "label": "Repeat within 180 days after a late first order",
           "source": "observed"
         }
       ],
@@ -387,9 +393,15 @@
           "source": "observed"
         },
         {
-          "name": "repeat_gap",
-          "value": 0.00527662,
-          "label": "Repeat within 180 days after an on-time vs a late first order",
+          "name": "repeat_after_on_time",
+          "value": 0.0195727,
+          "label": "Repeat within 180 days after an on-time first order",
+          "source": "observed"
+        },
+        {
+          "name": "repeat_after_late",
+          "value": 0.0142961,
+          "label": "Repeat within 180 days after a late first order",
           "source": "observed"
         },
         {

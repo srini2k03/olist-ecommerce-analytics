@@ -57,6 +57,7 @@ PAGE_TEMPLATE = Template((WEB / "page.html").read_text(encoding="utf-8"))
 PAGES = {"index.html", "executive_summary.html", "app", *(f"notebooks/{n}.html" for n in NOTEBOOKS)}
 
 esc = html.escape
+NUMBER_WORDS = {5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"}
 
 ARROW = (
     '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
@@ -310,9 +311,11 @@ def index_page(readme_text: str) -> str:
         "findings",
         "01",
         "Key findings",
-        'Seven findings, each with its <span class="sb-serif">evidence</span>.',
+        f"{NUMBER_WORDS.get(len(cards), str(len(cards)))} findings, each with its "
+        '<span class="sb-serif">evidence</span>.',
         "Every number below comes from executed code on the real data: SQL snapshots in "
-        "<code>results/sql/</code> and the executed notebooks.",
+        "<code>results/sql/</code>, analysis results in <code>results/analytics/</code> and the "
+        "executed notebooks.",
         f'<div class="finding-grid">{"".join(cards)}</div><div class="fig-grid">{fig_html}</div>',
     )
     extra_cards = (
@@ -325,8 +328,9 @@ def index_page(readme_text: str) -> str:
         '<a class="sb-card sb-spotlight nb-card sb-reveal" href="app/">'
         '<span class="nb-card__n">Live</span>'
         '<span class="nb-card__title">Streamlit dashboard</span>'
-        '<span class="nb-card__text">KPIs, revenue trend, cohort retention, segments, delivery '
-        "impact and a churn-risk lookup by customer, running entirely in your browser.</span>"
+        '<span class="nb-card__text">Ten filterable pages: overview, revenue, customers and CLV, '
+        "cohorts, RFM, sellers, delivery, products, a simulated A/B test with its decision "
+        "engine and business scenarios, running entirely in your browser.</span>"
         '<span class="nb-card__go">Open the dashboard →</span></a></div>'
     )
     notebooks_html = section(
@@ -363,10 +367,12 @@ def index_page(readme_text: str) -> str:
     {kicker("Analytics · Statistics", "2026 · Olist marketplace, 99,441 orders")}
     <h1 class="sb-h1" id="top-h">Why Olist's customers don't come
       <span class="sb-serif">back</span>.</h1>
-    <p class="sb-lead">Portable SQL, causal-minded statistics, segmentation and a churn model on
-      the real Olist Brazilian e-commerce data: 99,441 orders across 9 tables, from Sept 2016 to
-      Oct 2018. It ends with a dashboard, a one-page summary and a recommendation not to launch
-      free shipping as designed.</p>
+    <p class="sb-lead">A layered, quality-checked warehouse, portable SQL by domain, a metric
+      layer, cohorts, RFM, CLV, seller ranking with uncertainty, a delivery model validated on
+      later months and a simulated A/B test with a decision engine, on the real Olist data:
+      99,441 orders across 9 tables, from Sept 2016 to Oct 2018. It ends with a 10-page
+      dashboard, a one-page summary and a recommendation not to launch free shipping as
+      designed.</p>
     <div class="sb-hero__meta">
       <span class="sb-pill sb-pill--live">Dashboard live (in-browser)</span>
       <span class="sb-pill">Results committed · real data</span>

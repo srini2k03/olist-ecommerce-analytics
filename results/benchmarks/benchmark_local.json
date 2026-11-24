@@ -1,0 +1,374 @@
+{
+  "environment": {
+    "date_utc": "2026-11-24 11:11",
+    "git_sha": "680d2a1",
+    "machine": "dev sandbox (4 vCPU, 15 GB)",
+    "platform": "Linux-6.18.44-fc-v819-x86_64-with-glibc2.39",
+    "cpus": 4,
+    "versions": {
+      "python": "3.13.18",
+      "duckdb": "2.0.0",
+      "pandas": "3.1.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "lightgbm": "4.7.0",
+      "statsmodels": "0.15.0"
+    }
+  },
+  "duckdb": {
+    "ingest_raw": {
+      "seconds": 3.214846436998414,
+      "peak_rss_mb": 546.21875
+    },
+    "checks_raw": {
+      "seconds": 0.8858716419999837,
+      "peak_rss_mb": 297.15234375
+    },
+    "build_staging_marts": {
+      "stg_customers": {
+        "layer": "staging",
+        "rows": 99441,
+        "seconds": 0.124
+      },
+      "stg_geolocation": {
+        "layer": "staging",
+        "rows": 19010,
+        "seconds": 0.077
+      },
+      "stg_order_items": {
+        "layer": "staging",
+        "rows": 112650,
+        "seconds": 0.407
+      },
+      "stg_order_payments": {
+        "layer": "staging",
+        "rows": 103886,
+        "seconds": 0.057
+      },
+      "stg_order_reviews": {
+        "layer": "staging",
+        "rows": 99224,
+        "seconds": 0.141
+      },
+      "stg_orders": {
+        "layer": "staging",
+        "rows": 99441,
+        "seconds": 0.436
+      },
+      "stg_products": {
+        "layer": "staging",
+        "rows": 32951,
+        "seconds": 0.036
+      },
+      "stg_sellers": {
+        "layer": "staging",
+        "rows": 3095,
+        "seconds": 0.008
+      },
+      "dim_products": {
+        "layer": "marts",
+        "rows": 32951,
+        "seconds": 0.034
+      },
+      "fct_orders": {
+        "layer": "marts",
+        "rows": 99441,
+        "seconds": 1.083
+      },
+      "dim_customers": {
+        "layer": "marts",
+        "rows": 96096,
+        "seconds": 0.133
+      },
+      "fct_order_items": {
+        "layer": "marts",
+        "rows": 112650,
+        "seconds": 0.509
+      },
+      "fct_payments": {
+        "layer": "marts",
+        "rows": 103886,
+        "seconds": 0.09
+      },
+      "fct_reviews": {
+        "layer": "marts",
+        "rows": 99224,
+        "seconds": 0.345
+      },
+      "dim_sellers": {
+        "layer": "marts",
+        "rows": 3095,
+        "seconds": 0.022
+      },
+      "seconds": 3.9308098689998587,
+      "peak_rss_mb": 571.83203125
+    },
+    "checks_staging_marts": {
+      "seconds": 0.6881618550014537,
+      "peak_rss_mb": 290.625
+    },
+    "metric_layer_full_window": {
+      "compute_all_s": 0.3297652029996243,
+      "seconds": 1.3655757420001464,
+      "peak_rss_mb": 708.1484375
+    },
+    "queries": {
+      "01_monthly_revenue_mom": {
+        "median_ms": 6.95,
+        "p95_ms": 7.57
+      },
+      "02_cohort_retention": {
+        "median_ms": 23.44,
+        "p95_ms": 31.53
+      },
+      "03_rfm_scores": {
+        "median_ms": 73.24,
+        "p95_ms": 100.79
+      },
+      "04_delivery_delay_vs_review": {
+        "median_ms": 6.88,
+        "p95_ms": 17.43
+      },
+      "05_seller_league": {
+        "median_ms": 63.08,
+        "p95_ms": 88.89
+      },
+      "06_category_pareto": {
+        "median_ms": 25.09,
+        "p95_ms": 30.64
+      },
+      "07_payment_mix": {
+        "median_ms": 33.26,
+        "p95_ms": 37.5
+      },
+      "08_freight_ratio": {
+        "median_ms": 9.6,
+        "p95_ms": 10.34
+      },
+      "09_state_delivery_sla": {
+        "median_ms": 10.42,
+        "p95_ms": 11.28
+      },
+      "10_repeat_purchase_rate": {
+        "median_ms": 29.24,
+        "p95_ms": 39.2
+      },
+      "11_basket_size": {
+        "median_ms": 12.16,
+        "p95_ms": 22.61
+      },
+      "12_time_to_second_order": {
+        "median_ms": 34.68,
+        "p95_ms": 43.68
+      },
+      "13_late_delivery_hotspots": {
+        "median_ms": 11.54,
+        "p95_ms": 28.67
+      },
+      "14_review_sentiment_proxies": {
+        "median_ms": 85.08,
+        "p95_ms": 117.52
+      },
+      "15_customer_value_deciles": {
+        "median_ms": 35.26,
+        "p95_ms": 49.13
+      },
+      "16_purchase_timing": {
+        "median_ms": 5.72,
+        "p95_ms": 6.28
+      },
+      "17_order_status_funnel": {
+        "median_ms": 4.36,
+        "p95_ms": 4.89
+      },
+      "18_money_reconciliation": {
+        "median_ms": 6.29,
+        "p95_ms": 6.48
+      },
+      "19_category_growth": {
+        "median_ms": 31.71,
+        "p95_ms": 36.79
+      },
+      "20_cohort_revenue": {
+        "median_ms": 25.08,
+        "p95_ms": 32.59
+      },
+      "21_seller_scorecard": {
+        "median_ms": 40.15,
+        "p95_ms": 44.35
+      },
+      "22_delivery_by_category": {
+        "median_ms": 11.38,
+        "p95_ms": 11.65
+      },
+      "23_estimate_accuracy_by_month": {
+        "median_ms": 12.99,
+        "p95_ms": 19.16
+      },
+      "24_category_scorecard": {
+        "median_ms": 47.72,
+        "p95_ms": 71.79
+      },
+      "25_review_by_delivery_status": {
+        "median_ms": 8.13,
+        "p95_ms": 9.45
+      },
+      "26_installments_by_order_value": {
+        "median_ms": 7.71,
+        "p95_ms": 8.52
+      }
+    }
+  },
+  "dashboard": {
+    "bundle_load_s": 0.133,
+    "cases": {
+      "default (2017-01..2018-08)": {
+        "filter_ms": 12.4,
+        "metrics_ms": 56.2,
+        "cohort_matrix_ms": 26.5,
+        "rfm_ms": 63.9,
+        "seller_ranking_ms": 71.8,
+        "orders": 99092
+      },
+      "customer state SP": {
+        "filter_ms": 11.1,
+        "metrics_ms": 21.5,
+        "cohort_matrix_ms": 18.1,
+        "rfm_ms": 31.4,
+        "seller_ranking_ms": 43.7,
+        "orders": 41621
+      },
+      "category bed_bath_table": {
+        "filter_ms": 17.2,
+        "metrics_ms": 11.5,
+        "cohort_matrix_ms": 12.9,
+        "rfm_ms": 15.0,
+        "seller_ranking_ms": 21.2,
+        "orders": 9412
+      },
+      "one seller": {
+        "filter_ms": 13.6,
+        "metrics_ms": 8.5,
+        "cohort_matrix_ms": 11.9,
+        "rfm_ms": 11.5,
+        "seller_ranking_ms": 14.8,
+        "orders": 1854
+      }
+    },
+    "bundle_mb": 6.97
+  },
+  "postgres": {
+    "ingest_raw_s": 9.74,
+    "checks_raw_s": 1.74,
+    "build_staging_marts_s": 9.24,
+    "fct_orders_s": 3.552,
+    "checks_staging_marts_s": 1.39,
+    "queries": {
+      "01_monthly_revenue_mom": {
+        "median_ms": 34.16,
+        "p95_ms": 39.84
+      },
+      "02_cohort_retention": {
+        "median_ms": 157.09,
+        "p95_ms": 261.05
+      },
+      "03_rfm_scores": {
+        "median_ms": 334.13,
+        "p95_ms": 360.73
+      },
+      "04_delivery_delay_vs_review": {
+        "median_ms": 43.28,
+        "p95_ms": 51.97
+      },
+      "05_seller_league": {
+        "median_ms": 342.53,
+        "p95_ms": 368.01
+      },
+      "06_category_pareto": {
+        "median_ms": 180.56,
+        "p95_ms": 229.45
+      },
+      "07_payment_mix": {
+        "median_ms": 308.64,
+        "p95_ms": 341.9
+      },
+      "08_freight_ratio": {
+        "median_ms": 119.71,
+        "p95_ms": 126.93
+      },
+      "09_state_delivery_sla": {
+        "median_ms": 107.08,
+        "p95_ms": 117.66
+      },
+      "10_repeat_purchase_rate": {
+        "median_ms": 170.94,
+        "p95_ms": 173.86
+      },
+      "11_basket_size": {
+        "median_ms": 39.58,
+        "p95_ms": 42.06
+      },
+      "12_time_to_second_order": {
+        "median_ms": 165.76,
+        "p95_ms": 204.2
+      },
+      "13_late_delivery_hotspots": {
+        "median_ms": 38.72,
+        "p95_ms": 41.06
+      },
+      "14_review_sentiment_proxies": {
+        "median_ms": 306.63,
+        "p95_ms": 327.4
+      },
+      "15_customer_value_deciles": {
+        "median_ms": 92.31,
+        "p95_ms": 128.58
+      },
+      "16_purchase_timing": {
+        "median_ms": 80.35,
+        "p95_ms": 85.7
+      },
+      "17_order_status_funnel": {
+        "median_ms": 29.77,
+        "p95_ms": 34.3
+      },
+      "18_money_reconciliation": {
+        "median_ms": 31.96,
+        "p95_ms": 47.08
+      },
+      "19_category_growth": {
+        "median_ms": 152.18,
+        "p95_ms": 167.0
+      },
+      "20_cohort_revenue": {
+        "median_ms": 248.91,
+        "p95_ms": 277.12
+      },
+      "21_seller_scorecard": {
+        "median_ms": 306.65,
+        "p95_ms": 406.51
+      },
+      "22_delivery_by_category": {
+        "median_ms": 137.0,
+        "p95_ms": 148.34
+      },
+      "23_estimate_accuracy_by_month": {
+        "median_ms": 119.25,
+        "p95_ms": 135.71
+      },
+      "24_category_scorecard": {
+        "median_ms": 336.77,
+        "p95_ms": 363.35
+      },
+      "25_review_by_delivery_status": {
+        "median_ms": 39.61,
+        "p95_ms": 45.98
+      },
+      "26_installments_by_order_value": {
+        "median_ms": 56.43,
+        "p95_ms": 76.85
+      }
+    }
+  }
+}
