@@ -5,7 +5,8 @@
 --   (including cancelled), valid orders, item revenue, delivered orders, late orders,
 --   mean delivery days, reviewed orders, mean review, 1-2 star reviews, cancelled orders.
 --   Rates are left to the caller so it can apply minimum volumes and shrinkage.
--- Expected output: one row per seller that ever received an order (about 3,000).
+-- Expected output: one row per seller that ever received an order (about 3,000), ordered
+--   by seller_id (ties in float revenue sums would order differently across engines).
 -- Dialect notes: MAX over the per-order flags keeps one vote per (seller, order).
 WITH seller_orders AS (
     SELECT
@@ -38,4 +39,4 @@ SELECT
     SUM(is_cancelled) AS cancelled_orders
 FROM seller_orders
 GROUP BY seller_id
-ORDER BY item_revenue DESC, seller_id;
+ORDER BY seller_id;

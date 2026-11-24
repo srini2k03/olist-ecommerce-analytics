@@ -137,29 +137,32 @@ def condition(layer: str, table: str, name: str, ok: str, description: str, **kw
 
 
 def foreign_key(layer: str, child: str, col: str, parent: str, pcol: str, **kw) -> Check:
+    # A LEFT JOIN anti-join, not NOT EXISTS inside CASE: Postgres runs the latter as a
+    # per-row subplan (a full scan of the parent for every child row).
     return Check(
         f"{child}.{col} -> {parent}.{pcol}",
         layer,
         child,
         "foreign_key",
         kw.pop("description", f"every {child}.{col} exists in {parent}"),
-        f"SELECT SUM(CASE WHEN c.{col} IS NOT NULL AND NOT EXISTS ("
-        f"SELECT 1 FROM {parent} AS p WHERE p.{pcol} = c.{col}) THEN 1 ELSE 0 END) AS failing, "
-        f"COUNT(*) AS total FROM {child} AS c",
+        f"SELECT SUM(CASE WHEN c.{col} IS NOT NULL AND p.k IS NULL THEN 1 ELSE 0 END) "
+        f"AS failing, COUNT(*) AS total FROM {child} AS c "
+        f"LEFT JOIN (SELECT DISTINCT {pcol} AS k FROM {parent}) AS p ON p.k = c.{col}",
         **kw,
     )
 
 
 def has_child(layer: str, parent: str, pcol: str, child: str, col: str, **kw) -> Check:
-    """Completeness: every parent row has at least one child row."""
+    """Completeness: every parent row has at least one child row (LEFT JOIN anti-join)."""
     return Check(
         f"{parent} has {child}",
         layer,
         parent,
         "completeness",
         kw.pop("description", f"every {parent} row has a {child} row"),
-        f"SELECT SUM(CASE WHEN NOT EXISTS (SELECT 1 FROM {child} AS c WHERE c.{col} = p.{pcol}) "
-        f"THEN 1 ELSE 0 END) AS failing, COUNT(*) AS total FROM {parent} AS p",
+        f"SELECT SUM(CASE WHEN c.k IS NULL THEN 1 ELSE 0 END) AS failing, COUNT(*) AS total "
+        f"FROM {parent} AS p LEFT JOIN (SELECT DISTINCT {col} AS k FROM {child}) AS c "
+        f"ON c.k = p.{pcol}",
         **kw,
     )
 

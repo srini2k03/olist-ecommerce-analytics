@@ -98,6 +98,10 @@ def build_models(engine: Engine, models: list[Model] | None = None) -> dict[str,
         t0 = time.perf_counter()
         engine.execute(f"DROP TABLE IF EXISTS {m.name}")
         engine.execute(f"CREATE TABLE {m.name} AS\n{m.select}")
+        if engine.name == "postgres":
+            # Fresh CTAS tables have no planner statistics; without them Postgres picks
+            # nested loops for the mart joins (fct_orders took minutes instead of seconds).
+            engine.execute(f"ANALYZE {m.name}")
         rows = int(engine.query(f"SELECT COUNT(*) AS n FROM {m.name}")["n"].iloc[0])
         secs = time.perf_counter() - t0
         stats[m.name] = {"layer": m.layer, "rows": rows, "seconds": round(secs, 3)}
