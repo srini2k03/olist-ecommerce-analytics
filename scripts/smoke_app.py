@@ -23,7 +23,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "app"))
+sys.path[:0] = [str(ROOT / "app"), str(ROOT / "src")]  # works without `pip install -e .`
 TITLE = "Olist marketplace analytics"
 
 
@@ -45,10 +45,10 @@ def wait_for(url: str, timeout: float = 90) -> None:
     raise TimeoutError(f"{url} did not come up")
 
 
-def page_titles() -> list[str]:
+def page_titles() -> list[tuple[str, str]]:
     from dashboard.app import PAGES
 
-    return [p[0] for p in PAGES]
+    return [(p[0], p[1]) for p in PAGES]
 
 
 def settle(page, ms: int = 600) -> None:
@@ -114,7 +114,11 @@ def main() -> int:
                 # Streamlit scrolls inside its own container, so a tall viewport is the
                 # simplest way to capture whole pages.
                 height = 3400
-            page = browser.new_page(viewport={"width": args.width, "height": height})
+            # The OS colour scheme must not change the app's look: emulate the opposite one.
+            scheme = "light" if args.theme == "dark" else "dark"
+            page = browser.new_page(
+                viewport={"width": args.width, "height": height}, color_scheme=scheme
+            )
             errors: list[str] = []
             page.on("pageerror", lambda e: errors.append(str(e)))
             t0 = time.perf_counter()
@@ -125,12 +129,13 @@ def main() -> int:
             if args.screenshot:
                 args.screenshot.parent.mkdir(parents=True, exist_ok=True)
                 page.screenshot(path=str(args.screenshot), full_page=False)
-            for title in page_titles():
+            for title, url_path in page_titles():
                 t1 = time.perf_counter()
-                if args.width < 800:  # the sidebar is collapsed on phones
-                    page.get_by_test_id("stExpandSidebarButton").click()
-                    page.wait_for_timeout(400)
-                page.get_by_role("link", name=title).first.click()
+                if args.width < 800:  # the sidebar is collapsed on phones: open by URL
+                    path = "" if title == "Executive overview" else url_path  # default page is /
+                    page.goto(f"http://127.0.0.1:{port}/{path}", wait_until="networkidle")
+                else:
+                    page.get_by_role("link", name=title).first.click()
                 heading = TITLE if title == "Executive overview" else title
                 page.get_by_role("heading", name=heading).first.wait_for(timeout=120_000)
                 settle(page)
