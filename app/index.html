@@ -1,14 +1,41 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="en" data-theme="dark">
+<head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Olist dashboard</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser@1.10.0/build/stlite.css">
 <style>
-#loading { font: 16px/1.6 system-ui, sans-serif; padding: 24px 16px; color: #52514e; }
+html, body { margin: 0; background: #07090c; color: #eef1f5; }
+#loading { min-height: 100vh; display: grid; place-content: center; justify-items: center; gap: 1.25rem;
+  padding: 2rem 1rem; text-align: center; font: 400 15px/1.6 "Geist", ui-sans-serif, system-ui, sans-serif;
+  background: radial-gradient(900px 520px at 85% -10%, rgba(255, 181, 71, 0.12), transparent 60%),
+    radial-gradient(700px 420px at -10% 10%, rgba(94, 234, 168, 0.12), transparent 60%), #07090c; }
+#loading .brand { display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 600; font-size: 14px; }
+#loading .mark { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 7px;
+  background: #eef1f5; color: #07090c; font: 700 11px/1 "Geist Mono", ui-monospace, monospace; }
+#loading .sub { color: #8b95a3; font-weight: 400; }
+#loading .spinner { width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.16);
+  border-top-color: #5eeaa8; animation: spin 0.8s linear infinite; }
+#loading p { margin: 0; max-width: 30rem; color: #8b95a3; }
+#loading .kicker { font: 500 11px/1 "Geist Mono", ui-monospace, monospace; letter-spacing: 0.2em;
+  text-transform: uppercase; color: #ffb547; }
+#loading a { color: #c9d0da; text-underline-offset: 3px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { #loading .spinner { animation-duration: 2.4s; } }
 </style>
 </head><body>
-<div id="root"><p id="loading">Loading the dashboard: Python is starting in your browser,
-which takes 10&ndash;30 seconds on the first visit.</p></div>
+<div id="root"><div id="loading" role="status" aria-live="polite">
+  <span class="brand"><span class="mark" aria-hidden="true">SB</span>Srinivasan B. <span class="sub">/ Olist analytics</span></span>
+  <span class="spinner" aria-hidden="true"></span>
+  <span class="kicker">Dashboard</span>
+  <p id="loading-text">Loading the dashboard: Python is starting in your browser,
+which takes 10&ndash;30 seconds on the first visit.</p>
+  <p><a href="../">Back to the findings and notebooks</a></p>
+</div></div>
 <script type="module">
 import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@1.10.0/build/stlite.js";
 const files = ["streamlit_app.py", "data/churn_scores.parquet", "data/cohort.parquet", "data/delivery_delay.parquet", "data/kpis.json", "data/model_card.json", "data/monthly.parquet", "data/segment_sample.parquet", "data/segments.parquet", "data/state_sla.parquet"];
@@ -17,6 +44,7 @@ mount(
     requirements: ["altair", "pyarrow"],
     entrypoint: "streamlit_app.py",
     files: Object.fromEntries(files.map((f) => [f, { url: f }])),
+    streamlitConfig: {"theme.base": "dark", "theme.primaryColor": "#5eeaa8", "theme.backgroundColor": "#07090c", "theme.secondaryBackgroundColor": "#0d1117", "theme.textColor": "#eef1f5", "theme.linkColor": "#5eeaa8", "theme.borderColor": "#232831", "theme.showWidgetBorder": true, "theme.baseRadius": "10px", "theme.buttonRadius": "10px", "theme.font": "Geist", "theme.headingFont": "Geist", "theme.codeFont": "Geist Mono", "theme.codeBackgroundColor": "#0d1117", "theme.dataframeHeaderBackgroundColor": "#0d1117", "theme.metricValueFontSize": "1.75rem", "theme.metricValueFontWeight": 600},
   },
   document.getElementById("root"),
 );

@@ -1,132 +1,89 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="en" class="no-js" data-theme="dark">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.dataset.theme=(t==='light'||t==='dark')?t:'dark';}catch(e){document.documentElement.dataset.theme='dark';}document.documentElement.classList.remove('no-js');})();</script>
 <title>Olist e-commerce analytics</title>
-<style>
-:root { --ink:#0b0b0b; --muted:#52514e; --bg:#fcfcfb; --line:#e4e3df; --link:#2a78d6; }
-@media (prefers-color-scheme: dark) {
-  :root { --ink:#f0efec; --muted:#c3c2b7; --bg:#1a1a19; --line:#3a3a38; --link:#6da7ec; }
-  img { background:#fcfcfb; }
-}
-body { font: 16px/1.6 system-ui, -apple-system, Segoe UI, sans-serif; color:var(--ink);
-       background:var(--bg); max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
-a { color: var(--link); }
-img { max-width: 100%; height: auto; }
-table { border-collapse: collapse; display:block; overflow-x:auto; }
-th, td { border-bottom: 1px solid var(--line); padding: 4px 10px; text-align: left; }
-code { font-size: 0.92em; }
-nav { margin-bottom: 24px; color: var(--muted); }
-</style></head><body>
-<nav><a href="index.html">Home</a> · <a href="app/">Live dashboard</a> ·
-<a href="executive_summary.html">Executive summary</a> ·
-<a href="notebooks/01_eda.html">01_eda</a> · <a href="notebooks/02_stats.html">02_stats</a> · <a href="notebooks/03_segmentation.html">03_segmentation</a> · <a href="notebooks/04_churn.html">04_churn</a></nav>
-<h1>Olist e-commerce analytics</h1>
-<p><a href="https://github.com/srini2k03/olist-ecommerce-analytics/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/srini2k03/olist-ecommerce-analytics/actions/workflows/ci.yml/badge.svg" /></a>
-<a href="https://github.com/srini2k03/olist-ecommerce-analytics/actions/workflows/build-data.yml"><img alt="Build data" src="https://github.com/srini2k03/olist-ecommerce-analytics/actions/workflows/build-data.yml/badge.svg" /></a>
-<a href="https://github.com/srini2k03/olist-ecommerce-analytics/actions/workflows/pages.yml"><img alt="Pages" src="https://github.com/srini2k03/olist-ecommerce-analytics/actions/workflows/pages.yml/badge.svg" /></a></p>
-<p>This project runs SQL, statistics, segmentation and a churn model on the <strong>real</strong> Olist Brazilian e-commerce dataset: 99,441 orders across 9 tables, from Sept 2016 to Oct 2018. It ends with a Streamlit dashboard and a one-page <a href="executive_summary.html">executive summary</a>.</p>
-<ul>
-<li><strong>Live dashboard:</strong> https://srini2k03.github.io/olist-ecommerce-analytics/app/ runs Streamlit entirely in your browser via <a href="https://github.com/whitphx/stlite">stlite</a>, with no server. The first visit takes 10 to 30 s while Python starts.</li>
-<li><strong>Rendered notebooks and summary:</strong> https://srini2k03.github.io/olist-ecommerce-analytics/</li>
-</ul>
-<h2>Key findings</h2>
-<p>Every number below comes from executed code on the real data. The SQL snapshots are in <a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/results/sql"><code>results/sql/</code></a>, and the notebook outputs are in <a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/notebooks"><code>notebooks/</code></a>.</p>
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>Finding</th>
-<th>Evidence</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td><strong>Growth has stalled.</strong> Jan–Aug 2018 GMV was +140% on the same months of 2017, but mean month-on-month growth from Feb to Aug 2018 was <strong>−1.0%</strong>. Monthly GMV has been flat at R$ 1.0–1.16M.</td>
-<td>SQL 01, <a href="notebooks/01_eda.html">01_eda</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td><strong>Customers almost never return.</strong> Only <strong>3.0%</strong> of 94,707 customers ever place a second order. Month-1 retention averages <strong>0.48%</strong>, and <strong>30%</strong> of second orders are placed the same day as the first (split baskets, not loyalty).</td>
-<td>SQL 02, 10, 12</td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>Late delivery destroys reviews.</strong> Late orders average <strong>2.27★</strong>, against <strong>4.29★</strong> for on-time orders (−2.02★, 95% bootstrap CI −2.06 to −1.98; Cliff's δ = −0.64, large). With category, state, basket and value controls, the odds ratio for a higher score is <strong>0.068</strong> (95% CI 0.063–0.074).</td>
-<td><a href="notebooks/02_stats.html">02_stats</a> Part A</td>
-</tr>
-<tr>
-<td>4</td>
-<td><strong>Lateness is regional.</strong> The late rate is <strong>21.4%</strong> in Alagoas against <strong>4.5%</strong> in São Paulo. The single lane <strong>SP → RJ</strong> accounts for <strong>17.6% of all late deliveries</strong>.</td>
-<td>SQL 09, 13</td>
-</tr>
-<tr>
-<td>5</td>
-<td><strong>Value sits in lapsed one-time buyers.</strong> "At-risk big spenders" are <strong>12.4% of customers but 38.6% of revenue</strong> (R$ 515 average, about 298 days since their last order). They also have the lowest mean review of any segment (3.95).</td>
-<td><a href="notebooks/03_segmentation.html">03_segmentation</a></td>
-</tr>
-<tr>
-<td>6</td>
-<td><strong>Repeat purchase is barely predictable, and we say so.</strong> With a 1.18% base rate, LightGBM reaches ROC-AUC 0.581 and PR-AUC 0.020 on a later, held-out time window. <strong>Targeting the top 10% of customers ranked by the model captures 19.4% of those who actually bought again within 180 days (1.94x lift), against 15.4% for a recency rule.</strong> Logistic regression is statistically tied.</td>
-<td><a href="notebooks/04_churn.html">04_churn</a></td>
-</tr>
-<tr>
-<td>7</td>
-<td><strong>Simulated A/B test, calibrated to real baselines:</strong> free shipping on orders from R$ 150. In the simulation it lifts the multi-item rate (+1.43 pp, p = 0.006, P(B&gt;A) = 99.7%), but the freight subsidy costs <strong>R$ 9.60 per order</strong> against about <strong>R$ 1.44</strong> of extra GMV, because 26% of orders already qualify. Do not ship it as designed.</td>
-<td>02_stats Part B (<strong>simulated</strong>)</td>
-</tr>
-</tbody>
-</table>
-<p align="center">
-  <img src="results/figures/delay_vs_review.png" width="48%" alt="Review score by delivery delay">
-  <img src="results/figures/cohort_heatmap.png" width="48%" alt="Cohort retention heatmap">
-  <img src="results/figures/segments.png" width="48%" alt="Segments: customers vs revenue">
-  <img src="results/figures/churn_lift_gain.png" width="48%" alt="Lift and cumulative gain">
-</p>
+<meta name="description" content="SQL, statistics, segmentation and a churn model on 99,441 real Olist orders, with key findings, an executive summary, the executed notebooks and an in-browser dashboard.">
+<meta name="color-scheme" content="dark light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sb-kit.css">
+<link rel="stylesheet" href="site.css">
+<script src="sb-kit.js" defer></script>
+</head>
+<body class="sb-grain">
+<div class="sb-backdrop" aria-hidden="true"></div>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="sb-nav">
+  <div class="sb-container sb-nav__inner">
+    <a class="sb-brand" href="https://srini2k03.github.io/"><span class="sb-brand__mark">SB</span>
+      <span><span class="brand-name">Srinivasan B. </span><span class="sb-brand__sub"><span class="brand-slash">/ </span>Olist analytics</span></span></a>
+    <nav class="sb-nav__links" aria-label="Site">
+      <a class="sb-nav__link sb-nav__link--hide-sm" href="index.html#findings" aria-current=page>Findings</a><a class="sb-nav__link sb-nav__link--hide-sm" href="executive_summary.html">Summary</a><a class="sb-nav__link sb-nav__link--hide-sm" href="index.html#notebooks">Notebooks</a><a class="sb-nav__link sb-nav__link--hide-sm" href="app/">Dashboard</a>
+      <a class="sb-nav__link" href="https://github.com/srini2k03/olist-ecommerce-analytics">Code</a>
+      <button class="sb-icon-btn theme-btn" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="true"><svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button>
+    </nav>
+  </div>
+</header>
+<main id="main">
 
-<h2>What is in the repository</h2>
-<pre><code>sql/                     16 documented queries (DuckDB and Postgres, same SQL)
-results/sql/             snapshot of every query's output on the real data
-results/figures/         README and Pages figures, saved by the notebooks
-results/metrics/         JSON metrics written by the notebooks (stats, segments, churn)
-notebooks/               01_eda, 02_stats, 03_segmentation, 04_churn (executed, outputs committed)
-src/olist/               reusable package
-  db.py, schema.py         portable DDL + loaders for DuckDB and Postgres
-  sql_runner.py            discover/run/snapshot queries, cross-engine comparison
-  warehouse.py             order-level fact table for Python analysis
-  stats/                   effect sizes, bootstrap, power, SRM, Bayesian A/B, peeking
-  segmentation.py          RFM, k diagnostics, rule-based cluster naming
-  model/                   point-in-time features, models, lift/gain, SHAP reasons
-  app_data.py              builds the small app artefacts
-  synthetic.py             schema-faithful synthetic fixture (tests only)
-app/streamlit_app.py     dashboard entry point; app/data/ holds its prebuilt ~4 MB artefacts
-scripts/                 fetch_data, build_warehouse, run_sql, build_app_data, smoke_app, build_site
-tests/                   pytest: SQL, stats, leakage, models, segmentation, app
-.github/workflows/       ci.yml, build-data.yml, pages.yml
-</code></pre>
-<h2>Data and licence</h2>
-<ul>
-<li><strong>Dataset:</strong> <a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce">Brazilian E-Commerce Public Dataset by Olist</a>, licensed <strong>CC BY-NC-SA 4.0</strong> (attribution, non-commercial, share-alike). The raw CSVs are <strong>not committed</strong>. <code>scripts/fetch_data.py</code> downloads them at build time:
-  1. through the Kaggle API, when <code>KAGGLE_USERNAME</code>/<code>KAGGLE_KEY</code> are set;
-  2. otherwise from Olist's own public repository <a href="https://github.com/olist/work-at-olist-data"><code>olist/work-at-olist-data</code></a>, <strong>pinned to commit <code>d9e4980</code></strong>.</li>
+<section class="sb-hero" aria-labelledby="top-h">
+  <div class="sb-container">
+    <p class="sb-kicker"><span class="sb-kicker__index">Analytics · Statistics</span><span class="sb-kicker__rule"></span>2026 · Olist marketplace, 99,441 orders</p>
+    <h1 class="sb-h1" id="top-h">Why Olist's customers don't come
+      <span class="sb-serif">back</span>.</h1>
+    <p class="sb-lead">Portable SQL, causal-minded statistics, segmentation and a churn model on
+      the real Olist Brazilian e-commerce data: 99,441 orders across 9 tables, from Sept 2016 to
+      Oct 2018. It ends with a dashboard, a one-page summary and a recommendation not to launch
+      free shipping as designed.</p>
+    <div class="sb-hero__meta">
+      <span class="sb-pill sb-pill--live">Dashboard live (in-browser)</span>
+      <span class="sb-pill">Results committed · real data</span>
+      <span class="sb-pill sb-pill--pending">A/B test simulated</span>
+    </div>
+    <div class="sb-hero__actions">
+      <a class="sb-btn sb-btn--primary" href="app/">Open the dashboard <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+      <a class="sb-btn" href="executive_summary.html">Executive summary</a>
+      <a class="sb-btn sb-btn--ghost" href="https://github.com/srini2k03/olist-ecommerce-analytics"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg> Code</a>
+    </div>
+    <p class="hero-note">The dashboard is Streamlit compiled to WebAssembly: the first load takes
+      10–30 s while Python starts in your browser.</p>
+    <div class="sb-stats hero-stats sb-reveal" role="list"><div class="sb-stat" role="listitem"><div class="sb-stat__value">2.27★</div><div class="sb-stat__label">Average review when late</div><div class="sb-stat__ctx">vs 4.29★ on time · Cliff's δ = −0.64</div></div><div class="sb-stat" role="listitem"><div class="sb-stat__value">17.6%</div><div class="sb-stat__label">Of all late deliveries on one lane</div><div class="sb-stat__ctx">SP → RJ · SQL 13</div></div><div class="sb-stat" role="listitem"><div class="sb-stat__value">38.6%</div><div class="sb-stat__label">Of revenue from 12.4% of customers</div><div class="sb-stat__ctx">“At-risk big spenders” segment</div></div><div class="sb-stat" role="listitem"><div class="sb-stat__value">19.4%</div><div class="sb-stat__label">Of repeat buyers in the model's top 10%</div><div class="sb-stat__ctx">1.94x lift · ROC-AUC 0.581, a weak signal</div></div></div>
+  </div>
+</section>
+<section class="sb-section" id="findings" aria-labelledby="findings-h"><div class="sb-container"><div class="section-head sb-reveal"><p class="sb-kicker"><span class="sb-kicker__index">01</span><span class="sb-kicker__rule"></span>Key findings</p><h2 class="sb-h2" id="findings-h">Seven findings, each with its <span class="sb-serif">evidence</span>.</h2><p class="sb-lead">Every number below comes from executed code on the real data: SQL snapshots in <code>results/sql/</code> and the executed notebooks.</p></div><div class="finding-grid"><article class="sb-card sb-spotlight finding sb-reveal"><header class="finding__top"><span class="finding__n">01</span></header><h3 class="finding__title">Growth has stalled.</h3><p class="finding__body">Jan–Aug 2018 GMV was +140% on the same months of 2017, but mean month-on-month growth from Feb to Aug 2018 was <strong>−1.0%</strong>. Monthly GMV has been flat at R$ 1.0–1.16M.</p><p class="finding__ev"><span class="sb-label">Evidence</span> SQL 01, <a href="notebooks/01_eda.html">01_eda</a></p></article><article class="sb-card sb-spotlight finding sb-reveal"><header class="finding__top"><span class="finding__n">02</span></header><h3 class="finding__title">Customers almost never return.</h3><p class="finding__body">Only <strong>3.0%</strong> of 94,707 customers ever place a second order. Month-1 retention averages <strong>0.48%</strong>, and <strong>30%</strong> of second orders are placed the same day as the first (split baskets, not loyalty).</p><p class="finding__ev"><span class="sb-label">Evidence</span> SQL 02, 10, 12</p></article><article class="sb-card sb-spotlight finding sb-reveal"><header class="finding__top"><span class="finding__n">03</span></header><h3 class="finding__title">Late delivery destroys reviews.</h3><p class="finding__body">Late orders average <strong>2.27★</strong>, against <strong>4.29★</strong> for on-time orders (−2.02★, 95% bootstrap CI −2.06 to −1.98; Cliff's δ = −0.64, large). With category, state, basket and value controls, the odds ratio for a higher score is <strong>0.068</strong> (95% CI 0.063–0.074).</p><p class="finding__ev"><span class="sb-label">Evidence</span> <a href="notebooks/02_stats.html">02_stats</a> Part A</p></article><article class="sb-card sb-spotlight finding sb-reveal"><header class="finding__top"><span class="finding__n">04</span></header><h3 class="finding__title">Lateness is regional.</h3><p class="finding__body">The late rate is <strong>21.4%</strong> in Alagoas against <strong>4.5%</strong> in São Paulo. The single lane <strong>SP → RJ</strong> accounts for <strong>17.6% of all late deliveries</strong>.</p><p class="finding__ev"><span class="sb-label">Evidence</span> SQL 09, 13</p></article><article class="sb-card sb-spotlight finding sb-reveal"><header class="finding__top"><span class="finding__n">05</span></header><h3 class="finding__title">Value sits in lapsed one-time buyers.</h3><p class="finding__body">"At-risk big spenders" are <strong>12.4% of customers but 38.6% of revenue</strong> (R$ 515 average, about 298 days since their last order). They also have the lowest mean review of any segment (3.95).</p><p class="finding__ev"><span class="sb-label">Evidence</span> <a href="notebooks/03_segmentation.html">03_segmentation</a></p></article><article class="sb-card sb-spotlight finding sb-reveal"><header class="finding__top"><span class="finding__n">06</span></header><h3 class="finding__title">Repeat purchase is barely predictable, and we say so.</h3><p class="finding__body">With a 1.18% base rate, LightGBM reaches ROC-AUC 0.581 and PR-AUC 0.020 on a later, held-out time window. <strong>Targeting the top 10% of customers ranked by the model captures 19.4% of those who actually bought again within 180 days (1.94x lift), against 15.4% for a recency rule.</strong> Logistic regression is statistically tied.</p><p class="finding__ev"><span class="sb-label">Evidence</span> <a href="notebooks/04_churn.html">04_churn</a></p></article><article class="sb-card sb-spotlight finding sb-reveal"><header class="finding__top"><span class="finding__n">07</span><span class="sb-pill sb-pill--pending">Simulated</span></header><h3 class="finding__title">Simulated A/B test, calibrated to real baselines.</h3><p class="finding__body">Free shipping on orders from R$ 150. In the simulation it lifts the multi-item rate (+1.43 pp, p = 0.006, P(B&gt;A) = 99.7%), but the freight subsidy costs <strong>R$ 9.60 per order</strong> against about <strong>R$ 1.44</strong> of extra GMV, because 26% of orders already qualify. Do not ship it as designed.</p><p class="finding__ev"><span class="sb-label">Evidence</span> 02_stats Part B (<strong>simulated</strong>)</p></article></div><div class="fig-grid"><figure class="sb-card fig-card sb-reveal"><figcaption class="card-head"><span class="sb-card__title">Review score by delivery delay</span></figcaption><a class="fig-plate" href="results/figures/delay_vs_review.png" target="_blank" rel="noopener" title="Open the full-size image"><img src="results/figures/delay_vs_review.png" alt="Review score by delivery delay" loading="lazy" decoding="async" width="1056" height="517"></a></figure><figure class="sb-card fig-card sb-reveal"><figcaption class="card-head"><span class="sb-card__title">Cohort retention heatmap</span></figcaption><a class="fig-plate" href="results/figures/cohort_heatmap.png" target="_blank" rel="noopener" title="Open the full-size image"><img src="results/figures/cohort_heatmap.png" alt="Cohort retention heatmap" loading="lazy" decoding="async" width="1138" height="762"></a></figure><figure class="sb-card fig-card sb-reveal"><figcaption class="card-head"><span class="sb-card__title">Segments: customers vs revenue</span></figcaption><a class="fig-plate" href="results/figures/segments.png" target="_blank" rel="noopener" title="Open the full-size image"><img src="results/figures/segments.png" alt="Segments: customers vs revenue" loading="lazy" decoding="async" width="1336" height="525"></a></figure><figure class="sb-card fig-card sb-reveal"><figcaption class="card-head"><span class="sb-card__title">Lift and cumulative gain</span></figcaption><a class="fig-plate" href="results/figures/churn_lift_gain.png" target="_blank" rel="noopener" title="Open the full-size image"><img src="results/figures/churn_lift_gain.png" alt="Lift and cumulative gain" loading="lazy" decoding="async" width="1526" height="545"></a></figure></div></div></section>
+<section class="sb-section" id="notebooks" aria-labelledby="notebooks-h"><div class="sb-container"><div class="section-head sb-reveal"><p class="sb-kicker"><span class="sb-kicker__index">02</span><span class="sb-kicker__rule"></span>Notebooks</p><h2 class="sb-h2" id="notebooks-h">Four notebooks, executed on the <span class="sb-serif">real</span> data.</h2><p class="sb-lead">Rendered from the committed, executed notebooks. CI re-executes them on every push.</p></div><div class="nb-grid"><a class="sb-card sb-spotlight nb-card sb-reveal" href="notebooks/01_eda.html"><span class="nb-card__n">01</span><span class="nb-card__title">Exploratory analysis</span><span class="nb-card__text">Where Olist makes money and where it loses customers: GMV trend, cohorts, categories and delivery by state, each chart driven by one of the portable SQL queries.</span><span class="nb-card__go">Read the executed notebook →</span></a><a class="sb-card sb-spotlight nb-card sb-reveal" href="notebooks/02_stats.html"><span class="nb-card__n">02</span><span class="nb-card__title">Statistics and the simulated A/B test</span><span class="nb-card__text">Part A tests whether late delivery causes bad reviews (bootstrap CIs, Cliff&#x27;s δ, ordinal regression). Part B designs and reads a simulated free-shipping A/B test.</span><span class="nb-card__go">Read the executed notebook →</span></a><a class="sb-card sb-spotlight nb-card sb-reveal" href="notebooks/03_segmentation.html"><span class="nb-card__n">03</span><span class="nb-card__title">RFM + K-Means segmentation</span><span class="nb-card__text">RFM features, K-Means with k chosen from the elbow, the silhouette and business sense, clusters named by explicit rules and cross-checked against SQL NTILE RFM.</span><span class="nb-card__go">Read the executed notebook →</span></a><a class="sb-card sb-spotlight nb-card sb-reveal" href="notebooks/04_churn.html"><span class="nb-card__n">04</span><span class="nb-card__title">Repeat-purchase / churn model</span><span class="nb-card__text">Who buys again within 180 days: time-based split, point-in-time features, leakage tests, LightGBM against logistic regression and a recency rule, SHAP reasons.</span><span class="nb-card__go">Read the executed notebook →</span></a></div><div class="sb-grid-2 duo"><a class="sb-card sb-spotlight nb-card sb-reveal" href="executive_summary.html"><span class="nb-card__n">One page</span><span class="nb-card__title">Executive summary</span><span class="nb-card__text">The bottom line and five recommendations for the business, with the caveats.</span><span class="nb-card__go">Read the summary →</span></a><a class="sb-card sb-spotlight nb-card sb-reveal" href="app/"><span class="nb-card__n">Live</span><span class="nb-card__title">Streamlit dashboard</span><span class="nb-card__text">KPIs, revenue trend, cohort retention, segments, delivery impact and a churn-risk lookup by customer, running entirely in your browser.</span><span class="nb-card__go">Open the dashboard →</span></a></div><div class="stack"><figure class="sb-card fig-card sb-reveal"><figcaption class="card-head"><span class="sb-card__title">Churn-risk lookup in the dashboard</span></figcaption><a class="fig-plate" href="results/figures/app_churn.png" target="_blank" rel="noopener" title="Open the full-size image"><img src="results/figures/app_churn.png" alt="Churn-risk lookup in the dashboard" loading="lazy" decoding="async" width="1400" height="1000"></a></figure></div></div></section>
+<section class="sb-section" id="methods" aria-labelledby="methods-h"><div class="sb-container"><div class="section-head sb-reveal"><p class="sb-kicker"><span class="sb-kicker__index">03</span><span class="sb-kicker__rule"></span>Methods</p><h2 class="sb-h2" id="methods-h">One SQL text, two <span class="sb-serif">engines</span>.</h2></div><div class="split"><div class="prose sb-reveal"><ul>
+<li><strong>Statistics (02).</strong> Mann-Whitney U and Welch's t-test; Cliff's delta and Cohen's d, each with a percentile bootstrap 95% CI; a proportional-odds ordinal regression controlling for category, state, basket and value.</li>
+<li><strong>Simulated A/B test (02, Part B).</strong> Clearly labelled as simulated. The baseline (9.90% multi-item rate) and traffic (222 orders/day) are real 2018 values. It covers:<ul>
+<li>power and sample size (a 10% MDE would take 135 days, so a 15% MDE over 9 weeks was planned);</li>
+<li>an SRM chi-square check;</li>
+<li>a two-proportion z-test with CI;</li>
+<li>a Beta-Binomial posterior with P(B&gt;A) and expected loss;</li>
+<li>guardrails resampled from real orders;</li>
+<li>peeking: 20 looks inflate the false-positive rate from 5% to 23%;</li>
+<li>a novelty-effect simulation.</li>
 </ul>
-<p>Every file is checked against a SHA-256 checksum. A Kaggle file that differs from the pinned bytes is replaced from the mirror, so every run analyses identical data.
-- <strong>Derived artefacts</strong> (aggregated SQL outputs, figures, the per-customer scores in <code>app/data</code>) are shared under the same CC BY-NC-SA 4.0 terms.
-- <strong>Code:</strong> MIT (<a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/LICENSE">LICENSE</a>).</p>
-<h2>Reproduce</h2>
-<pre><code class="language-bash">python -m venv .venv &amp;&amp; source .venv/bin/activate
-make setup          # pip install -r requirements-dev.txt -e .
-make warehouse      # fetch + verify the 9 CSVs, build data/olist.duckdb
-make sql            # run the 16 queries, write results/sql/*.csv
-make notebooks      # execute all notebooks in place with nbconvert
-make app-data       # rebuild app/data
-make test lint      # pytest + ruff
-make app            # streamlit run app/streamlit_app.py
-</code></pre>
-<p><strong>Postgres.</strong> Set <code>OLIST_PG_DSN=postgresql://user:pass@host/db</code>, run <code>make postgres</code> to load the same tables, then run <code>make sql-compare</code> to execute every query on both engines and require identical results.</p>
-<h2>SQL library (<code>sql/</code>)</h2>
-<p>Each file starts with a header comment giving its <strong>business question</strong>, <strong>method</strong>, <strong>expected output</strong> and <strong>dialect notes</strong>. Together the queries use JOINs, CTEs and window functions: <code>LAG</code>, <code>LEAD</code>, <code>NTILE</code>, <code>RANK</code>, <code>PERCENT_RANK</code>, <code>ROW_NUMBER</code>, running <code>SUM() OVER</code>, and <code>PERCENTILE_CONT ... WITHIN GROUP</code>.</p>
-<table>
+</li>
+<li><strong>Segmentation (03).</strong> RFM, then a log transform with frequency capped at 3, standardisation and K-Means. k = 5 was chosen from the elbow, the silhouette and business sense. The silhouette's k = 2 maximum only separates repeat buyers. Clusters are named by explicit rules on their profile, and the result is cross-checked against the SQL NTILE RFM.</li>
+<li><strong>Churn / repeat purchase (04).</strong><ul>
+<li><strong>Split:</strong> time-based, with train cutoffs 2017-06-01 and 2017-09-01, test cutoff 2018-03-01, and a 180-day label window.</li>
+<li><strong>Point-in-time features:</strong> deliveries and reviews count only if they had happened by the cutoff.</li>
+<li><strong>Leakage:</strong> a dedicated "no leakage" section with a timeline figure, plus a unit test that scrambles post-cutoff data.</li>
+<li><strong>Models:</strong> a recency rule and logistic regression as baselines, against LightGBM.</li>
+<li><strong>Evaluation:</strong> PR-AUC and ROC-AUC with bootstrap CIs, lift and gain charts, SHAP.</li>
+</ul>
+</li>
+</ul></div><div class="stack stack--tight"><div class="sb-callout sb-callout--info sb-reveal" role="note"><div><p class="sb-label">Being candid about the churn model</p><p>Olist's repeat rate is about 3% overall and about 1.2% in a 180-day window, and the data has no browsing or marketing signals. No model here is strong: ROC-AUC is about 0.58–0.59, and the PR-AUC confidence intervals of LightGBM and logistic regression overlap. The model is still useful for ranking <strong>cheap</strong> retention actions, since its top decile holds about 2x the base rate. It should not be used to justify expensive per-customer offers, and an uplift holdout test should come before any incentive spend.</p></div></div><div class="sb-callout sb-callout--warn sb-reveal" role="note"><div><p class="sb-label">Honesty notes</p><ul>
+<li>All results were produced locally on the real, checksum-verified dataset (Olist commit <code>d9e4980</code>) on 2026-11-03. CI recomputes them on every push.</li>
+<li><strong>The A/B test is simulated.</strong> Only its inputs are real. The notebook labels it as simulated in every heading.</li>
+<li>The review-text "sentiment" uses keyword proxies, not a trained classifier.</li>
+<li>The causal reading of the late-delivery effect rests on observational data plus controls. A promise-date experiment is the proper confirmation.</li>
+</ul></div></div></div></div><article class="sb-card sb-reveal sql-card"><header class="card-head"><h3 class="sb-card__title">SQL library</h3><p class="sb-card__sub">16 documented queries in <code>sql/</code>, each with its business question, method, expected output and dialect notes.</p></header><div class="prose prose--table"><p>Each file starts with a header comment giving its <strong>business question</strong>, <strong>method</strong>, <strong>expected output</strong> and <strong>dialect notes</strong>. Together the queries use JOINs, CTEs and window functions: <code>LAG</code>, <code>LEAD</code>, <code>NTILE</code>, <code>RANK</code>, <code>PERCENT_RANK</code>, <code>ROW_NUMBER</code>, running <code>SUM() OVER</code>, and <code>PERCENTILE_CONT ... WITHIN GROUP</code>.</p>
+<div class="sb-table-wrap" tabindex="0"><table class="sb-table">
 <thead>
 <tr>
 <th>#</th>
@@ -185,82 +142,26 @@ make app            # streamlit run app/streamlit_app.py
 <td>Purchase timing (weekday × hour)</td>
 </tr>
 </tbody>
-</table>
-<p><strong>Portability.</strong> The same text runs on DuckDB and Postgres. The queries avoid engine-specific functions:
-- day differences use <code>CAST(a AS DATE) - CAST(b AS DATE)</code> rather than DuckDB's <code>date_diff</code>;
-- months come from <code>CAST(date_trunc('month', ts) AS DATE)</code>;
-- <code>EXTRACT</code> results are cast to <code>INTEGER</code>, because Postgres returns <code>NUMERIC</code>;
-- there is no <code>ROUND(double, n)</code>, which Postgres lacks; rounding happens in the runner;
-- keyword matching uses <code>LOWER(...) LIKE</code> instead of <code>ILIKE</code> or regex.</p>
-<p>The runner turns Postgres <code>NUMERIC</code> into floats and compares every cell with a 1e-6 relative tolerance. CI runs the comparison on the real data.</p>
-<h2>Methods in brief</h2>
+</table></div>
+<p><strong>Portability.</strong> The same text runs on DuckDB and Postgres. The queries avoid engine-specific functions:</p>
 <ul>
-<li><strong>Statistics (02).</strong> Mann-Whitney U and Welch's t-test; Cliff's delta and Cohen's d, each with a percentile bootstrap 95% CI; a proportional-odds ordinal regression controlling for category, state, basket and value.</li>
-<li><strong>Simulated A/B test (02, Part B).</strong> Clearly labelled as simulated. The baseline (9.90% multi-item rate) and traffic (222 orders/day) are real 2018 values. It covers:</li>
-<li>power and sample size (a 10% MDE would take 135 days, so a 15% MDE over 9 weeks was planned);</li>
-<li>an SRM chi-square check;</li>
-<li>a two-proportion z-test with CI;</li>
-<li>a Beta-Binomial posterior with P(B&gt;A) and expected loss;</li>
-<li>guardrails resampled from real orders;</li>
-<li>peeking: 20 looks inflate the false-positive rate from 5% to 23%;</li>
-<li>a novelty-effect simulation.</li>
-<li><strong>Segmentation (03).</strong> RFM, then a log transform with frequency capped at 3, standardisation and K-Means. k = 5 was chosen from the elbow, the silhouette and business sense. The silhouette's k = 2 maximum only separates repeat buyers. Clusters are named by explicit rules on their profile, and the result is cross-checked against the SQL NTILE RFM.</li>
-<li><strong>Churn / repeat purchase (04).</strong></li>
-<li><strong>Split:</strong> time-based, with train cutoffs 2017-06-01 and 2017-09-01, test cutoff 2018-03-01, and a 180-day label window.</li>
-<li><strong>Point-in-time features:</strong> deliveries and reviews count only if they had happened by the cutoff.</li>
-<li><strong>Leakage:</strong> a dedicated "no leakage" section with a timeline figure, plus a unit test that scrambles post-cutoff data.</li>
-<li><strong>Models:</strong> a recency rule and logistic regression as baselines, against LightGBM.</li>
-<li><strong>Evaluation:</strong> PR-AUC and ROC-AUC with bootstrap CIs, lift and gain charts, SHAP.</li>
+<li>day differences use <code>CAST(a AS DATE) - CAST(b AS DATE)</code> rather than DuckDB's <code>date_diff</code>;</li>
+<li>months come from <code>CAST(date_trunc('month', ts) AS DATE)</code>;</li>
+<li><code>EXTRACT</code> results are cast to <code>INTEGER</code>, because Postgres returns <code>NUMERIC</code>;</li>
+<li>there is no <code>ROUND(double, n)</code>, which Postgres lacks; rounding happens in the runner;</li>
+<li>keyword matching uses <code>LOWER(...) LIKE</code> instead of <code>ILIKE</code> or regex.</li>
 </ul>
-<h3>Being candid about the churn model</h3>
-<p>Olist's repeat rate is about 3% overall and about 1.2% in a 180-day window, and the data has no browsing or marketing signals. No model here is strong: ROC-AUC is about 0.58–0.59, and the PR-AUC confidence intervals of LightGBM and logistic regression overlap. The model is still useful for ranking <strong>cheap</strong> retention actions, since its top decile holds about 2x the base rate. It should not be used to justify expensive per-customer offers, and an uplift holdout test should come before any incentive spend.</p>
-<h2>The dashboard</h2>
-<p><code>app/streamlit_app.py</code> has the following views:
-- KPI cards;
-- monthly GMV trend;
-- cohort retention heatmap;
-- segment explorer;
-- delivery-delay impact (by bucket and by state);
-- <strong>churn-risk lookup by <code>customer_unique_id</code></strong>, showing P(repeat in 180 days), decile, segment and the top-3 SHAP reasons.</p>
-<p>It reads only <code>app/data/</code> (about 4 MB of parquet and JSON, built by <code>scripts/build_app_data.py</code> and committed by the <code>build-data</code> workflow), so it starts quickly and needs no ML libraries at runtime.</p>
-<p align="center"><img src="results/figures/app_churn.png" width="80%" alt="Churn-risk lookup in the dashboard"></p>
+<p>The runner turns Postgres <code>NUMERIC</code> into floats and compares every cell with a 1e-6 relative tolerance. CI runs the comparison on the real data.</p></div><p class="sb-card__foot">Reproduce, data licence and deployment notes: the <a href="https://github.com/srini2k03/olist-ecommerce-analytics#readme">README on GitHub</a>.</p></article></div></section>
 
-<h3>Deploy the dashboard</h3>
-<p><strong>GitHub Pages (live, the default).</strong> <code>scripts/build_site.py</code> copies the app and its prebuilt data into <code>site/app/</code> with a <a href="https://github.com/whitphx/stlite">stlite</a> loader, which runs Streamlit on Pyodide in the browser. Before publishing, the Pages workflow renders it in headless Chromium (<code>scripts/smoke_browser_app.py</code>) and fails if it does not load.</p>
-<p><strong>Streamlit Community Cloud (optional).</strong> The repository also works as a normal Streamlit app:</p>
-<ol>
-<li><code>requirements.txt</code> sits <strong>at the repository root</strong> and contains only the app's runtime dependencies (streamlit, pandas, pyarrow, altair). The full analysis stack is in <code>requirements-dev.txt</code>.</li>
-<li>The entry point is <strong><code>app/streamlit_app.py</code></strong>.</li>
-<li>At share.streamlit.io, sign in with GitHub, click <strong>Create app</strong>, pick this repo and branch <code>main</code>, and set the main file path to <code>app/streamlit_app.py</code>. Under Advanced settings, choose Python 3.12 or later.</li>
-</ol>
-<h2>CI/CD</h2>
-<table>
-<thead>
-<tr>
-<th>Workflow</th>
-<th>What it proves or does</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>ci.yml</code></td>
-<td>It has four jobs. <strong>lint-test:</strong> ruff (lint and format) and pytest on a synthetic fixture, including Streamlit <code>AppTest</code> on the committed artefacts. <strong>sql-duckdb-postgres:</strong> fetches the real data, loads DuckDB and a Postgres 16 service container, runs all 16 queries on both, requires identical results, and checks that the committed <code>results/sql</code> snapshots match a fresh run. <strong>notebooks:</strong> executes all four notebooks on real data with nbconvert. <strong>streamlit-smoke:</strong> <code>streamlit run</code> driven by Playwright Chromium, using only <code>requirements.txt</code>.</td>
-</tr>
-<tr>
-<td><code>build-data.yml</code></td>
-<td>Fetches the real data, rebuilds SQL snapshots, executed notebooks, metrics, figures, app screenshots and <code>app/data</code>, and commits any changes.</td>
-</tr>
-<tr>
-<td><code>pages.yml</code></td>
-<td>Renders the executed notebooks to HTML together with the executive summary and the README figures, and publishes them to <code>gh-pages</code> with <code>peaceiris/actions-gh-pages@v4</code>.</td>
-</tr>
-</tbody>
-</table>
-<h2>Honesty notes</h2>
-<ul>
-<li>All results were produced locally on the real, checksum-verified dataset (Olist commit <code>d9e4980</code>) on 2026-11-03. CI recomputes them on every push.</li>
-<li><strong>The A/B test is simulated.</strong> Only its inputs are real. The notebook labels it as simulated in every heading.</li>
-<li>The review-text "sentiment" uses keyword proxies, not a trained classifier.</li>
-<li>The causal reading of the late-delivery effect rests on observational data plus controls. A promise-date experiment is the proper confirmation.</li>
-</ul>
-</body></html>
+</main>
+<footer class="sb-footer">
+  <div class="sb-container sb-footer__inner">
+    <div>
+      <p class="foot-name">© 2026 Srinivasan Balasubramanian</p>
+      <p>Static pages built by <code>scripts/build_site.py</code> from the committed README, summary, notebooks and results, published to GitHub Pages by the <code>pages</code> workflow. Data: Olist, <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>. Code: MIT.</p>
+    </div>
+    <p class="foot-links"><a href="https://srini2k03.github.io/">Portfolio</a><a href="https://github.com/srini2k03/olist-ecommerce-analytics">Repository</a><a href="app/">Dashboard</a></p>
+  </div>
+</footer>
+</body>
+</html>

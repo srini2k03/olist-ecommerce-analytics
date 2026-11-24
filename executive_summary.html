@@ -1,55 +1,90 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="en" class="no-js" data-theme="dark">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Executive summary</title>
-<style>
-:root { --ink:#0b0b0b; --muted:#52514e; --bg:#fcfcfb; --line:#e4e3df; --link:#2a78d6; }
-@media (prefers-color-scheme: dark) {
-  :root { --ink:#f0efec; --muted:#c3c2b7; --bg:#1a1a19; --line:#3a3a38; --link:#6da7ec; }
-  img { background:#fcfcfb; }
-}
-body { font: 16px/1.6 system-ui, -apple-system, Segoe UI, sans-serif; color:var(--ink);
-       background:var(--bg); max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
-a { color: var(--link); }
-img { max-width: 100%; height: auto; }
-table { border-collapse: collapse; display:block; overflow-x:auto; }
-th, td { border-bottom: 1px solid var(--line); padding: 4px 10px; text-align: left; }
-code { font-size: 0.92em; }
-nav { margin-bottom: 24px; color: var(--muted); }
-</style></head><body>
-<nav><a href="index.html">Home</a> · <a href="app/">Live dashboard</a> ·
-<a href="executive_summary.html">Executive summary</a> ·
-<a href="notebooks/01_eda.html">01_eda</a> · <a href="notebooks/02_stats.html">02_stats</a> · <a href="notebooks/03_segmentation.html">03_segmentation</a> · <a href="notebooks/04_churn.html">04_churn</a></nav>
-<h1>Executive summary: Olist marketplace, Jan 2017 to Aug 2018</h1>
-<p><strong>Bottom line.</strong> Olist more than doubled in a year (Jan–Aug 2018 GMV +140% on the same months of 2017), but <strong>growth flattened in 2018</strong> (mean month-on-month −1.0%). Almost nobody buys twice: <strong>3.0%</strong> of customers ever do. Further growth has to come from keeping customers. Our analysis points to <strong>late delivery</strong> as the main controllable reason they do not return.</p>
-<p><em>Scope:</em> 99,441 orders from the public Olist dataset. Figures come from executed SQL and notebooks in this repository. The A/B test in recommendation 4 is <strong>simulated</strong>, with inputs calibrated to real data.</p>
-<h2>Recommendations</h2>
-<p><strong>1. Make "delivered by the promised date" the top customer-experience KPI, and fix it lane by lane.</strong>
-- <strong>Finding:</strong> late orders average <strong>2.27★</strong>, against <strong>4.29★</strong> for on-time orders. Controlling for category, state, basket and value, being late cuts the odds of a better review about 15-fold (odds ratio <strong>0.068</strong>, 95% CI 0.063–0.074).
-- <strong>Where:</strong> late rates reach <strong>21.4%</strong> in Alagoas against <strong>4.5%</strong> in São Paulo, and the SP → RJ lane alone accounts for <strong>17.6% of all late orders</strong>.
-- <strong>Action:</strong> pad promised dates on high-risk north-east lanes. Customers tolerate slow delivery but punish late delivery; arriving 1–3 days late already drops the mean to 3.29★. Renegotiate or switch the SP → RJ carrier.
-- <strong>Size of the prize:</strong> if the 6.7% of late orders were reviewed like on-time ones, the platform's mean review would rise by about <strong>0.13★</strong> (6.7% × 2.02★).</p>
-<p><strong>2. Run a win-back programme for "At-risk big spenders" before day 365.</strong>
-- <strong>Finding:</strong> this K-Means segment is <strong>12.4% of customers but 38.6% of revenue</strong> (R$ 515 average spend, about 298 days since the last order). It has the <strong>lowest mean review of any segment (3.95)</strong>.
-- <strong>Action:</strong> send a personal offer in the category they bought, starting with an apology or credit where their order was late. This is the only segment where paid reactivation clearly pays.</p>
-<p><strong>3. Nudge recent buyers to a second order between day 30 and day 90.</strong>
-- <strong>Finding:</strong> month-1 retention is <strong>0.48%</strong>. Of the customers who do return, <strong>68%</strong> place their second order within 90 days and <strong>83%</strong> within 180 days.
-- <strong>Action:</strong> trigger a complementary-category bundle for "Recent mid-value buyers" (31.2% of customers, 31.4% of revenue) inside that window, and measure it against a holdout.</p>
-<p><strong>4. Do not launch a R$ 150 free-shipping threshold as designed. Test a better-targeted version, and run tests properly.</strong>
-- <strong>Finding (simulated, calibrated to real 2018 data):</strong> the threshold lifts the multi-item rate (+1.43 pp, p = 0.006). However, the freight subsidy costs <strong>R$ 9.60 per order</strong> against about <strong>R$ 1.44</strong> of extra GMV, because <strong>26%</strong> of orders already qualify.
-- <strong>Action:</strong> test a threshold just above typical single-item baskets, or a partial subsidy, and use margin as a guardrail.
-- <strong>Testing discipline:</strong>
-  - at 222 orders per day, plan about <strong>9-week</strong> tests (a 15% minimum detectable effect);
-  - <strong>do not peek</strong>: checking 20 times inflates the false-positive rate from 5% to <strong>23%</strong>;
-  - read results by week of exposure to strip out novelty effects.</p>
-<p><strong>5. Use the churn score only to prioritise cheap retention actions, and prove uplift first.</strong>
-- <strong>Finding:</strong> repeat purchase is hard to predict. On a later, held-out window, LightGBM reaches ROC-AUC <strong>0.581</strong> and PR-AUC <strong>0.020</strong> against a 1.18% base rate. Logistic regression performs about as well. Still, <strong>targeting the top 10% of customers ranked by the model captures 19.4% of next-180-day repeat buyers (1.94x lift)</strong>, against 15.4% for a "most recent first" rule.
-- <strong>Action:</strong> use the score for email and push to the top 10–20%. Run a randomised holdout before attaching discounts.</p>
-<h2>Caveats</h2>
-<ul>
+<script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.dataset.theme=(t==='light'||t==='dark')?t:'dark';}catch(e){document.documentElement.dataset.theme='dark';}document.documentElement.classList.remove('no-js');})();</script>
+<title>Executive summary · Olist analytics</title>
+<meta name="description" content="One-page executive summary: the bottom line and five recommendations from the Olist marketplace analysis.">
+<meta name="color-scheme" content="dark light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sb-kit.css">
+<link rel="stylesheet" href="site.css">
+<script src="sb-kit.js" defer></script>
+</head>
+<body class="sb-grain">
+<div class="sb-backdrop" aria-hidden="true"></div>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="sb-nav">
+  <div class="sb-container sb-nav__inner">
+    <a class="sb-brand" href="https://srini2k03.github.io/"><span class="sb-brand__mark">SB</span>
+      <span><span class="brand-name">Srinivasan B. </span><span class="sb-brand__sub"><span class="brand-slash">/ </span>Olist analytics</span></span></a>
+    <nav class="sb-nav__links" aria-label="Site">
+      <a class="sb-nav__link sb-nav__link--hide-sm" href="index.html#findings">Findings</a><a class="sb-nav__link sb-nav__link--hide-sm" href="executive_summary.html" aria-current=page>Summary</a><a class="sb-nav__link sb-nav__link--hide-sm" href="index.html#notebooks">Notebooks</a><a class="sb-nav__link sb-nav__link--hide-sm" href="app/">Dashboard</a>
+      <a class="sb-nav__link" href="https://github.com/srini2k03/olist-ecommerce-analytics">Code</a>
+      <button class="sb-icon-btn theme-btn" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="true"><svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button>
+    </nav>
+  </div>
+</header>
+<main id="main">
+
+<section class="sb-hero sb-hero--page" aria-labelledby="top-h">
+  <div class="sb-container sb-container--narrow">
+    <p class="sb-kicker"><span class="sb-kicker__index">Executive summary</span><span class="sb-kicker__rule"></span>Olist marketplace, Jan 2017 to Aug 2018</p>
+    <h1 class="sb-h1 sb-h1--page" id="top-h">Keep the customers you already
+      <span class="sb-serif">win</span>.</h1>
+    <div class="bottom-line sb-reveal"><p class="sb-label">Bottom line</p><p>Olist more than doubled in a year (Jan–Aug 2018 GMV +140% on the same months of 2017), but <strong>growth flattened in 2018</strong> (mean month-on-month −1.0%). Almost nobody buys twice: <strong>3.0%</strong> of customers ever do. Further growth has to come from keeping customers. Our analysis points to <strong>late delivery</strong> as the main controllable reason they do not return.</p></div>
+    <p class="scope"><em>Scope:</em> 99,441 orders from the public Olist dataset. Figures come from executed SQL and notebooks in this repository. The A/B test in recommendation 4 is <strong>simulated</strong>, with inputs calibrated to real data.</p>
+  </div>
+</section>
+<section class="sb-section sb-section--tight" aria-labelledby="recs-h">
+  <div class="sb-container sb-container--narrow">
+    <div class="section-head sb-reveal"><p class="sb-kicker"><span class="sb-kicker__index">01</span><span class="sb-kicker__rule"></span>Recommendations</p>
+      <h2 class="sb-h2" id="recs-h">Five <span class="sb-serif">recommendations</span>.</h2></div>
+    <div class="recs"><article class="sb-card rec sb-reveal" id="rec-1"><div class="rec__n" aria-hidden="true">01</div><div class="rec__main"><header class="rec__head"><h3 class="rec__title"><span class="sr-only">Recommendation 1: </span>Make "delivered by the promised date" the top customer-experience KPI, and fix it lane by lane.</h3></header><div class="rec__body"><ul>
+<li><strong>Finding</strong> Late orders average <strong>2.27★</strong>, against <strong>4.29★</strong> for on-time orders. Controlling for category, state, basket and value, being late cuts the odds of a better review about 15-fold (odds ratio <strong>0.068</strong>, 95% CI 0.063–0.074).</li>
+<li><strong>Where</strong> Late rates reach <strong>21.4%</strong> in Alagoas against <strong>4.5%</strong> in São Paulo, and the SP → RJ lane alone accounts for <strong>17.6% of all late orders</strong>.</li>
+<li><strong>Action</strong> Pad promised dates on high-risk north-east lanes. Customers tolerate slow delivery but punish late delivery; arriving 1–3 days late already drops the mean to 3.29★. Renegotiate or switch the SP → RJ carrier.</li>
+<li><strong>Size of the prize</strong> If the 6.7% of late orders were reviewed like on-time ones, the platform's mean review would rise by about <strong>0.13★</strong> (6.7% × 2.02★).</li>
+</ul></div></div></article><article class="sb-card rec sb-reveal" id="rec-2"><div class="rec__n" aria-hidden="true">02</div><div class="rec__main"><header class="rec__head"><h3 class="rec__title"><span class="sr-only">Recommendation 2: </span>Run a win-back programme for "At-risk big spenders" before day 365.</h3></header><div class="rec__body"><ul>
+<li><strong>Finding</strong> This K-Means segment is <strong>12.4% of customers but 38.6% of revenue</strong> (R$ 515 average spend, about 298 days since the last order). It has the <strong>lowest mean review of any segment (3.95)</strong>.</li>
+<li><strong>Action</strong> Send a personal offer in the category they bought, starting with an apology or credit where their order was late. This is the only segment where paid reactivation clearly pays.</li>
+</ul></div></div></article><article class="sb-card rec sb-reveal" id="rec-3"><div class="rec__n" aria-hidden="true">03</div><div class="rec__main"><header class="rec__head"><h3 class="rec__title"><span class="sr-only">Recommendation 3: </span>Nudge recent buyers to a second order between day 30 and day 90.</h3></header><div class="rec__body"><ul>
+<li><strong>Finding</strong> Month-1 retention is <strong>0.48%</strong>. Of the customers who do return, <strong>68%</strong> place their second order within 90 days and <strong>83%</strong> within 180 days.</li>
+<li><strong>Action</strong> Trigger a complementary-category bundle for "Recent mid-value buyers" (31.2% of customers, 31.4% of revenue) inside that window, and measure it against a holdout.</li>
+</ul></div></div></article><article class="sb-card rec sb-reveal" id="rec-4"><div class="rec__n" aria-hidden="true">04</div><div class="rec__main"><header class="rec__head"><h3 class="rec__title"><span class="sr-only">Recommendation 4: </span>Do not launch a R$ 150 free-shipping threshold as designed. Test a better-targeted version, and run tests properly.</h3><span class="sb-pill sb-pill--pending">Simulated input</span></header><div class="rec__body"><ul>
+<li><strong>Finding (simulated, calibrated to real 2018 data)</strong> The threshold lifts the multi-item rate (+1.43 pp, p = 0.006). However, the freight subsidy costs <strong>R$ 9.60 per order</strong> against about <strong>R$ 1.44</strong> of extra GMV, because <strong>26%</strong> of orders already qualify.</li>
+<li><strong>Action</strong> Test a threshold just above typical single-item baskets, or a partial subsidy, and use margin as a guardrail.</li>
+<li><strong>Testing discipline</strong><ul>
+<li>at 222 orders per day, plan about <strong>9-week</strong> tests (a 15% minimum detectable effect);</li>
+<li><strong>do not peek</strong>: checking 20 times inflates the false-positive rate from 5% to <strong>23%</strong>;</li>
+<li>read results by week of exposure to strip out novelty effects.</li>
+</ul>
+</li>
+</ul></div></div></article><article class="sb-card rec sb-reveal" id="rec-5"><div class="rec__n" aria-hidden="true">05</div><div class="rec__main"><header class="rec__head"><h3 class="rec__title"><span class="sr-only">Recommendation 5: </span>Use the churn score only to prioritise cheap retention actions, and prove uplift first.</h3></header><div class="rec__body"><ul>
+<li><strong>Finding</strong> Repeat purchase is hard to predict. On a later, held-out window, LightGBM reaches ROC-AUC <strong>0.581</strong> and PR-AUC <strong>0.020</strong> against a 1.18% base rate. Logistic regression performs about as well. Still, <strong>targeting the top 10% of customers ranked by the model captures 19.4% of next-180-day repeat buyers (1.94x lift)</strong>, against 15.4% for a "most recent first" rule.</li>
+<li><strong>Action</strong> Use the score for email and push to the top 10–20%. Run a randomised holdout before attaching discounts.</li>
+</ul></div></div></article></div>
+    <div class="sb-callout sb-callout--warn caveats sb-reveal" role="note"><div>
+      <p class="sb-label">Caveats</p><ul>
 <li>The data is observational, so the delivery-to-review link is strongly supported but not experimentally proven.</li>
 <li>Repeat-purchase signal is weak, with no browsing or marketing data available.</li>
 <li>Review "sentiment" relies on keyword proxies.</li>
-</ul>
-<p>Details: <a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/notebooks/">notebooks</a> · <a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/results/sql/">SQL snapshots</a> · dashboard: <code>app/streamlit_app.py</code>.</p>
-</body></html>
+</ul></div></div>
+    <p class="details sb-reveal">Details: <a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/notebooks">notebooks</a> · <a href="https://github.com/srini2k03/olist-ecommerce-analytics/tree/main/results/sql">SQL snapshots</a> · dashboard: <code>app/streamlit_app.py</code>.</p>
+  </div>
+</section>
+</main>
+<footer class="sb-footer">
+  <div class="sb-container sb-footer__inner">
+    <div>
+      <p class="foot-name">© 2026 Srinivasan Balasubramanian</p>
+      <p>Static pages built by <code>scripts/build_site.py</code> from the committed README, summary, notebooks and results, published to GitHub Pages by the <code>pages</code> workflow. Data: Olist, <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>. Code: MIT.</p>
+    </div>
+    <p class="foot-links"><a href="https://srini2k03.github.io/">Portfolio</a><a href="https://github.com/srini2k03/olist-ecommerce-analytics">Repository</a><a href="app/">Dashboard</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -14,10 +14,30 @@ import pandas as pd
 import streamlit as st
 
 DATA = Path(__file__).parent / "data"
-BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
-SEGMENT_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"]
+# Chart colours: the portfolio's dark chart tokens (https://srini2k03.github.io/). The page theme
+# itself (colours, Geist fonts) lives in .streamlit/config.toml.
+SERIES_1, SERIES_2, MUTED = "#1ea372", "#d96a33", "#5d6774"
+BG, GRID, ACCENT = "#07090c", "#1c222b", "#5eeaa8"
 
 st.set_page_config(page_title="Olist analytics", page_icon="📦", layout="wide")
+
+# A little CSS the theme options cannot express: headings, metric cards and the kicker label.
+st.html(
+    """<style>
+h1, h2, h3 { letter-spacing: -0.03em; }
+h1 { font-weight: 600 !important; }
+[data-testid="stMetric"] { background: #0d1117; border: 1px solid #232831; border-radius: 16px;
+  padding: 0.9rem 1.1rem; }
+[data-testid="stMetricLabel"] p { font-family: "Geist Mono", ui-monospace, monospace;
+  font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #8b95a3; }
+[data-testid="stMetricValue"] { font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+[data-testid="stMarkdownContainer"] p.sb-kicker { display: flex; flex-wrap: wrap;
+  align-items: center; gap: 0.75rem; margin: 0; font: 500 11px/1.4 "Geist Mono", ui-monospace,
+  monospace; letter-spacing: 0.2em; text-transform: uppercase; color: #8b95a3; }
+.sb-kicker .k-index { color: #ffb547; }
+.sb-kicker .k-rule { width: 2rem; height: 1px; background: rgba(255, 255, 255, 0.16); }
+</style>"""
+)
 
 
 @st.cache_data
@@ -39,6 +59,11 @@ def load():
 d = load()
 k = d["kpis"]
 
+st.markdown(
+    '<p class="sb-kicker"><span class="k-index">Analytics · Statistics</span>'
+    '<span class="k-rule"></span>Olist marketplace</p>',
+    unsafe_allow_html=True,
+)
 st.title("Olist marketplace analytics")
 st.caption(
     f"Brazilian e-commerce public dataset by Olist (CC BY-NC-SA 4.0), {k['period']}. "
@@ -60,7 +85,9 @@ tab_rev, tab_cohort, tab_seg, tab_delivery, tab_churn = st.tabs(
 with tab_rev:
     m = d["monthly"].assign(month=lambda x: pd.to_datetime(x["month"]))
     base = alt.Chart(m).encode(x=alt.X("month:T", title=None))
-    line = base.mark_line(color=BLUE, strokeWidth=2, point=alt.OverlayMarkDef(size=40)).encode(
+    line = base.mark_line(
+        color=SERIES_1, strokeWidth=2, point=alt.OverlayMarkDef(size=40, color=SERIES_1)
+    ).encode(
         y=alt.Y("gmv:Q", title="GMV (R$)", axis=alt.Axis(format="~s")),
         tooltip=[
             alt.Tooltip("month:T", format="%b %Y"),
@@ -91,14 +118,14 @@ with tab_cohort:
     c["retention_pct"] = c["retention"] * 100
     heat = (
         alt.Chart(c.query("months_since_first > 0"))
-        .mark_rect(stroke="white", strokeWidth=1)
+        .mark_rect(stroke=BG, strokeWidth=1)
         .encode(
             x=alt.X("months_since_first:O", title="Months since first purchase"),
             y=alt.Y("cohort_month:O", title="First-purchase cohort"),
             color=alt.Color(
                 "retention_pct:Q",
                 title="% returning",
-                scale=alt.Scale(scheme="blues", domain=[0, 0.8]),
+                scale=alt.Scale(range=[GRID, SERIES_1, ACCENT], domain=[0, 0.8]),
             ),
             tooltip=[
                 "cohort_month",
@@ -135,7 +162,9 @@ with tab_seg:
             yOffset="measure:N",
             x=alt.X("value:Q", title=None, axis=alt.Axis(format="%")),
             color=alt.Color(
-                "measure:N", scale=alt.Scale(range=[BLUE, ORANGE]), legend=alt.Legend(title=None)
+                "measure:N",
+                scale=alt.Scale(range=[SERIES_1, SERIES_2]),
+                legend=alt.Legend(title=None),
             ),
             tooltip=["segment", "measure", alt.Tooltip("value:Q", format=".1%")],
         )
@@ -177,7 +206,7 @@ with tab_seg:
         .encode(
             x=alt.X("recency_days:Q", title="Days since last order"),
             y=alt.Y("monetary:Q", title="Lifetime spend (R$, log)", scale=alt.Scale(type="log")),
-            color=alt.condition("datum.highlight", alt.value(ORANGE), alt.value("#c9c8c3")),
+            color=alt.condition("datum.highlight", alt.value(SERIES_2), alt.value(MUTED)),
             opacity=alt.condition("datum.highlight", alt.value(0.9), alt.value(0.35)),
             tooltip=[
                 "segment",
@@ -202,7 +231,9 @@ with tab_delivery:
             x=alt.X("delay_bucket:N", sort=list(dl["delay_bucket"]), title=None),
             y=alt.Y("avg_review:Q", title="Mean review (1-5)", scale=alt.Scale(domain=[0, 5])),
             color=alt.Color(
-                "status:N", scale=alt.Scale(range=[ORANGE, BLUE]), legend=alt.Legend(title=None)
+                "status:N",
+                scale=alt.Scale(range=[SERIES_2, SERIES_1]),
+                legend=alt.Legend(title=None),
             ),
             tooltip=[
                 "delay_bucket",
@@ -227,7 +258,7 @@ with tab_delivery:
     st.subheader("Late-delivery rate by customer state")
     st.altair_chart(
         alt.Chart(sla)
-        .mark_bar(color=BLUE, cornerRadiusEnd=3)
+        .mark_bar(color=SERIES_1, cornerRadiusEnd=3)
         .encode(
             y=alt.Y("customer_state:N", sort="-x", title=None),
             x=alt.X("late_rate:Q", title="Late rate", axis=alt.Axis(format="%")),
@@ -302,5 +333,7 @@ with tab_churn:
 st.divider()
 st.caption(
     "Code: MIT. Data: Olist, CC BY-NC-SA 4.0 (non-commercial). Built from the pinned public "
-    "dataset; see the repository README for methods and caveats."
+    "dataset; see the repository README for methods and caveats. "
+    "[Findings and notebooks](https://srini2k03.github.io/olist-ecommerce-analytics/) · "
+    "[Portfolio](https://srini2k03.github.io/) · © 2026 Srinivasan Balasubramanian"
 )
