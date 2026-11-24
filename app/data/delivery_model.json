@@ -1,0 +1,228 @@
+{
+  "splits": {
+    "train": {
+      "from": "2017-01-01",
+      "to_exclusive": "2018-01-01",
+      "orders": 43426
+    },
+    "valid": {
+      "from": "2018-01-01",
+      "to_exclusive": "2018-04-01",
+      "orders": 20627
+    },
+    "test": {
+      "from": "2018-04-01",
+      "to_exclusive": "2018-08-01",
+      "orders": 25799
+    }
+  },
+  "protocol": "candidates compared on the validation window only; the selected setting and the lane baseline are refitted on train+validation; the test window is scored once",
+  "censoring_undelivered_share": {
+    "2018-05": 0.0123,
+    "2018-06": 0.008,
+    "2018-07": 0.0124,
+    "2018-08": 0.0109,
+    "2018-09": 1.0
+  },
+  "features": {
+    "categorical": [
+      "customer_state",
+      "seller_state",
+      "category",
+      "lane"
+    ],
+    "numeric": [
+      "estimated_days",
+      "distance_km",
+      "same_state",
+      "n_items",
+      "n_sellers",
+      "item_revenue",
+      "freight_value",
+      "freight_ratio",
+      "weight_g",
+      "volume_cm3",
+      "purchase_month",
+      "purchase_dow",
+      "purchase_hour",
+      "orders_prev_7d",
+      "seller_past_orders",
+      "seller_past_avg_days",
+      "seller_past_late_rate",
+      "lane_past_orders",
+      "lane_past_avg_days",
+      "lane_past_late_rate"
+    ]
+  },
+  "params": {
+    "n_estimators": 2000,
+    "learning_rate": 0.03,
+    "num_leaves": 31,
+    "min_child_samples": 50,
+    "subsample": 0.8,
+    "subsample_freq": 1,
+    "colsample_bytree": 0.8,
+    "reg_lambda": 1.0,
+    "random_state": 42,
+    "n_jobs": 1,
+    "deterministic": true,
+    "force_col_wise": true
+  },
+  "selection": {
+    "regression": {
+      "l2_all_features": {
+        "valid_mae": 6.14415,
+        "best_iteration": 189
+      },
+      "l1_all_features": {
+        "valid_mae": 6.07949,
+        "best_iteration": 276
+      },
+      "l1_no_seasonal_level": {
+        "valid_mae": 6.08518,
+        "best_iteration": 799
+      },
+      "lane_history_mean (baseline)": {
+        "valid_mae": 6.56676
+      }
+    },
+    "classification": {
+      "all_features": {
+        "valid_pr_auc": 0.289106,
+        "best_iteration": 143
+      },
+      "no_seasonal_level": {
+        "valid_pr_auc": 0.264554,
+        "best_iteration": 131
+      },
+      "lane_history_rate (baseline)": {
+        "valid_pr_auc": 0.219212
+      }
+    }
+  },
+  "selected": {
+    "regression": "l1_all_features",
+    "classification": "all_features",
+    "n_estimators": {
+      "regressor": 276,
+      "classifier": 143
+    }
+  },
+  "regression_delivery_days": {
+    "olist_promise": {
+      "mae": 14.5641,
+      "mae_ci": [
+        14.4728,
+        14.6552
+      ],
+      "rmse": 16.6843,
+      "bias": 13.8643,
+      "within_3_days": 0.0574828
+    },
+    "lane_history_mean": {
+      "mae": 5.64889,
+      "mae_ci": [
+        5.5919,
+        5.70709
+      ],
+      "rmse": 7.27737,
+      "bias": 3.14151,
+      "within_3_days": 0.288306
+    },
+    "lightgbm": {
+      "mae": 5.20383,
+      "mae_ci": [
+        5.14351,
+        5.25698
+      ],
+      "rmse": 7.01686,
+      "bias": 2.81413,
+      "within_3_days": 0.359626
+    }
+  },
+  "classification_late": {
+    "lane_history_rate": {
+      "pr_auc": 0.0694433,
+      "pr_auc_ci": [
+        0.0618967,
+        0.0774976
+      ],
+      "roc_auc": 0.631448,
+      "brier": 0.0408638,
+      "precision_top10pct": 0.0670543,
+      "recall_top10pct": 0.168288,
+      "base_rate": 0.0398465
+    },
+    "lightgbm": {
+      "pr_auc": 0.123009,
+      "pr_auc_ci": [
+        0.10868,
+        0.141362
+      ],
+      "roc_auc": 0.731958,
+      "brier": 0.0473543,
+      "precision_top10pct": 0.141085,
+      "recall_top10pct": 0.354086,
+      "base_rate": 0.0398465
+    },
+    "lightgbm_regressor_vs_promise": {
+      "precision": 0.20155,
+      "recall": 0.101167,
+      "flagged_share": 0.0200008
+    }
+  },
+  "olist_promise_late_rate_test": 0.0398465,
+  "robustness_train_only": {
+    "description": "models (early-stopped on validation) and lane baseline fitted on the 2017 training window only, scored on the same test window",
+    "regression_mae": {
+      "lane_history_mean": 5.16175,
+      "lightgbm": 4.70596
+    },
+    "classification_pr_auc": {
+      "lane_history_rate": 0.0617573,
+      "lightgbm": 0.0997444
+    }
+  },
+  "importance_gain_classifier": {
+    "orders_prev_7d": 0.1996,
+    "lane": 0.1672,
+    "lane_past_late_rate": 0.112,
+    "estimated_days": 0.0972,
+    "lane_past_avg_days": 0.0638,
+    "category": 0.0602,
+    "purchase_month": 0.05,
+    "seller_past_avg_days": 0.0462,
+    "customer_state": 0.0366,
+    "lane_past_orders": 0.0295,
+    "distance_km": 0.0243,
+    "freight_value": 0.019
+  },
+  "importance_gain_regressor": {
+    "lane": 0.3398,
+    "lane_past_avg_days": 0.1251,
+    "estimated_days": 0.094,
+    "distance_km": 0.0737,
+    "category": 0.0713,
+    "orders_prev_7d": 0.063,
+    "seller_past_avg_days": 0.0584,
+    "same_state": 0.0236,
+    "purchase_month": 0.0211,
+    "customer_state": 0.0209,
+    "lane_past_orders": 0.0181,
+    "purchase_dow": 0.0149
+  },
+  "run_metadata": {
+    "data_fingerprint": "aa7b7c3b78b98584",
+    "versions": {
+      "python": "3.13.18",
+      "duckdb": "2.0.0",
+      "pandas": "3.1.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "lightgbm": "4.7.0",
+      "statsmodels": "0.15.0"
+    },
+    "seed": 42
+  }
+}

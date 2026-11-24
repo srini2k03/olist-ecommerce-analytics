@@ -1,0 +1,103 @@
+{
+  "late_vs_on_time_review": {
+    "late_mean": 2.27182,
+    "on_time_mean": 4.29059,
+    "n_late": 6381,
+    "n_on_time": 89443,
+    "diff": -2.01877,
+    "diff_ci": [
+      -2.05778,
+      -1.97924
+    ],
+    "cliffs_delta": -0.63798,
+    "states_same_sign": 21,
+    "states_tested": 21,
+    "categories_same_sign": 29,
+    "categories_tested": 29,
+    "source": "results/analytics/late_vs_on_time.json; SQL 25"
+  },
+  "growth": {
+    "gmv_jan_aug_2018_vs_2017": 1.40433,
+    "mean_mom_growth_feb_aug_2018": -0.010343,
+    "source": "SQL 01"
+  },
+  "repeat": {
+    "customers": 94693,
+    "repeat_customers": 2873,
+    "repeat_rate": 0.0303402,
+    "month1_retention": 0.00482573,
+    "same_day_second_orders": 0.301005,
+    "source": "SQL 10, SQL 12, results/analytics/retention_curve.csv"
+  },
+  "late_hotspot_lane": {
+    "lane": "SP -> RJ",
+    "share_of_all_late": 0.176309,
+    "source": "SQL 13"
+  },
+  "money_window": {
+    "item_revenue": 13449529.68,
+    "freight_value": 2238866.96,
+    "gmv": 15688396.64,
+    "payment_value": 15686469.07,
+    "source": "metrics_snapshot.json (2017-01 to 2018-08)"
+  },
+  "rfm_rule_based": {
+    "Champions": {
+      "customer_share": 0.0129918,
+      "revenue_share": 0.0252409
+    },
+    "Loyal, lapsing": {
+      "customer_share": 0.0173926,
+      "revenue_share": 0.031344
+    },
+    "New big spenders": {
+      "customer_share": 0.154164,
+      "revenue_share": 0.281959
+    },
+    "New low spenders": {
+      "customer_share": 0.232831,
+      "revenue_share": 0.10267
+    },
+    "Fading one-timers": {
+      "customer_share": 0.193445,
+      "revenue_share": 0.177555
+    },
+    "At-risk big spenders": {
+      "customer_share": 0.147374,
+      "revenue_share": 0.275018
+    },
+    "Lost one-timers": {
+      "customer_share": 0.241801,
+      "revenue_share": 0.106213
+    }
+  },
+  "kmeans_at_risk_big_spenders": {
+    "customer_share": 0.124033,
+    "revenue_share": 0.3858,
+    "source": "results/metrics/segments.json (notebook 03)"
+  },
+  "clv_holdout": {
+    "predicted_repeat_purchases": 739.232,
+    "actual_repeat_purchases": 720,
+    "baseline_repeat_purchases": 1273.82,
+    "source": "results/analytics/clv.json"
+  },
+  "ab_decision": {
+    "verdict": "do not ship",
+    "source": "results/analytics/ab_test.json"
+  },
+  "run_metadata": {
+    "data_fingerprint": "aa7b7c3b78b98584",
+    "versions": {
+      "python": "3.13.18",
+      "duckdb": "2.0.0",
+      "pandas": "3.1.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "lightgbm": "4.7.0",
+      "statsmodels": "0.15.0"
+    },
+    "seed": 42
+  }
+}

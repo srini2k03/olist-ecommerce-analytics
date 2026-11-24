@@ -38,7 +38,7 @@ which takes 10&ndash;30 seconds on the first visit.</p>
 </div></div>
 <script type="module">
 import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@1.10.0/build/stlite.js";
-const files = ["streamlit_app.py", "data/churn_scores.parquet", "data/cohort.parquet", "data/delivery_delay.parquet", "data/kpis.json", "data/model_card.json", "data/monthly.parquet", "data/segment_sample.parquet", "data/segments.parquet", "data/state_sla.parquet"];
+const files = ["streamlit_app.py", "dashboard/__init__.py", "dashboard/app.py", "dashboard/charts.py", "dashboard/data.py", "dashboard/pages_business.py", "dashboard/pages_customers.py", "dashboard/pages_experiments.py", "dashboard/pages_operations.py", "dashboard/ui.py", "olist/__init__.py", "olist/config.py", "olist/metrics.py", "olist/scenarios.py", "olist/stats/__init__.py", "olist/stats/core.py", "olist/analytics/__init__.py", "olist/analytics/cohorts.py", "olist/analytics/delivery.py", "olist/analytics/rfm.py", "olist/analytics/sellers.py", "olist/experiments/__init__.py", "olist/experiments/decision.py", "olist/experiments/simulator.py", "data/ab_test.json", "data/churn_scores.parquet", "data/clv.json", "data/clv_by_segment.parquet", "data/data_quality.json", "data/delivery_model.json", "data/findings.json", "data/items.parquet", "data/metrics.json", "data/metrics_snapshot.json", "data/model_card.json", "data/orders.parquet", "data/retention_curve.parquet", "data/segment_sample.parquet", "data/segments.parquet", "data/seller_ranking.json", "data/sellers.parquet"];
 mount(
   {
     requirements: ["altair", "pyarrow"],
