@@ -161,7 +161,7 @@ Sidebar filters (purchase months, customer state, category, seller state, seller
 
 ## Benchmarks
 
-`python scripts/benchmark.py` times every stage in a fresh process (so peak memory is per stage) and every query as a median of 10 runs after a warm-up. Numbers below: [`results/benchmarks/benchmark_local.json`](results/benchmarks/benchmark_local.json) (commit eeaf14d, dev sandbox, 4 vCPU), [`benchmark_local_e70f19e.json`](results/benchmarks/benchmark_local_e70f19e.json) (before the two optimisations below, with the Postgres slow paths) and [`dashboard_load.json`](results/benchmarks/dashboard_load.json). `benchmark.yml` reruns it on a GitHub runner.
+`python scripts/benchmark.py` times every stage in a fresh process (so peak memory is per stage) and every query as a median of 10 runs after a warm-up. Numbers below: [`results/benchmarks/benchmark_local.json`](results/benchmarks/benchmark_local.json) (commit eeaf14d, dev sandbox, 4 vCPU), [`benchmark_local_e70f19e.json`](results/benchmarks/benchmark_local_e70f19e.json) (before the two optimisations below, with the Postgres slow paths) and [`dashboard_load.json`](results/benchmarks/dashboard_load.json). The `benchmark.yml` run on a GitHub `ubuntu-latest` runner ([`benchmark_ci.json`](results/benchmarks/benchmark_ci.json), commit fb7e406, run 45382820658) agrees: DuckDB load 2.7 s, build 3.0 s, query median 15 ms; Postgres build 9.3 s, query median 126 ms; the two Postgres slow paths 203.5 s vs 0.12 s and 223 s vs 2.6 s.
 
 | Stage | DuckDB | Postgres 16 |
 |---|---:|---:|
@@ -178,7 +178,7 @@ Sidebar filters (purchase months, customer state, category, seller state, seller
 | Query 14 (review text): `LOWER()` once in a CTE instead of in 16 `LIKE`s | 454 ms (Postgres) | 307 ms; DuckDB unchanged (85 ms) |
 | Metric layer `compute_all` on 99k orders (cache of shared subsets) | 203 ms | 56 ms |
 
-Dashboard: the bundle is 6.97 MB and loads in 0.13 s; a rerun with the default filters costs 12 ms of filtering, 56 ms for all metrics, 27 ms for the cohort matrix, 64 ms for RFM and 72 ms for the seller ranking (server-side Python). Clicking through the pages takes 1.4–1.8 s each under `streamlit run` locally and 1.8–2.9 s each in the browser (stlite, Pages run 45380021360), both including a fixed 1.0–1.2 s settle wait in the test; the first in-browser render takes 14.4 s while Pyodide starts.
+Dashboard: the bundle is 6.97 MB and loads in 0.13 s; a rerun with the default filters costs 12 ms of filtering, 56 ms for all metrics, 27 ms for the cohort matrix, 64 ms for RFM and 72 ms for the seller ranking (server-side Python). Clicking through the pages takes 1.4–1.8 s each under `streamlit run` locally and 1.8–2.3 s each in the browser (stlite, Pages run 45383762159), both including a fixed 1.0–1.2 s settle wait in the test; the first in-browser render takes 10.2 s while Pyodide starts (14.4 s in the earlier run 45380021360).
 
 ## Tests
 
