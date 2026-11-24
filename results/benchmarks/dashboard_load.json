@@ -3,7 +3,7 @@
   "streamlit_run_local": {
     "source": "python scripts/smoke_app.py --width 1280 --report ...",
     "machine": "dev sandbox (4 vCPU, 15 GB)",
-    "git_sha": "eeaf14d",
+    "git_sha": "4ada9c5",
     "date_utc": "2026-11-24",
     "timings_s": {
       "first_render_s": 4.21,
@@ -20,7 +20,7 @@
     }
   },
   "stlite_pages_ci": {
-    "source": "GitHub Actions Pages workflow run 45380021360 (job 138396330084), commit e70f19e, scripts/smoke_browser_app.py on ubuntu-latest; the dashboard runs in Pyodide in Chromium",
+    "source": "GitHub Actions Pages workflow run 45380021360 (job 138396330084), commit 5143091, scripts/smoke_browser_app.py on ubuntu-latest; the dashboard runs in Pyodide in Chromium",
     "date_utc": "2026-11-24",
     "timings_s": {
       "first_render_s": 14.4,
@@ -37,7 +37,7 @@
     }
   },
   "stlite_pages_ci_latest": {
-    "source": "GitHub Actions Pages workflow run 45383762159, commit 07ea1b5, scripts/smoke_browser_app.py on ubuntu-latest",
+    "source": "GitHub Actions Pages workflow run 45383762159, commit 78bef46, scripts/smoke_browser_app.py on ubuntu-latest",
     "date_utc": "2026-11-24",
     "timings_s": {
       "first_render_s": 10.2,

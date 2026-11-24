@@ -1,7 +1,7 @@
 {
   "environment": {
     "date_utc": "2026-11-24 11:18",
-    "git_sha": "fb7e406",
+    "git_sha": "300cf02",
     "machine": "GitHub Actions ubuntu-latest",
     "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
     "cpus": 4,
