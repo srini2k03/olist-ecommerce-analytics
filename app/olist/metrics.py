@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import math
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -88,8 +89,25 @@ def _flag(s: pd.Series) -> pd.Series:
     return s.fillna(0).astype("int8").eq(1)
 
 
+# Within one compute_all call the same subsets (valid, delivered, reviewed orders) are needed
+# by many metrics; this cache, keyed by the frame's id, thread-local (Streamlit serves sessions
+# in threads) and alive only during that call, avoids re-filtering 100k rows per metric
+# (timings in results/benchmarks).
+_LOCAL = threading.local()
+
+
+def _memo(kind: str, frame: pd.DataFrame, make):
+    cache = getattr(_LOCAL, "subsets", None)
+    if cache is None:
+        return make()
+    key = (kind, id(frame))
+    if key not in cache:
+        cache[key] = make()
+    return cache[key]
+
+
 def _valid(o: pd.DataFrame) -> pd.DataFrame:
-    return o[_flag(o["is_valid"])]
+    return _memo("valid", o, lambda: o[_flag(o["is_valid"])])
 
 
 def _money_frame(o: pd.DataFrame, items: pd.DataFrame | None) -> pd.DataFrame:
@@ -106,12 +124,12 @@ def _mean(s: pd.Series) -> float:
 
 
 def _delivered(o: pd.DataFrame) -> pd.DataFrame:
-    return o[_flag(o["is_valid"]) & _flag(o["is_delivered"])]
+    return _memo("delivered", o, lambda: o[_flag(o["is_valid"]) & _flag(o["is_delivered"])])
 
 
 def _reviewed(o: pd.DataFrame) -> pd.DataFrame:
     v = _valid(o)
-    return v[v["review_score"].notna()]
+    return _memo("reviewed", o, lambda: v[v["review_score"].notna()])
 
 
 def monthly_gmv(o: pd.DataFrame, items: pd.DataFrame | None = None) -> pd.Series:
@@ -229,7 +247,11 @@ def compute_all(
     assumptions: dict[str, float] | None = None,
     names: list[str] | None = None,
 ) -> dict[str, float]:
-    return {n: compute(n, orders, items, assumptions) for n in (names or list(REGISTRY))}
+    _LOCAL.subsets = {}
+    try:
+        return {n: compute(n, orders, items, assumptions) for n in (names or list(REGISTRY))}
+    finally:
+        _LOCAL.subsets = None
 
 
 # ---------------------------------------------------------------------------- formatting

@@ -216,9 +216,15 @@ def faster_delivery(
             "review_gap", b.review_on_time - b.review_late, "On-time minus late review", "observed"
         ),
         Input(
-            "repeat_gap",
-            b.repeat_rate_after_on_time - b.repeat_rate_after_late,
-            "Repeat within 180 days after an on-time vs a late first order",
+            "repeat_after_on_time",
+            b.repeat_rate_after_on_time,
+            "Repeat within 180 days after an on-time first order",
+            "observed",
+        ),
+        Input(
+            "repeat_after_late",
+            b.repeat_rate_after_late,
+            "Repeat within 180 days after a late first order",
             "observed",
         ),
     ]
