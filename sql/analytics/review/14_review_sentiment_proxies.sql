@@ -6,37 +6,34 @@
 -- Expected output: 5 rows (1 to 5 stars) with comment share, mean comment length and the
 --   three mention rates. Delivery mentions should dominate low scores.
 -- Dialect notes: LOWER(...) LIKE instead of ILIKE or regex, which differ across engines.
-WITH flagged AS (
+WITH reviews AS (
+    -- Lower-case each comment once; repeating LOWER() in every LIKE made this the slowest
+    -- query in the benchmark.
+    SELECT review_score, has_comment, LOWER(comment_message) AS msg
+    FROM fct_reviews
+),
+flagged AS (
     SELECT
         review_score,
         has_comment,
-        LENGTH(LOWER(comment_message)) AS comment_length,
+        LENGTH(msg) AS comment_length,
         CASE
-            WHEN LOWER(comment_message) LIKE '%não recebi%'
-                OR LOWER(comment_message) LIKE '%nao recebi%'
-                OR LOWER(comment_message) LIKE '%atras%'
-                OR LOWER(comment_message) LIKE '%ainda não%'
-                OR LOWER(comment_message) LIKE '%entreg%' THEN 1.0
+            WHEN msg LIKE '%não recebi%' OR msg LIKE '%nao recebi%' OR msg LIKE '%atras%'
+                OR msg LIKE '%ainda não%' OR msg LIKE '%entreg%' THEN 1.0
             ELSE 0.0
         END AS mentions_delivery,
         CASE
-            WHEN LOWER(comment_message) LIKE '%defeito%'
-                OR LOWER(comment_message) LIKE '%quebrad%'
-                OR LOWER(comment_message) LIKE '%errad%'
-                OR LOWER(comment_message) LIKE '%falsificad%' THEN 1.0
+            WHEN msg LIKE '%defeito%' OR msg LIKE '%quebrad%' OR msg LIKE '%errad%'
+                OR msg LIKE '%falsificad%' THEN 1.0
             ELSE 0.0
         END AS mentions_product_problem,
         CASE
-            WHEN LOWER(comment_message) LIKE '%recomendo%'
-                OR LOWER(comment_message) LIKE '%ótimo%'
-                OR LOWER(comment_message) LIKE '%otimo%'
-                OR LOWER(comment_message) LIKE '%excelente%'
-                OR LOWER(comment_message) LIKE '%perfeito%'
-                OR LOWER(comment_message) LIKE '%rápid%'
-                OR LOWER(comment_message) LIKE '%rapid%' THEN 1.0
+            WHEN msg LIKE '%recomendo%' OR msg LIKE '%ótimo%' OR msg LIKE '%otimo%'
+                OR msg LIKE '%excelente%' OR msg LIKE '%perfeito%' OR msg LIKE '%rápid%'
+                OR msg LIKE '%rapid%' THEN 1.0
             ELSE 0.0
         END AS mentions_praise
-    FROM fct_reviews
+    FROM reviews
 )
 SELECT
     review_score,
