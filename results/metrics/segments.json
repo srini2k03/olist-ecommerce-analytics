@@ -5,49 +5,49 @@
     {
       "k": 2,
       "inertia": 190671.29901809862,
-      "silhouette": 0.7130747363012937,
+      "silhouette": 0.7130747363012934,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 3,
-      "inertia": 125690.03190494285,
-      "silhouette": 0.35911832659291915,
+      "inertia": 125690.03190494284,
+      "silhouette": 0.35911832659291704,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 4,
       "inertia": 84493.78260903354,
-      "silhouette": 0.37021029088330454,
+      "silhouette": 0.3702102908833005,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 5,
       "inertia": 68800.62485812831,
-      "silhouette": 0.3528152153195827,
+      "silhouette": 0.352815215319577,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 6,
       "inertia": 57551.37378488343,
-      "silhouette": 0.3427976598862855,
+      "silhouette": 0.34279765988627825,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 7,
       "inertia": 48830.92935790084,
-      "silhouette": 0.356870707457871,
+      "silhouette": 0.3568707074578598,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 8,
-      "inertia": 43165.80930843876,
-      "silhouette": 0.34749209387056407,
+      "inertia": 43165.80930843875,
+      "silhouette": 0.3474920938705501,
       "smallest_cluster_share": 0.03038438457408168
     },
     {
       "k": 9,
-      "inertia": 39264.30622120888,
-      "silhouette": 0.34711115294238815,
+      "inertia": 39264.30622120887,
+      "silhouette": 0.3471111529423734,
       "smallest_cluster_share": 0.03038438457408168
     }
   ],
