@@ -1,0 +1,259 @@
+/* olist-ecommerce-analytics site: project rules on top of sb-kit.css (the portfolio's design kit). */
+:root { --project: var(--amber); }
+
+/* ---------- Chrome ---------- */
+.skip-link {
+  position: absolute; left: 1rem; top: -3rem; z-index: 100; padding: 0.5rem 0.8rem; border-radius: 8px;
+  background: var(--accent); color: var(--accent-ink); font-weight: 600; text-decoration: none;
+}
+.skip-link:focus { top: 0.6rem; }
+.sb-brand > span:last-child { white-space: nowrap; }
+@media (max-width: 480px) { .brand-name, .brand-slash { display: none; } }
+.theme-btn { width: 2.5rem; height: 2.5rem; margin-left: 0.25rem; }
+.theme-btn .icon-sun { display: none; }
+:root[data-theme="light"] .theme-btn .icon-sun { display: block; }
+:root[data-theme="light"] .theme-btn .icon-moon { display: none; }
+.sb-nav__link { min-height: 2.5rem; display: inline-flex; align-items: center; }
+main { display: block; }
+code { font-size: 0.88em; padding: 0.08em 0.35em; border-radius: 5px; background: var(--surface-strong); color: var(--fg-soft); }
+a code { color: inherit; }
+.sb-btn svg { flex: none; }
+
+/* ---------- Hero ---------- */
+.sb-hero .sb-kicker { flex-wrap: wrap; row-gap: 0.6rem; line-height: 1.4; }
+.sb-hero .sb-kicker__index { white-space: nowrap; }
+.hero-note { margin: 0.9rem 0 0; font: 400 11.5px/1.5 var(--font-mono); color: var(--muted); }
+.hero-stats { margin-top: 3rem; }
+.sb-hero--page { padding-bottom: 2rem; }
+.sb-h1--page { font-size: clamp(2.2rem, 5.4vw, 3.9rem); }
+
+/* ---------- Sections & layout ---------- */
+.sb-section { border-top: 1px solid var(--border); }
+.sb-section--tight { padding-top: 3.5rem; }
+.section-head { margin-bottom: 2.25rem; }
+.sb-container--narrow { max-width: 56rem; }
+.stack { display: grid; gap: 1.25rem; margin-top: 1.25rem; }
+.stack--tight { margin-top: 0; align-content: start; }
+.split { display: grid; gap: 1.5rem; align-items: start; }
+@media (min-width: 960px) { .split { grid-template-columns: 1.15fr 1fr; gap: 2.5rem; } }
+.stack > *, .split > *, .sb-grid-2 > *, .fig-grid > *, .finding-grid > *, .nb-grid > * { min-width: 0; }
+.card-head { display: grid; gap: 0.1rem; margin-bottom: 1rem; }
+.sb-card__foot a { color: var(--fg-soft); text-underline-offset: 3px; }
+
+/* Prose rendered from markdown */
+.prose { color: var(--fg-soft); font-size: 15px; line-height: 1.7; }
+.prose > * + * { margin-top: 0.9rem; }
+.prose p { margin: 0; }
+.prose strong { color: var(--fg); font-weight: 600; }
+.prose ul, .prose ol { margin: 0.6rem 0 0; padding-left: 1.2rem; }
+.prose li + li { margin-top: 0.4rem; }
+.prose li > ul { margin-top: 0.4rem; }
+.prose li::marker { color: var(--project); }
+.prose a, .sb-callout a, .finding a, .rec a, .details a { color: var(--fg); text-decoration-color: color-mix(in srgb, var(--project) 60%, transparent); text-underline-offset: 3px; }
+.prose a:hover, .sb-callout a:hover, .finding a:hover, .rec a:hover { text-decoration-color: var(--project); }
+.prose--table .sb-table-wrap { margin: 1rem -0.25rem; }
+.sb-table td { vertical-align: top; }
+.sb-table td:nth-child(odd) { color: var(--project); font-family: var(--font-mono); white-space: nowrap; }
+.sql-card { margin-top: 1.25rem; }
+
+/* Callouts holding markdown */
+.sb-callout > div { min-width: 0; }
+.sb-callout .sb-label { margin-bottom: 0.5rem; }
+.sb-callout p, .sb-callout ul { margin: 0; }
+.sb-callout ul { padding-left: 1.1rem; }
+.sb-callout li + li { margin-top: 0.35rem; }
+.sb-callout p + p, .sb-callout p + ul { margin-top: 0.5rem; }
+.sb-callout--info .sb-label { color: var(--project); }
+.sb-callout--warn .sb-label { color: var(--pending); }
+
+/* ---------- Findings ---------- */
+.finding-grid { display: grid; gap: 1.25rem; }
+@media (min-width: 860px) { .finding-grid { grid-template-columns: 1fr 1fr; } }
+.finding { display: flex; flex-direction: column; gap: 0.75rem; }
+@media (min-width: 860px) { .finding:last-child:nth-child(odd) { grid-column: 1 / -1; } }
+.finding__top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.finding__n { font: 500 11px/1 var(--font-mono); letter-spacing: 0.2em; color: var(--project); }
+.finding__title { margin: 0; font-size: 1.2rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; color: var(--fg); }
+.finding__body { margin: 0; color: var(--fg-soft); font-size: 14.5px; line-height: 1.65; }
+.finding__body strong { color: var(--fg); font-weight: 600; }
+.finding__ev { margin: auto 0 0; padding-top: 0.75rem; border-top: 1px solid var(--border); font: 400 12px/1.6 var(--font-mono); color: var(--muted); }
+.finding__ev .sb-label { margin-right: 0.5rem; }
+
+/* ---------- Figures (matplotlib PNGs on a light plate) ---------- */
+.fig-grid { display: grid; gap: 1.25rem; margin-top: 1.25rem; }
+@media (min-width: 860px) { .fig-grid { grid-template-columns: 1fr 1fr; } }
+.fig-card { margin: 0; display: flex; flex-direction: column; }
+.fig-plate { flex: 1; display: grid; place-items: center; padding: 0.75rem; border-radius: 10px; background: #fcfcfb; border: 1px solid var(--border); cursor: zoom-in; }
+.fig-plate img { display: block; width: 100%; height: auto; }
+:root[data-theme="dark"] .fig-plate { border-color: transparent; }
+.stack > .fig-card .fig-plate { padding: 0; overflow: hidden; background: #0e1117; }
+
+/* ---------- Notebook cards ---------- */
+.nb-grid { display: grid; gap: 1.25rem; }
+@media (min-width: 640px) { .nb-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1100px) { .nb-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.duo { margin-top: 1.25rem; }
+.nb-card { display: flex; flex-direction: column; gap: 0.55rem; text-decoration: none; color: inherit; transition: border-color 0.2s var(--ease), transform 0.2s var(--ease); }
+.nb-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.nb-card__n { font: 500 11px/1 var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--project); }
+.nb-card__title { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; color: var(--fg); }
+.nb-card__text { font-size: 13.5px; line-height: 1.6; color: var(--muted); }
+.nb-card__go { margin-top: auto; padding-top: 0.5rem; font-size: 13px; color: var(--fg-soft); }
+.nb-card:hover .nb-card__go { color: var(--fg); }
+
+/* ---------- Executive summary ---------- */
+.bottom-line { margin-top: 2rem; padding: 1.25rem 1.4rem; border-radius: var(--radius); border: 1px solid color-mix(in srgb, var(--project) 35%, transparent); background: color-mix(in srgb, var(--project) 7%, var(--bg-elev)); }
+.bottom-line .sb-label { color: var(--project); margin: 0 0 0.6rem; }
+.bottom-line p:last-child { margin: 0; font-size: clamp(1.02rem, 1.7vw, 1.15rem); line-height: 1.7; color: var(--fg-soft); }
+.bottom-line strong { color: var(--fg); font-weight: 600; }
+.scope { margin: 1rem 0 0; font-size: 13.5px; color: var(--muted); }
+.scope strong { color: var(--fg-soft); }
+.recs { display: grid; gap: 1.25rem; }
+.rec { display: grid; gap: 0.5rem 1.25rem; }
+@media (min-width: 720px) { .rec { grid-template-columns: 3.5rem 1fr; } }
+.rec__n { font: 400 2.4rem/1 var(--font-serif); font-style: italic; color: var(--project); }
+.rec__main { min-width: 0; }
+.rec__head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0.5rem 1rem; }
+.rec__title { margin: 0; flex: 1 1 18rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.015em; line-height: 1.35; color: var(--fg); }
+.rec__body { margin-top: 0.9rem; color: var(--fg-soft); font-size: 14.5px; line-height: 1.65; }
+.rec__body > ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.7rem; }
+.rec__body > ul > li { padding: 0.75rem 0 0; border-top: 1px solid var(--border); }
+.rec__body > ul > li > strong:first-child { display: block; margin-bottom: 0.2rem; font: 500 10.5px/1.4 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+.rec__body strong { color: var(--fg); font-weight: 600; }
+.rec__body li ul { margin: 0.4rem 0 0; padding-left: 1.1rem; }
+.rec__body li ul li + li { margin-top: 0.3rem; }
+.rec__body li ul li::marker { color: var(--project); }
+.caveats { margin-top: 1.5rem; }
+.details { margin: 1.25rem 0 0; font-size: 13px; color: var(--muted); }
+
+/* ---------- Notebook pages ---------- */
+.nb-shell { padding-top: 2.5rem; padding-bottom: 1rem; max-width: 64rem; }
+.nb-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1rem; padding-bottom: 1.25rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+.nb-bar .sb-kicker { margin: 0; flex-wrap: wrap; row-gap: 0.5rem; }
+.nb-bar__links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; }
+.nb-bar__links .sb-btn { min-height: 2.5rem; }
+.pager { display: grid; gap: 1rem; margin-top: 3rem; }
+@media (min-width: 640px) { .pager { grid-template-columns: 1fr 1fr; } }
+.pager__item { display: grid; gap: 0.35rem; text-decoration: none; color: inherit; }
+.pager__item--next { text-align: right; }
+.pager__item:hover { border-color: var(--border-strong); }
+.pager__title { font-weight: 600; color: var(--fg); }
+.pager__item--empty { display: none; }
+@media (min-width: 640px) { .pager__item--empty { display: block; } }
+
+/* JupyterLab variables mapped onto the portfolio tokens (both themes follow automatically). */
+.nb {
+  --jp-layout-color0: transparent;
+  --jp-layout-color1: transparent;
+  --jp-layout-color2: var(--surface);
+  --jp-layout-color3: var(--surface-strong);
+  --jp-ui-font-color0: var(--fg);
+  --jp-ui-font-color1: var(--fg-soft);
+  --jp-ui-font-color2: var(--muted);
+  --jp-ui-font-color3: var(--faint);
+  --jp-content-font-color0: var(--fg);
+  --jp-content-font-color1: var(--fg-soft);
+  --jp-content-font-color2: var(--muted);
+  --jp-content-font-color3: var(--faint);
+  --jp-content-link-color: var(--fg);
+  --jp-border-color0: var(--border-strong);
+  --jp-border-color1: var(--border);
+  --jp-border-color2: var(--border);
+  --jp-border-color3: var(--border);
+  --jp-cell-editor-background: var(--surface);
+  --jp-cell-editor-border-color: var(--border);
+  --jp-cell-editor-active-background: var(--surface-strong);
+  --jp-cell-prompt-not-active-font-color: var(--faint);
+  --jp-cell-inprompt-font-color: var(--faint);
+  --jp-cell-outprompt-font-color: var(--faint);
+  --jp-rendermime-table-row-background: transparent;
+  --jp-rendermime-table-row-hover-background: var(--surface);
+  --jp-rendermime-error-background: color-mix(in srgb, var(--danger) 10%, transparent);
+  --jp-content-font-family: var(--font-sans);
+  --jp-ui-font-family: var(--font-sans);
+  --jp-code-font-family: var(--font-mono);
+  --jp-code-font-family-default: var(--font-mono);
+  --jp-content-font-size1: 15px;
+  --jp-code-font-size: 12.5px;
+  --jp-code-line-height: 1.6;
+  --jp-mirror-editor-keyword-color: var(--violet);
+  --jp-mirror-editor-atom-color: var(--blue);
+  --jp-mirror-editor-number-color: var(--amber);
+  --jp-mirror-editor-def-color: var(--blue);
+  --jp-mirror-editor-variable-color: var(--fg-soft);
+  --jp-mirror-editor-variable-2-color: var(--fg-soft);
+  --jp-mirror-editor-variable-3-color: var(--fg-soft);
+  --jp-mirror-editor-punctuation-color: var(--muted);
+  --jp-mirror-editor-property-color: var(--fg-soft);
+  --jp-mirror-editor-operator-color: var(--rose);
+  --jp-mirror-editor-comment-color: var(--faint);
+  --jp-mirror-editor-string-color: var(--accent);
+  --jp-mirror-editor-string-2-color: var(--accent);
+  --jp-mirror-editor-meta-color: var(--violet);
+  --jp-mirror-editor-qualifier-color: var(--blue);
+  --jp-mirror-editor-builtin-color: var(--blue);
+  --jp-mirror-editor-bracket-color: var(--muted);
+  --jp-mirror-editor-tag-color: var(--violet);
+  --jp-mirror-editor-attribute-color: var(--blue);
+  --jp-mirror-editor-header-color: var(--fg);
+  --jp-mirror-editor-quote-color: var(--accent);
+  --jp-mirror-editor-link-color: var(--blue);
+  --jp-mirror-editor-error-color: var(--danger);
+  --jp-mirror-editor-hr-color: var(--border);
+  color: var(--fg-soft);
+  font-family: var(--font-sans);
+}
+.nb.jp-Notebook { padding: 0; background: transparent; overflow: visible; }
+.nb .jp-Cell { padding: 0; margin: 0 0 1.1rem; }
+.nb .jp-InputPrompt, .nb .jp-OutputPrompt { display: none; }
+.nb .jp-InputArea, .nb .jp-OutputArea-child { display: block; }
+.nb .jp-InputArea { overflow: visible; }
+.nb .jp-InputArea-editor { display: block; width: 100%; max-width: 100%; box-sizing: border-box; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); overflow-x: auto; }
+.nb .jp-InputArea-editor .highlight { background: transparent; }
+.nb .jp-InputArea-editor pre { padding: 0.8rem 1rem !important; font-size: 12.5px; line-height: 1.6; }
+.nb .highlight .k, .nb .highlight .o, .nb .highlight .kn, .nb .highlight .ow { font-weight: 500; }
+.nb .jp-OutputArea { margin-top: 0.6rem; }
+.nb .jp-OutputArea-output { overflow-x: auto; }
+.nb .jp-RenderedText pre { margin: 0; padding: 0.6rem 0.9rem; border-left: 2px solid var(--border-strong); font-size: 12px; line-height: 1.55; color: var(--muted); white-space: pre-wrap; word-break: break-word; }
+.nb .jp-RenderedText[data-mime-type="application/vnd.jupyter.stderr"] pre { border-left-color: var(--pending); }
+
+/* Markdown cells */
+.nb .jp-RenderedMarkdown { padding: 0; font-size: 15.5px; line-height: 1.7; color: var(--fg-soft); }
+.nb .jp-RenderedHTMLCommon { padding-right: 0; }
+.nb .jp-RenderedMarkdown h1 { margin: 0.5rem 0 1.25rem; font-size: clamp(1.9rem, 4.2vw, 2.8rem); font-weight: 600; line-height: 1.08; letter-spacing: -0.035em; color: var(--fg); text-wrap: balance; }
+.nb .jp-RenderedMarkdown h2 { margin: 2.75rem 0 0.75rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: clamp(1.4rem, 2.6vw, 1.8rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.025em; color: var(--fg); }
+.nb .jp-RenderedMarkdown h3 { margin: 1.75rem 0 0.5rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.015em; color: var(--fg); }
+.nb .jp-RenderedMarkdown h4 { margin: 1.25rem 0 0.4rem; font-size: 1rem; font-weight: 600; color: var(--fg); }
+.nb .jp-RenderedMarkdown p, .nb .jp-RenderedMarkdown li { color: var(--fg-soft); }
+.nb .jp-RenderedMarkdown strong { color: var(--fg); font-weight: 600; }
+.nb .jp-RenderedMarkdown li::marker { color: var(--project); }
+.nb .jp-RenderedMarkdown a { color: var(--fg); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--project) 60%, transparent); text-underline-offset: 3px; }
+.nb .jp-RenderedMarkdown code { font-size: 0.86em; background: var(--surface-strong); color: var(--fg-soft); padding: 0.08em 0.35em; border-radius: 5px; overflow-wrap: anywhere; }
+.nb .jp-RenderedMarkdown { min-width: 0; overflow-wrap: break-word; }
+.nb .jp-RenderedMarkdown blockquote { margin: 1rem 0; padding: 0.75rem 1rem; border-left: 2px solid var(--project); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: color-mix(in srgb, var(--project) 6%, transparent); color: var(--fg-soft); }
+.nb .jp-RenderedMarkdown hr { border: 0; border-top: 1px solid var(--border); }
+.nb a.anchor-link { display: none; }
+
+/* Tables (dataframes and markdown) */
+.nb .nb-table { max-width: 100%; overflow-x: auto; margin: 0.4rem 0; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-elev); }
+.nb .jp-RenderedHTMLCommon table { margin: 0; border: 0; border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; color: var(--fg-soft); table-layout: auto; }
+.nb .jp-RenderedHTMLCommon th { font: 500 10.5px/1.3 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); background: transparent; border-bottom: 1px solid var(--border-strong); padding: 0.55rem 0.75rem; }
+.nb .jp-RenderedHTMLCommon td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+.nb .jp-RenderedHTMLCommon tbody tr:nth-child(odd) { background: transparent; }
+.nb .jp-RenderedHTMLCommon tbody tr:hover { background: var(--surface); }
+.nb .jp-RenderedHTMLCommon tbody th { color: var(--fg-soft); text-transform: none; letter-spacing: 0; font-size: 12px; }
+.nb .jp-RenderedHTMLCommon tr:last-child td, .nb .jp-RenderedHTMLCommon tr:last-child th { border-bottom: 0; }
+.nb .jp-RenderedMarkdown .nb-table td { font-family: var(--font-sans); white-space: normal; font-size: 13px; }
+
+/* Charts: matplotlib PNGs on a framed light plate */
+.nb .jp-RenderedImage { padding: 0; }
+.nb .jp-RenderedImage img { display: block; max-width: 100%; height: auto; margin: 0.25rem 0; padding: 0.75rem; border-radius: var(--radius-sm); background: #fcfcfb; border: 1px solid var(--border); box-sizing: border-box; }
+:root[data-theme="dark"] .nb .jp-RenderedImage img { border-color: transparent; }
+
+/* ---------- Footer ---------- */
+.sb-footer { margin-top: 0; }
+.foot-name { color: var(--fg); font-weight: 500; margin: 0 0 0.35rem; }
+.sb-footer p { margin: 0; max-width: 42rem; }
+.sb-footer code { font-size: 0.95em; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+.foot-links a { display: inline-flex; align-items: center; min-height: 2.5rem; }

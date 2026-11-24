@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" class="no-js" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+$anti_flash
+<title>$title</title>
+<meta name="description" content="$desc">
+<meta name="color-scheme" content="dark light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="$fonts" rel="stylesheet">
+$head<link rel="stylesheet" href="${up}sb-kit.css">
+<link rel="stylesheet" href="${up}site.css">
+<script src="${up}sb-kit.js" defer></script>
+</head>
+<body class="sb-grain">
+<div class="sb-backdrop" aria-hidden="true"></div>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="sb-nav">
+  <div class="sb-container sb-nav__inner">
+    <a class="sb-brand" href="$portfolio"><span class="sb-brand__mark">SB</span>
+      <span><span class="brand-name">Srinivasan B. </span><span class="sb-brand__sub"><span class="brand-slash">/ </span>Olist analytics</span></span></a>
+    <nav class="sb-nav__links" aria-label="Site">
+      $links
+      <a class="sb-nav__link" href="$repo">Code</a>
+      <button class="sb-icon-btn theme-btn" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="true">$theme_icons</button>
+    </nav>
+  </div>
+</header>
+<main id="main">
+$body
+</main>
+<footer class="sb-footer">
+  <div class="sb-container sb-footer__inner">
+    <div>
+      <p class="foot-name">© 2026 Srinivasan Balasubramanian</p>
+      <p>Static pages built by <code>scripts/build_site.py</code> from the committed README, summary, notebooks and results, published to GitHub Pages by the <code>pages</code> workflow. Data: Olist, <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>. Code: MIT.</p>
+    </div>
+    <p class="foot-links"><a href="$portfolio">Portfolio</a><a href="$repo">Repository</a><a href="${up}app/">Dashboard</a></p>
+  </div>
+</footer>
+</body>
+</html>

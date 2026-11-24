@@ -2,6 +2,8 @@ name: Pages
 
 # Publishes the executed notebooks as HTML, the executive summary, the README
 # (with its figures) and the in-browser Streamlit dashboard to the gh-pages branch.
+# The pages use the portfolio design kit in web/; the dashboard theme comes from
+# .streamlit/config.toml.
 on:
   workflow_dispatch:
   push:
@@ -14,6 +16,8 @@ on:
       - "scripts/build_site.py"
       - "scripts/smoke_browser_app.py"
       - "app/**"
+      - "web/**"
+      - ".streamlit/**"
   workflow_run:
     workflows: ["Build data"]
     types: [completed]

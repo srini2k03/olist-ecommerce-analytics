@@ -4,5 +4,24 @@ headless = true
 [browser]
 gatherUsageStats = false
 
+# Theme: the portfolio's dark design tokens (https://srini2k03.github.io/). Streamlit Cloud and
+# `streamlit run` read this file; scripts/build_site.py passes the same [theme] table to stlite,
+# so the in-browser dashboard on GitHub Pages looks the same.
 [theme]
-primaryColor = "#2a78d6"
+base = "dark"
+primaryColor = "#5eeaa8"
+backgroundColor = "#07090c"
+secondaryBackgroundColor = "#0d1117"
+textColor = "#eef1f5"
+linkColor = "#5eeaa8"
+borderColor = "#232831"
+showWidgetBorder = true
+baseRadius = "10px"
+buttonRadius = "10px"
+font = "Geist:https://fonts.googleapis.com/css2?family=Geist:wght@300..700&display=swap"
+headingFont = "Geist:https://fonts.googleapis.com/css2?family=Geist:wght@300..700&display=swap"
+codeFont = "'Geist Mono':https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400..600&display=swap"
+codeBackgroundColor = "#0d1117"
+dataframeHeaderBackgroundColor = "#0d1117"
+metricValueFontSize = "1.75rem"
+metricValueFontWeight = 600
