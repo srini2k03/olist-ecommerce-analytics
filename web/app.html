@@ -41,7 +41,7 @@ import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@$version/bui
 const files = $files;
 mount(
   {
-    requirements: ["altair", "pyarrow"],
+    requirements: $requirements,
     entrypoint: "streamlit_app.py",
     files: Object.fromEntries(files.map((f) => [f, { url: f }])),
     streamlitConfig: $config,

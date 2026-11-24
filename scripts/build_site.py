@@ -564,12 +564,46 @@ def streamlit_theme() -> dict:
     return out
 
 
-def build_browser_app() -> None:
-    """Copy the dashboard and its prebuilt data into site/app and add a stlite loader."""
+# The pure-Python parts of the olist package the dashboard imports (pandas/numpy only; no
+# SciPy, scikit-learn, DuckDB or LightGBM in the browser). tests/test_app.py checks that
+# this list covers every olist module the dashboard loads.
+APP_MODULES = (
+    "olist/__init__.py",
+    "olist/config.py",
+    "olist/metrics.py",
+    "olist/scenarios.py",
+    "olist/stats/__init__.py",
+    "olist/stats/core.py",
+    "olist/analytics/__init__.py",
+    "olist/analytics/cohorts.py",
+    "olist/analytics/delivery.py",
+    "olist/analytics/rfm.py",
+    "olist/analytics/sellers.py",
+    "olist/experiments/__init__.py",
+    "olist/experiments/decision.py",
+    "olist/experiments/simulator.py",
+)
+STLITE_REQUIREMENTS = ["altair", "pyarrow"]
+
+
+def build_browser_app() -> list[str]:
+    """Copy the dashboard, the olist modules it needs and its data into site/app, and write
+    the stlite loader. Returns the list of files mounted in the browser."""
     app_out = OUT / "app"
     (app_out / "data").mkdir(parents=True)
-    shutil.copy2(ROOT / "app" / "streamlit_app.py", app_out / "streamlit_app.py")
-    files = ["streamlit_app.py"]
+    files = []
+    for f in [
+        ROOT / "app" / "streamlit_app.py",
+        *sorted((ROOT / "app" / "dashboard").glob("*.py")),
+    ]:
+        rel = f.relative_to(ROOT / "app").as_posix()
+        (app_out / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(f, app_out / rel)
+        files.append(rel)
+    for rel in APP_MODULES:
+        (app_out / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / "src" / rel, app_out / rel)
+        files.append(rel)
     for f in sorted((ROOT / "app" / "data").iterdir()):
         if f.is_file():
             shutil.copy2(f, app_out / "data" / f.name)
@@ -578,11 +612,13 @@ def build_browser_app() -> None:
         APP_TEMPLATE.substitute(
             version=STLITE_VERSION,
             files=json.dumps(files),
+            requirements=json.dumps(STLITE_REQUIREMENTS),
             config=json.dumps(streamlit_theme()),
             fonts=FONTS,
         ),
         encoding="utf-8",
     )
+    return files
 
 
 # ---------------------------------------------------------------------------- main

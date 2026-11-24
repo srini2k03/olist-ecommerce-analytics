@@ -4,6 +4,10 @@ headless = true
 [browser]
 gatherUsageStats = false
 
+[client]
+# Hide the "Deploy" button and developer menu entries for viewers.
+toolbarMode = "viewer"
+
 # Theme: the portfolio's dark design tokens (https://srini2k03.github.io/). Streamlit Cloud and
 # `streamlit run` read this file; scripts/build_site.py passes the same [theme] table to stlite,
 # so the in-browser dashboard on GitHub Pages looks the same.

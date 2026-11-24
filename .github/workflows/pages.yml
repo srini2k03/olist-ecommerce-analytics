@@ -15,6 +15,7 @@ on:
       - "EXECUTIVE_SUMMARY.md"
       - "scripts/build_site.py"
       - "scripts/smoke_browser_app.py"
+      - "src/olist/**"
       - "app/**"
       - "web/**"
       - ".streamlit/**"
@@ -40,7 +41,11 @@ jobs:
       - run: python scripts/build_site.py
       # The in-browser dashboard (stlite) must actually render before publishing.
       - run: pip install playwright==1.64.1 && python -m playwright install --with-deps chromium
-      - run: python scripts/smoke_browser_app.py --screenshot site/app-screenshot.png
+      - name: Render the in-browser dashboard and open all 10 pages
+        run: >-
+          python scripts/smoke_browser_app.py --screenshot site/app-screenshot.png
+          --report site/app-timings.json
+          --pages "Revenue,Customers,Cohort retention,RFM segments,Sellers,Delivery,Products,A/B testing,Business simulation,Executive overview"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

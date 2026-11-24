@@ -1,0 +1,334 @@
+{
+  "label": "SIMULATED experiment calibrated on real 2018 orders; effects are assumptions",
+  "baseline": {
+    "period": "2018-01-01/2018-09-01",
+    "daily_orders": 220.288,
+    "multi_item_rate": 0.0990473,
+    "qualifying_share_at_threshold": 0.244909
+  },
+  "result": {
+    "simulated": true,
+    "assumptions": {
+      "threshold": 150.0,
+      "lift_multi_item": 0.15,
+      "lift_orders": 0.0,
+      "take_rate": 0.1,
+      "payment_cost_rate": 0.02,
+      "review_shift": 0.0
+    },
+    "design": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "mde_rel": 0.15,
+      "share_treatment": 0.5,
+      "duration_days": null,
+      "seed": 42
+    },
+    "plan": {
+      "baseline_multi_item_rate": 0.0990473,
+      "daily_orders": 220.288,
+      "n_per_arm_required": 6763,
+      "days_required": 62,
+      "duration_days": 62,
+      "n_per_arm_planned": 6828,
+      "power_at_planned_n": 0.803796
+    },
+    "n_a": 6796,
+    "n_b": 6862,
+    "days": 62,
+    "srm_p_value": 0.572249,
+    "primary_multi_item_rate": {
+      "p_a": 0.104915,
+      "p_b": 0.112358,
+      "diff": 0.00744326,
+      "diff_ci": [
+        -0.00299293,
+        0.0178794
+      ],
+      "rel_lift": 0.0709458,
+      "z": 1.39757,
+      "p_value": 0.162241,
+      "cohens_h": 0.0239226,
+      "prob_b_better": 0.9164,
+      "expected_loss_choose_b": 0.000210089
+    },
+    "secondary": {
+      "aov_customer": {
+        "mean_a": 162.276,
+        "mean_b": 152.217,
+        "diff": -10.0589,
+        "diff_ci": [
+          -16.8353,
+          -3.28261
+        ],
+        "diff_ci_bootstrap": [
+          -17.0016,
+          -3.60628
+        ],
+        "p_value": 0.00362105,
+        "cohens_d": -0.0498022
+      },
+      "item_value_per_order": {
+        "mean_a": 138.835,
+        "mean_b": 137.834,
+        "diff": -1.00104,
+        "diff_ci": [
+          -7.66818,
+          5.66611
+        ],
+        "diff_ci_bootstrap": [
+          -7.73648,
+          5.42487
+        ],
+        "p_value": 0.768545,
+        "cohens_d": -0.0050365
+      },
+      "items_per_order": {
+        "mean_a": 1.15583,
+        "mean_b": 1.152,
+        "diff": -0.00383045,
+        "diff_ci": [
+          -0.0225188,
+          0.0148579
+        ],
+        "diff_ci_bootstrap": [
+          -0.0217709,
+          0.0137447
+        ],
+        "p_value": 0.687888,
+        "cohens_d": -0.00687606
+      }
+    },
+    "guardrails": {
+      "review_score": {
+        "mean_a": 4.11663,
+        "mean_b": 4.10748,
+        "diff": -0.00914755,
+        "diff_ci": [
+          -0.0541233,
+          0.0358282
+        ],
+        "diff_ci_bootstrap": [
+          -0.056132,
+          0.0384274
+        ],
+        "p_value": 0.690163,
+        "cohens_d": -0.00684374
+      }
+    },
+    "economics": {
+      "qualifying_share_control": 0.246027,
+      "qualifying_share_treatment": 0.249636,
+      "subsidy_per_treatment_order": 9.35462,
+      "subsidy_per_month_at_rollout": 61821.3,
+      "incremental_item_value_per_order": -1.00104,
+      "incremental_gmv_per_month_at_rollout": -66475.9,
+      "contribution_per_order_control": 10.6379,
+      "contribution_per_order_treatment": 1.3844,
+      "incremental_contribution_per_month_at_rollout": -61153.3,
+      "incremental_contribution_per_order": {
+        "mean_a": 10.6379,
+        "mean_b": 1.3844,
+        "diff": -9.25354,
+        "diff_ci": [
+          -9.86106,
+          -8.64602
+        ],
+        "diff_ci_bootstrap": [
+          -9.84732,
+          -8.61529
+        ],
+        "p_value": 0.0,
+        "cohens_d": -0.510624
+      },
+      "prob_contribution_positive": 0.0,
+      "incremental_contribution_per_month_ci": [
+        -65063.7,
+        -57108.4
+      ]
+    }
+  },
+  "decision": {
+    "verdict": "do not ship",
+    "reasons": [
+      "Multi-item rate 10.49% -> 11.24% (p = 0.162, P(B>A) = 91.6%).",
+      "Review guardrail: -0.009 stars (95% CI -0.054 to +0.036).",
+      "Incremental contribution at rollout: R$ -61,153/month (95% CI R$ -65,064 to R$ -57,108; P(> 0) = 0%); subsidy R$ 9.35 per treatment order."
+    ],
+    "checks": {
+      "no_sample_ratio_mismatch": true,
+      "primary_metric_improved": false,
+      "guardrail_review_ok": false,
+      "contribution_positive": false
+    },
+    "rules": {
+      "srm_alpha": 0.001,
+      "alpha": 0.05,
+      "guardrail_review_tolerance": 0.05,
+      "min_prob_contribution_positive": 0.8
+    }
+  },
+  "sensitivity_grid": [
+    {
+      "lift_multi_item": 0.0,
+      "take_rate": 0.05,
+      "incremental_contribution_month": -59048.6
+    },
+    {
+      "lift_multi_item": 0.0,
+      "take_rate": 0.1,
+      "incremental_contribution_month": -59048.6
+    },
+    {
+      "lift_multi_item": 0.0,
+      "take_rate": 0.15,
+      "incremental_contribution_month": -59048.6
+    },
+    {
+      "lift_multi_item": 0.0,
+      "take_rate": 0.2,
+      "incremental_contribution_month": -59048.6
+    },
+    {
+      "lift_multi_item": 0.1,
+      "take_rate": 0.05,
+      "incremental_contribution_month": -60234.2
+    },
+    {
+      "lift_multi_item": 0.1,
+      "take_rate": 0.1,
+      "incremental_contribution_month": -59899.8
+    },
+    {
+      "lift_multi_item": 0.1,
+      "take_rate": 0.15,
+      "incremental_contribution_month": -59565.3
+    },
+    {
+      "lift_multi_item": 0.1,
+      "take_rate": 0.2,
+      "incremental_contribution_month": -59230.8
+    },
+    {
+      "lift_multi_item": 0.2,
+      "take_rate": 0.05,
+      "incremental_contribution_month": -61377.6
+    },
+    {
+      "lift_multi_item": 0.2,
+      "take_rate": 0.1,
+      "incremental_contribution_month": -60754.8
+    },
+    {
+      "lift_multi_item": 0.2,
+      "take_rate": 0.15,
+      "incremental_contribution_month": -60132.0
+    },
+    {
+      "lift_multi_item": 0.2,
+      "take_rate": 0.2,
+      "incremental_contribution_month": -59509.3
+    },
+    {
+      "lift_multi_item": 0.3,
+      "take_rate": 0.05,
+      "incremental_contribution_month": -62640.4
+    },
+    {
+      "lift_multi_item": 0.3,
+      "take_rate": 0.1,
+      "incremental_contribution_month": -61536.4
+    },
+    {
+      "lift_multi_item": 0.3,
+      "take_rate": 0.15,
+      "incremental_contribution_month": -60432.5
+    },
+    {
+      "lift_multi_item": 0.3,
+      "take_rate": 0.2,
+      "incremental_contribution_month": -59328.5
+    },
+    {
+      "lift_multi_item": 0.5,
+      "take_rate": 0.05,
+      "incremental_contribution_month": -64851.1
+    },
+    {
+      "lift_multi_item": 0.5,
+      "take_rate": 0.1,
+      "incremental_contribution_month": -62938.3
+    },
+    {
+      "lift_multi_item": 0.5,
+      "take_rate": 0.15,
+      "incremental_contribution_month": -61025.5
+    },
+    {
+      "lift_multi_item": 0.5,
+      "take_rate": 0.2,
+      "incremental_contribution_month": -59112.7
+    }
+  ],
+  "tornado": [
+    {
+      "assumption": "threshold",
+      "low": 100.0,
+      "high": 250.0,
+      "at_low": -90055.3,
+      "at_high": -33257.8,
+      "swing": 56797.5,
+      "centre": -60289.2
+    },
+    {
+      "assumption": "lift_multi_item",
+      "low": 0.0,
+      "high": 0.3,
+      "at_low": -59048.6,
+      "at_high": -61536.4,
+      "swing": 2487.82,
+      "centre": -60289.2
+    },
+    {
+      "assumption": "take_rate",
+      "low": 0.05,
+      "high": 0.2,
+      "at_low": -60775.3,
+      "at_high": -59316.9,
+      "swing": 1458.42,
+      "centre": -60289.2
+    },
+    {
+      "assumption": "payment_cost_rate",
+      "low": 0.01,
+      "high": 0.03,
+      "at_low": -60794.1,
+      "at_high": -59784.3,
+      "swing": 1009.76,
+      "centre": -60289.2
+    },
+    {
+      "assumption": "lift_orders",
+      "low": -0.02,
+      "high": 0.05,
+      "at_low": -60496.6,
+      "at_high": -59770.7,
+      "swing": 725.874,
+      "centre": -60289.2
+    }
+  ],
+  "run_metadata": {
+    "data_fingerprint": "aa7b7c3b78b98584",
+    "versions": {
+      "python": "3.13.18",
+      "duckdb": "2.0.0",
+      "pandas": "3.1.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "lightgbm": "4.7.0",
+      "statsmodels": "0.15.0"
+    },
+    "seed": 42
+  }
+}

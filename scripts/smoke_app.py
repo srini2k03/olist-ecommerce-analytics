@@ -1,14 +1,20 @@
-"""End-to-end smoke test: start `streamlit run` and drive the page with Playwright.
+"""End-to-end smoke test: start `streamlit run` and click through all 10 dashboard pages.
 
-Usage: python scripts/smoke_app.py [--screenshot results/figures/app_screenshot.png]
-Set PLAYWRIGHT_CHROMIUM_EXECUTABLE to use a system Chrome instead of the
-Playwright-managed browser.
+Usage:
+    python scripts/smoke_app.py [--screenshot results/figures/app_overview.png]
+                                [--shots-dir DIR] [--width 1280] [--report timings.json]
+
+Fails on any Streamlit exception or browser error. With --screenshot it saves the overview
+there and the churn-risk lookup next to it as <stem>_churn.png (the README figures). With
+--shots-dir it saves every page. Set PLAYWRIGHT_CHROMIUM_EXECUTABLE to use a system Chrome.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -17,6 +23,8 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "app"))
+TITLE = "Olist marketplace analytics"
 
 
 def free_port() -> int:
@@ -37,56 +45,119 @@ def wait_for(url: str, timeout: float = 90) -> None:
     raise TimeoutError(f"{url} did not come up")
 
 
+def page_titles() -> list[str]:
+    from dashboard.app import PAGES
+
+    return [p[0] for p in PAGES]
+
+
+def settle(page, ms: int = 600) -> None:
+    """Wait until Streamlit has finished running the script (no 'Running...' status)."""
+    page.wait_for_timeout(ms)
+    page.locator("[data-testid='stStatusWidget']").wait_for(state="hidden", timeout=120_000)
+    page.wait_for_timeout(ms)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--screenshot", type=Path, default=None)
+    parser.add_argument("--shots-dir", type=Path, default=None)
+    parser.add_argument("--width", type=int, default=1400)
+    parser.add_argument("--theme", choices=["dark", "light"], default="dark")
+    parser.add_argument("--report", type=Path, default=None)
     args = parser.parse_args()
 
     from playwright.sync_api import sync_playwright
 
     port = free_port()
-    proc = subprocess.Popen(  # noqa: S603
-        [
-            sys.executable,
-            "-m",
-            "streamlit",
-            "run",
-            "app/streamlit_app.py",
-            "--server.port",
-            str(port),
-            "--server.headless",
-            "true",
-        ],
-        cwd=ROOT,
-    )
+    cmd = [
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        "app/streamlit_app.py",
+        "--server.port",
+        str(port),
+        "--server.headless",
+        "true",
+    ]
+    if args.theme == "light":
+        cmd += [
+            "--theme.base",
+            "light",
+            "--theme.backgroundColor",
+            "#f6f6f2",
+            "--theme.secondaryBackgroundColor",
+            "#ffffff",
+            "--theme.textColor",
+            "#0c0f14",
+            "--theme.primaryColor",
+            "#0a7d52",
+            "--theme.borderColor",
+            "#e3e4e0",
+            "--theme.codeBackgroundColor",
+            "#ffffff",
+            "--theme.dataframeHeaderBackgroundColor",
+            "#ffffff",
+            "--theme.linkColor",
+            "#0a7d52",
+        ]
+    proc = subprocess.Popen(cmd, cwd=ROOT)  # noqa: S603
+    timings: dict[str, float] = {}
     try:
         wait_for(f"http://127.0.0.1:{port}/_stcore/health")
         exe = os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE") or None
         with sync_playwright() as p:
             browser = p.chromium.launch(executable_path=exe)
-            page = browser.new_page(viewport={"width": 1400, "height": 1000})
+            height = 1000 if args.width >= 800 else 844
+            if args.shots_dir and args.width >= 800:
+                # Streamlit scrolls inside its own container, so a tall viewport is the
+                # simplest way to capture whole pages.
+                height = 3400
+            page = browser.new_page(viewport={"width": args.width, "height": height})
             errors: list[str] = []
             page.on("pageerror", lambda e: errors.append(str(e)))
+            t0 = time.perf_counter()
             page.goto(f"http://127.0.0.1:{port}/", wait_until="networkidle")
-            page.get_by_text("Olist marketplace analytics").first.wait_for(timeout=60_000)
-            page.get_by_text("GMV").first.wait_for()
+            page.get_by_role("heading", name=TITLE).first.wait_for(timeout=90_000)
+            settle(page)
+            timings["first_render_s"] = round(time.perf_counter() - t0, 2)
             if args.screenshot:
-                page.wait_for_timeout(3000)
                 args.screenshot.parent.mkdir(parents=True, exist_ok=True)
                 page.screenshot(path=str(args.screenshot), full_page=False)
-            for tab in ["Cohort retention", "Segments", "Delivery impact", "Churn-risk lookup"]:
-                page.get_by_role("tab", name=tab).click()
-                page.wait_for_timeout(800)
-            page.get_by_text("P(repeat in 180 days)").first.wait_for(timeout=30_000)
-            if args.screenshot:
-                page.wait_for_timeout(1500)
-                churn_png = args.screenshot.with_name(args.screenshot.stem + "_churn.png")
-                page.screenshot(path=str(churn_png), full_page=False)
-            if page.locator("[data-testid='stException']").count():
-                raise RuntimeError("Streamlit rendered an exception")
+            for title in page_titles():
+                t1 = time.perf_counter()
+                if args.width < 800:  # the sidebar is collapsed on phones
+                    page.get_by_test_id("stExpandSidebarButton").click()
+                    page.wait_for_timeout(400)
+                page.get_by_role("link", name=title).first.click()
+                heading = TITLE if title == "Executive overview" else title
+                page.get_by_role("heading", name=heading).first.wait_for(timeout=120_000)
+                settle(page)
+                timings[f"page:{title}"] = round(time.perf_counter() - t1, 2)
+                if page.locator("[data-testid='stException']").count():
+                    text = page.locator("[data-testid='stException']").first.inner_text()
+                    raise RuntimeError(f"Streamlit exception on {title!r}: {text[:800]}")
+                if args.shots_dir:
+                    args.shots_dir.mkdir(parents=True, exist_ok=True)
+                    slug = re.sub(r"[^a-z0-9]+", "_", title.lower()).strip("_")
+                    page.screenshot(
+                        path=str(args.shots_dir / f"{args.width}-{args.theme}-{slug}.png"),
+                        full_page=True,
+                    )
+                if title == "Customers" and args.screenshot:
+                    page.get_by_text("P(repeat in 180 days)").first.wait_for(timeout=30_000)
+                    page.get_by_text("Churn-risk lookup").first.scroll_into_view_if_needed()
+                    page.wait_for_timeout(800)
+                    churn = args.screenshot.with_name(args.screenshot.stem + "_churn.png")
+                    page.screenshot(path=str(churn), full_page=False)
             if errors:
                 raise RuntimeError(f"browser errors: {errors}")
             browser.close()
+        print("timings:", json.dumps(timings))
+        if args.report:
+            args.report.parent.mkdir(parents=True, exist_ok=True)
+            args.report.write_text(json.dumps(timings, indent=2))
         print("smoke test passed")
         return 0
     finally:

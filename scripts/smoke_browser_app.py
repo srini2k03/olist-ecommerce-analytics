@@ -82,8 +82,12 @@ def main() -> int:
                 for label in [x.strip() for x in args.pages.split(",") if x.strip()]:
                     t1 = time.perf_counter()
                     page.get_by_role("link", name=label).first.click()
-                    page.get_by_role("heading", name=label).first.wait_for(timeout=120_000)
-                    page.wait_for_timeout(1500)
+                    heading = TITLE if label == "Executive overview" else label
+                    page.get_by_role("heading", name=heading).first.wait_for(timeout=120_000)
+                    page.wait_for_timeout(500)
+                    status = page.locator("[data-testid='stStatusWidget']")
+                    status.wait_for(state="hidden", timeout=180_000)
+                    page.wait_for_timeout(500)
                     timings[f"page:{label}"] = round(time.perf_counter() - t1, 2)
                     if page.locator(".stException").count():
                         print(f"FAIL: exception on page {label!r}")

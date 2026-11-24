@@ -1,0 +1,441 @@
+{
+ "version": 1,
+ "assumptions": {
+  "take_rate": {
+   "value": 0.1,
+   "label": "Marketplace commission on item revenue",
+   "source": "assumption",
+   "note": "Olist's commission and fees are not in the dataset. 10% is an illustrative value for a marketplace take rate; change it in the dashboard's simulation pages."
+  },
+  "payment_cost_rate": {
+   "value": 0.02,
+   "label": "Payment processing cost as a share of payment value",
+   "source": "assumption",
+   "note": "Not in the dataset; illustrative card/boleto processing cost."
+  }
+ },
+ "metrics": [
+  {
+   "name": "item_revenue",
+   "label": "Item revenue",
+   "domain": "revenue",
+   "unit": "BRL",
+   "kind": "observed",
+   "definition": "Sum of item prices on valid orders. Excludes freight.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "SUM(item_revenue)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "freight_value",
+   "label": "Freight charged",
+   "domain": "revenue",
+   "unit": "BRL",
+   "kind": "observed",
+   "definition": "Sum of freight charged to customers on valid orders. Not Olist revenue.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "SUM(freight_value)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "gmv",
+   "label": "GMV",
+   "domain": "revenue",
+   "unit": "BRL",
+   "kind": "observed",
+   "definition": "Gross merchandise value = item revenue + freight, on valid orders.",
+   "caveats": "Before returns and refunds, which the dataset does not record.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "SUM(gmv)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "payment_value",
+   "label": "Payment value",
+   "domain": "revenue",
+   "unit": "BRL",
+   "kind": "observed",
+   "definition": "Sum of payments recorded on valid orders (cash charged to customers).",
+   "caveats": "Differs from GMV on a few hundred orders (instalment interest, vouchers, rounding); it is not revenue.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "SUM(payment_value)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "aov",
+   "label": "Average order value",
+   "domain": "revenue",
+   "unit": "BRL",
+   "kind": "observed",
+   "definition": "GMV / valid orders.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "SUM(gmv) / COUNT(*)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "freight_share_of_gmv",
+   "label": "Freight share of GMV",
+   "domain": "revenue",
+   "unit": "share",
+   "kind": "observed",
+   "definition": "Freight charged / GMV.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "SUM(freight_value) / SUM(gmv)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "gmv_mom_growth",
+   "label": "GMV growth, last month vs previous",
+   "domain": "revenue",
+   "unit": "share",
+   "kind": "observed",
+   "definition": "GMV of the last complete month in the selection / GMV of the month before - 1.",
+   "caveats": "Month-on-month growth is noisy; read it with the 3-month average in SQL 01.",
+   "sql": {
+    "query": "WITH m AS (SELECT purchase_month, SUM(gmv) AS gmv FROM fct_orders WHERE is_valid = 1 GROUP BY purchase_month) SELECT (SELECT gmv FROM m ORDER BY purchase_month DESC LIMIT 1) / (SELECT gmv FROM m ORDER BY purchase_month DESC LIMIT 1 OFFSET 1) - 1 AS value"
+   }
+  },
+  {
+   "name": "marketplace_revenue_estimate",
+   "label": "Marketplace revenue (estimate)",
+   "domain": "revenue",
+   "unit": "BRL",
+   "kind": "estimate",
+   "definition": "take_rate x item revenue. An estimate of Olist's own revenue.",
+   "assumptions": [
+    "take_rate"
+   ],
+   "caveats": "The dataset has no commission data; the take rate is an assumption.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "{take_rate} * SUM(item_revenue)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "contribution_estimate",
+   "label": "Contribution (estimate)",
+   "domain": "revenue",
+   "unit": "BRL",
+   "kind": "estimate",
+   "definition": "Marketplace revenue estimate - payment_cost_rate x payment value. A rough profit proxy before fixed costs, marketing and any shipping subsidy.",
+   "assumptions": [
+    "take_rate",
+    "payment_cost_rate"
+   ],
+   "caveats": "Built only from assumptions applied to observed volumes; not observed profit.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "{take_rate} * SUM(item_revenue) - {payment_cost_rate} * SUM(payment_value)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "orders",
+   "label": "Orders",
+   "domain": "order",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "Number of valid orders.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "COUNT(*)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "orders_placed",
+   "label": "Orders placed",
+   "domain": "order",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "All orders, including cancelled and unavailable ones.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "COUNT(*)"
+   }
+  },
+  {
+   "name": "cancellation_rate",
+   "label": "Cancellation rate",
+   "domain": "order",
+   "unit": "share",
+   "kind": "observed",
+   "definition": "Orders with status canceled or unavailable / orders placed.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "1.0 * SUM(is_cancelled) / COUNT(*)"
+   }
+  },
+  {
+   "name": "delivery_completion_rate",
+   "label": "Delivery completion",
+   "domain": "order",
+   "unit": "share",
+   "kind": "observed",
+   "definition": "Delivered orders / orders placed.",
+   "caveats": "Orders placed near the end of the extract may still be in transit.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "1.0 * SUM(is_delivered) / COUNT(*)"
+   }
+  },
+  {
+   "name": "items_per_order",
+   "label": "Items per order",
+   "domain": "order",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "Items sold / valid orders.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "1.0 * SUM(n_items) / COUNT(*)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "credit_card_share",
+   "label": "Orders paid mainly by credit card",
+   "domain": "payment",
+   "unit": "share",
+   "kind": "observed",
+   "definition": "Valid orders whose largest payment is by credit card / valid orders with a payment.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "AVG(CASE WHEN main_payment_type = 'credit_card' THEN 1.0 ELSE 0.0 END)",
+    "where": "is_valid = 1 AND main_payment_type IS NOT NULL"
+   }
+  },
+  {
+   "name": "avg_installments",
+   "label": "Average instalments",
+   "domain": "payment",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "Mean of the largest instalment count per valid order.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "AVG(1.0 * installments)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "customers",
+   "label": "Customers",
+   "domain": "customer",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "Distinct people (customer_unique_id) with at least one valid order.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "COUNT(DISTINCT customer_unique_id)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "new_customers",
+   "label": "New customers",
+   "domain": "customer",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "People whose first valid order ever falls in the selection.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "COUNT(*)",
+    "where": "is_valid = 1 AND customer_order_seq = 1"
+   }
+  },
+  {
+   "name": "returning_customers",
+   "label": "Returning customers",
+   "domain": "customer",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "People with a second or later valid order in the selection.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "COUNT(DISTINCT customer_unique_id)",
+    "where": "is_valid = 1 AND customer_order_seq > 1"
+   }
+  },
+  {
+   "name": "repeat_rate",
+   "label": "Repeat-customer rate",
+   "domain": "customer",
+   "unit": "share",
+   "kind": "observed",
+   "definition": "Of the people acquired in the selection (first valid order in it), the share whose second valid order is also in the selection.",
+   "caveats": "Customers acquired late have had less time to return (right-censoring).",
+   "sql": {
+    "query": "SELECT 1.0 * COUNT(s.customer_unique_id) / COUNT(*) AS value FROM fct_orders AS f LEFT JOIN fct_orders AS s\n  ON s.customer_unique_id = f.customer_unique_id AND s.customer_order_seq = 2\nWHERE f.is_valid = 1 AND f.customer_order_seq = 1"
+   }
+  },
+  {
+   "name": "gmv_per_customer",
+   "label": "GMV per customer (observed)",
+   "domain": "customer",
+   "unit": "BRL",
+   "kind": "observed",
+   "definition": "GMV / customers in the selection. Observed historical value, not a forecast.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "SUM(gmv) / COUNT(DISTINCT customer_unique_id)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "orders_per_customer",
+   "label": "Orders per customer",
+   "domain": "customer",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "Valid orders / customers.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "1.0 * COUNT(*) / COUNT(DISTINCT customer_unique_id)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "avg_delivery_days",
+   "label": "Average delivery time",
+   "domain": "delivery",
+   "unit": "days",
+   "kind": "observed",
+   "definition": "Mean calendar days from purchase to delivery, delivered valid orders.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "AVG(1.0 * delivery_days)",
+    "where": "is_valid = 1 AND is_delivered = 1"
+   }
+  },
+  {
+   "name": "avg_promised_days",
+   "label": "Average promised time",
+   "domain": "delivery",
+   "unit": "days",
+   "kind": "observed",
+   "definition": "Mean days from purchase to the estimated date shown at checkout, delivered orders.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "AVG(1.0 * estimated_days)",
+    "where": "is_valid = 1 AND is_delivered = 1"
+   }
+  },
+  {
+   "name": "late_rate",
+   "label": "Late deliveries",
+   "domain": "delivery",
+   "unit": "share",
+   "kind": "observed",
+   "definition": "Delivered valid orders that arrived after the estimated date / delivered valid orders.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "AVG(1.0 * is_late)",
+    "where": "is_valid = 1 AND is_delivered = 1"
+   }
+  },
+  {
+   "name": "avg_days_late_when_late",
+   "label": "Days late when late",
+   "domain": "delivery",
+   "unit": "days",
+   "kind": "observed",
+   "definition": "Mean days after the estimated date, over late orders only.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "AVG(1.0 * delay_days)",
+    "where": "is_valid = 1 AND is_late = 1"
+   }
+  },
+  {
+   "name": "avg_review",
+   "label": "Average review",
+   "domain": "review",
+   "unit": "stars",
+   "kind": "observed",
+   "definition": "Mean review score (1-5) of valid orders with a review (orders with several reviews use their mean).",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "AVG(review_score)",
+    "where": "is_valid = 1 AND review_score IS NOT NULL"
+   }
+  },
+  {
+   "name": "bad_review_rate",
+   "label": "1-2 star reviews",
+   "domain": "review",
+   "unit": "share",
+   "kind": "observed",
+   "definition": "Share of reviewed valid orders with a mean score of 2 or less.",
+   "sql": {
+    "table": "fct_orders",
+    "expr": "AVG(CASE WHEN review_score <= 2 THEN 1.0 ELSE 0.0 END)",
+    "where": "is_valid = 1 AND review_score IS NOT NULL"
+   }
+  },
+  {
+   "name": "review_gap_late",
+   "label": "Review gap, on time minus late",
+   "domain": "review",
+   "unit": "stars",
+   "kind": "observed",
+   "definition": "Mean review of on-time delivered orders minus mean review of late ones.",
+   "caveats": "An association in observational data, not the causal effect of lateness.",
+   "sql": {
+    "query": "SELECT AVG(CASE WHEN is_late = 0 THEN review_score END)\n  - AVG(CASE WHEN is_late = 1 THEN review_score END) AS value\nFROM fct_orders WHERE is_valid = 1 AND is_delivered = 1 AND review_score IS NOT NULL"
+   }
+  },
+  {
+   "name": "active_categories",
+   "label": "Categories sold",
+   "domain": "product",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "Distinct product categories with at least one item on a valid order.",
+   "sql": {
+    "table": "fct_order_items",
+    "expr": "COUNT(DISTINCT category)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "active_sellers",
+   "label": "Active sellers",
+   "domain": "seller",
+   "unit": "count",
+   "kind": "observed",
+   "definition": "Distinct sellers with at least one item on a valid order.",
+   "sql": {
+    "table": "fct_order_items",
+    "expr": "COUNT(DISTINCT seller_id)",
+    "where": "is_valid = 1"
+   }
+  },
+  {
+   "name": "item_revenue_per_seller",
+   "label": "Item revenue per active seller",
+   "domain": "seller",
+   "unit": "BRL",
+   "kind": "observed",
+   "definition": "Item revenue / active sellers.",
+   "sql": {
+    "table": "fct_order_items",
+    "expr": "SUM(item_revenue) / COUNT(DISTINCT seller_id)",
+    "where": "is_valid = 1"
+   }
+  }
+ ]
+}
