@@ -99,8 +99,10 @@ def run_all(
         timings[name] = round(time.perf_counter() - timings[name], 2)
         log.info("analysis step done", extra={"fields": {"step": name, "s": timings[name]}})
 
-    fo = eng.query("SELECT * FROM fct_orders")
-    items = eng.query("SELECT * FROM fct_order_items")
+    # Explicit order: DuckDB's parallel scan returns rows in varying order, and resampling
+    # (A/B simulation) and LightGBM bagging depend on row order.
+    fo = eng.query("SELECT * FROM fct_orders ORDER BY order_id")
+    items = eng.query("SELECT * FROM fct_order_items ORDER BY order_id, order_item_id")
     queries = {q.name: q for q in list_queries()}
     sql = {name: run(eng, queries[name]) for name in queries}
     facts = order_facts(eng.con)

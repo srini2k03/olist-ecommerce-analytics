@@ -55,12 +55,14 @@ class Baseline:
         period: str = "2018-01-01/2018-09-01",
     ) -> Baseline:
         lo, hi = period.split("/")
-        o = orders[(orders["is_valid"] == 1)]
+        o = orders[(orders["is_valid"] == 1)].sort_values("order_id")
         t = pd.to_datetime(o["purchase_date"])
         o = o[(t >= lo) & (t < hi)]
         days = max((pd.Timestamp(hi) - pd.Timestamp(lo)).days, 1)
         if items is not None:
-            it = items[items["order_id"].isin(o["order_id"])]
+            it = items[items["order_id"].isin(o["order_id"])].sort_values(
+                ["order_id", "item_revenue", "freight_value"]
+            )
             unit_price, unit_freight = (
                 it["item_revenue"].to_numpy(float),
                 it["freight_value"].to_numpy(float),

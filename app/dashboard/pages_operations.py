@@ -425,13 +425,18 @@ def _model_card(dm: dict) -> None:
         )
     rob = dm.get("robustness_train_only", {})
     if rob:
+        r_lane, r_lgb = (
+            rob["regression_mae"]["lane_history_mean"],
+            rob["regression_mae"]["lightgbm"],
+        )
+        c_lane = rob["classification_pr_auc"]["lane_history_rate"]
+        c_lgb = rob["classification_pr_auc"]["lightgbm"]
+        verdict = "also ahead" if r_lgb < r_lane else "no longer ahead"
         st.caption(
-            "Robustness: fitted on 2017 only, the lane-history mean scores MAE "
-            f"{rob['regression_mae']['lane_history_mean']:.2f} vs LightGBM "
-            f"{rob['regression_mae']['lightgbm']:.2f} days, so the delivery-time gain depends on "
-            "including the most recent months; for lateness LightGBM stays ahead (PR-AUC "
-            f"{rob['classification_pr_auc']['lightgbm']:.3f} vs "
-            f"{rob['classification_pr_auc']['lane_history_rate']:.3f})."
+            f"Robustness check: with models and baselines fitted on 2017 only, LightGBM is "
+            f"{verdict} on delivery days (MAE {r_lgb:.2f} vs {r_lane:.2f} for the lane mean) and "
+            f"{'ahead' if c_lgb > c_lane else 'behind'} on lateness (PR-AUC {c_lgb:.3f} vs "
+            f"{c_lane:.3f})."
         )
     imp = pd.Series(dm["importance_gain_classifier"]).reset_index()
     imp.columns = ["feature", "gain_share"]
@@ -450,11 +455,21 @@ def _model_card(dm: dict) -> None:
         )
     )
     st.altair_chart(charts._cfg(bar, 300), width="stretch")
+    lgb = dm["classification_late"]["lightgbm"]
+    lane = dm["classification_late"]["lane_history_rate"]
+    promise = dm["regression_delivery_days"]["olist_promise"]
+    calib = (
+        "its probabilities are not well calibrated after the early-2018 surge (Brier "
+        f"{lgb['brier']:.3f} vs {lane['brier']:.3f} for the lane rate)"
+        if lgb["brier"] > lane["brier"]
+        else f"its Brier score is {lgb['brier']:.3f} (lane rate {lane['brier']:.3f})"
+    )
     st.markdown(
-        "**Operational limits.** Olist's promise is padded by about two weeks, so it is a poor "
-        "estimate of delivery time but rarely missed. The late-delivery model ranks risk about "
-        "3x better than the base rate in its top decile; it is not calibrated after a regime "
-        "change (the early-2018 surge), and the demand feature (orders in the previous 7 days) "
-        "needs a live feed. Use it to prioritise proactive customer messages or carrier "
-        "escalation, not to change promised dates without a test."
+        f"**Operational limits.** Olist's promise overshoots actual delivery by "
+        f"{promise['bias']:.1f} days on average, so it is a poor estimate of delivery time but "
+        f"rarely missed. The late-delivery model's top decile holds "
+        f"{lgb['precision_top10pct'] / lgb['base_rate']:.1f}x the base rate of late orders "
+        f"({lgb['recall_top10pct']:.0%} of them); {calib}; and the demand feature (orders in "
+        "the previous 7 days) needs a live feed. Use it to prioritise proactive messages or "
+        "carrier escalation, not to change promised dates without a test."
     )

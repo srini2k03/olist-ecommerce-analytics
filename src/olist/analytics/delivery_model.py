@@ -100,7 +100,7 @@ def _history(events: pd.DataFrame, queries: pd.DataFrame, key: str, prefix: str)
 
 def build_features(fct_orders: pd.DataFrame) -> pd.DataFrame:
     """Feature table for every valid order (targets are NaN where not delivered)."""
-    o = fct_orders[fct_orders["is_valid"] == 1].copy()
+    o = fct_orders[fct_orders["is_valid"] == 1].sort_values("order_id").reset_index(drop=True)
     o["purchased_at"] = pd.to_datetime(o["purchased_at"])
     o["delivered_at"] = pd.to_datetime(o["delivered_at"])
     for c in ("delivery_days", "is_late", "estimated_days"):
