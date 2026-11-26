@@ -1,0 +1,4 @@
+# BigQuery sandbox parity check (scripts/bigquery_parity.py, .github/workflows/bigquery.yml)
+-r requirements-dev.txt
+google-cloud-bigquery==3.47.0
+db-dtypes==1.9.0

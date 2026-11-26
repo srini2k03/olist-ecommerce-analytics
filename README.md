@@ -135,6 +135,30 @@ The 26 analytics queries are organised by domain under `sql/analytics/<domain>/`
 
 The queries use CTEs, joins and window functions (`LAG`, `LEAD`, `NTILE`, `RANK`, `DENSE_RANK`, `PERCENT_RANK`, `ROW_NUMBER`, running `SUM() OVER`, `PERCENTILE_CONT ... WITHIN GROUP`). Portability rules: `DATE - DATE` for days, `CAST(date_trunc('month', ts) AS DATE)` for months, `EXTRACT` cast to `INTEGER`, no `ROUND(double, n)`, `LOWER(...) LIKE` instead of `ILIKE`, deterministic `ORDER BY` (float ties sort differently on the two engines), and anti-joins as `LEFT JOIN ... IS NULL` (Postgres runs `NOT EXISTS` inside `CASE` row by row; that made the CI parity job hang before it was fixed).
 
+### The same queries on Google BigQuery (sandbox)
+
+The `BigQuery` workflow loads the 7 marts into a BigQuery dataset in the **sandbox** (free, no
+billing account) and runs all 26 analytics queries there, comparing every result cell by cell
+with DuckDB; the report is committed to [`results/bigquery/parity.md`](results/bigquery/).
+Translation lives in [`src/olist/bigquery.py`](src/olist/bigquery.py):
+
+- 20 queries are translated automatically with [sqlglot](https://github.com/tobymao/sqlglot)
+  (DuckDB -> BigQuery), plus two fixes sqlglot leaves alone: `EXTRACT(DOW ...)` (0 = Sunday)
+  becomes `EXTRACT(DAYOFWEEK ...) - 1` (BigQuery counts 1 = Sunday) and `DATE - DATE` becomes
+  `DATE_DIFF(a, b, DAY)`.
+- 6 queries use `PERCENTILE_CONT ... WITHIN GROUP`, which BigQuery only offers as an analytic
+  function, so they have hand-written versions in [`sql/bigquery/`](sql/bigquery/) that compute
+  the exact percentile per group with `PERCENTILE_CONT(x, p) OVER (PARTITION BY ...)` and carry
+  it through the `GROUP BY`. Translated back to DuckDB with sqlglot, all six return exactly the
+  original results on the real data.
+
+Setup (once): create a Google Cloud project **without billing**, run
+`bash scripts/gcp/setup_bigquery_sandbox.sh PROJECT_ID` in Cloud Shell (it refuses to continue
+if billing is enabled, creates the dataset, a service account limited to BigQuery jobs and table
+writes, and keyless Workload Identity Federation for this repository), add the three repository
+variables it prints, then run the workflow. Sandbox tables expire after 60 days, so the workflow
+also reloads them monthly.
+
 ## Methods in brief
 
 - **Statistics** ([docs/statistics.md](docs/statistics.md)). `olist.stats.core` (no SciPy, also used in the browser): descriptive CIs, Wilson intervals, two-proportion test with Cohen's h, bootstrap, permutation test, Bonferroni/Holm/Benjamini-Hochberg, power and sample size; `olist.stats.inference` adds Welch, Mann-Whitney, chi-square and a stratified mean difference with Holm-adjusted strata and a pooled estimate. Notebook 02 adds a proportional-odds regression (late: odds ratio 0.068 for a higher score).

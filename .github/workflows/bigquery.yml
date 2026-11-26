@@ -1,0 +1,94 @@
+name: BigQuery
+
+# Loads the marts into the BigQuery sandbox (free, no billing account) and checks that every
+# analytics query returns the same result there as on DuckDB; commits results/bigquery/.
+# Sandbox tables expire after 60 days, so a monthly run reloads them.
+# One-time setup: run scripts/gcp/setup_bigquery_sandbox.sh in Cloud Shell and add the three
+# repository variables it prints. Until they exist this workflow only prints a notice.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 4 3 * *" # 04:23 UTC on the 3rd of every month
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: bigquery
+  cancel-in-progress: false
+
+jobs:
+  parity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PROJECT: ${{ vars.GCP_PROJECT_ID }}
+    steps:
+      - name: Check configuration
+        id: cfg
+        env:
+          PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+          SA: ${{ vars.GCP_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$PROJECT" ] || [ -z "$PROVIDER" ] || [ -z "$SA" ]; then
+            echo "::notice::GCP_PROJECT_ID, GCP_WIF_PROVIDER or GCP_SERVICE_ACCOUNT is not set; nothing to do (see scripts/gcp/setup_bigquery_sandbox.sh)."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.cfg.outputs.enabled == 'true'
+      - uses: actions/setup-python@v5
+        if: steps.cfg.outputs.enabled == 'true'
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - if: steps.cfg.outputs.enabled == 'true'
+        run: pip install -r requirements-bigquery.txt -e .
+      - uses: actions/cache@v4
+        if: steps.cfg.outputs.enabled == 'true'
+        with:
+          path: data/raw
+          key: olist-raw-${{ hashFiles('scripts/fetch_data.py') }}
+      - name: Fetch the real data and build the DuckDB warehouse
+        if: steps.cfg.outputs.enabled == 'true'
+        run: |
+          python scripts/fetch_data.py
+          python scripts/build_warehouse.py
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      - uses: google-github-actions/auth@v2
+        if: steps.cfg.outputs.enabled == 'true'
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - name: Load the marts into BigQuery and compare all queries with DuckDB
+        id: parity
+        if: steps.cfg.outputs.enabled == 'true'
+        run: |
+          set +e
+          python scripts/bigquery_parity.py --project "$PROJECT"
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+          cat results/bigquery/parity.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+      - name: Commit the parity report
+        if: steps.cfg.outputs.enabled == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/bigquery
+          if git diff --cached --quiet; then echo "No changes."; exit 0; fi
+          git commit -m "BigQuery parity report (run ${GITHUB_RUN_ID})"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs origin main && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((i * 5))
+          done
+          echo "::error::could not push the parity report"; exit 1
+      - name: Fail if any query differs
+        if: steps.cfg.outputs.enabled == 'true' && steps.parity.outputs.status != '0'
+        run: |
+          echo "::error::Some queries returned different results on BigQuery (see results/bigquery/parity.md)."
+          exit 1
