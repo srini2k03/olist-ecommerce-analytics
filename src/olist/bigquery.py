@@ -4,10 +4,12 @@ The marts are built once by the DuckDB pipeline, exported to Parquet and loaded 
 BigQuery dataset (load jobs are free, and the BigQuery sandbox needs no billing account).
 Each analytics query is then translated to BigQuery SQL:
 
-* most queries are translated automatically with sqlglot (DuckDB -> BigQuery), plus two
+* most queries are translated automatically with sqlglot (DuckDB -> BigQuery), plus three
   fixes sqlglot leaves alone: ``EXTRACT(DOW ...)`` (0 = Sunday) becomes
-  ``EXTRACT(DAYOFWEEK ...) - 1`` (BigQuery counts 1 = Sunday), and ``DATE - DATE``
-  becomes ``DATE_DIFF(a, b, DAY)``;
+  ``EXTRACT(DAYOFWEEK ...) - 1`` (BigQuery counts 1 = Sunday), ``DATE - DATE`` becomes
+  ``DATE_DIFF(a, b, DAY)``, and ``ts >= DATE 'd'`` / ``ts < DATE 'd'`` compare
+  ``CAST(ts AS DATE)`` (BigQuery rejects TIMESTAMP vs DATE; for these two operators the
+  result is identical);
 * queries using ``PERCENTILE_CONT ... WITHIN GROUP`` have a hand-written BigQuery version
   in ``sql/bigquery/<name>.sql``, because BigQuery's exact percentile only exists as an
   analytic function.
@@ -50,17 +52,49 @@ def _is_date_cast(node: exp.Expression) -> bool:
     return isinstance(node, exp.Cast) and node.to.is_type(exp.DataType.Type.DATE)
 
 
+def _is_date_literal(node: exp.Expression) -> bool:
+    """``DATE 'YYYY-MM-DD'`` (sqlglot parses it as a cast of a string literal)."""
+    return _is_date_cast(node) and isinstance(node.this, exp.Literal) and node.this.is_string
+
+
+def _as_date(node: exp.Expression) -> exp.Expression:
+    return node if _is_date_cast(node) else exp.cast(node, exp.DataType.build("DATE"))
+
+
 def _bigquery_fixes(node: exp.Expression) -> exp.Expression:
+    # EXTRACT(DOW ...): DuckDB/Postgres count 0 = Sunday, BigQuery's DAYOFWEEK 1 = Sunday.
     if isinstance(node, exp.Extract) and node.this.name.upper() == "DOW":
         dayofweek = exp.Extract(this=exp.var("DAYOFWEEK"), expression=node.expression)
         return exp.paren(exp.Sub(this=dayofweek, expression=exp.Literal.number(1)))
-    if isinstance(node, exp.Sub) and _is_date_cast(node.this) and _is_date_cast(node.expression):
+    # DATE - DATE is a whole number of days in DuckDB/Postgres but an INTERVAL in BigQuery.
+    # The queries only subtract dates when at least one side is a DATE cast or literal.
+    if (
+        isinstance(node, exp.Sub)
+        and (_is_date_cast(node.this) or _is_date_cast(node.expression))
+        and not isinstance(node.this, exp.Literal)
+        and not isinstance(node.expression, exp.Literal)
+    ):
         return exp.DateDiff(this=node.this, expression=node.expression, unit=exp.var("DAY"))
+    # ts >= DATE 'd' / ts < DATE 'd': DuckDB compares a timestamp with a date at midnight;
+    # BigQuery rejects TIMESTAMP vs DATE. For >= and < (and their mirrors) comparing the date
+    # part is exactly equivalent, for DATE and TIMESTAMP operands alike.
+    if (
+        isinstance(node, (exp.GTE, exp.LT))
+        and _is_date_literal(node.expression)
+        and not _is_date_literal(node.this)
+    ):
+        return node.__class__(this=_as_date(node.this), expression=node.expression)
+    if (
+        isinstance(node, (exp.LTE, exp.GT))
+        and _is_date_literal(node.this)
+        and not _is_date_literal(node.expression)
+    ):
+        return node.__class__(this=node.this, expression=_as_date(node.expression))
     return node
 
 
 def translate(sql: str) -> str:
-    """DuckDB SQL -> BigQuery SQL (sqlglot plus the DOW and DATE - DATE fixes)."""
+    """DuckDB SQL -> BigQuery SQL (sqlglot plus the DOW, DATE - DATE and date-comparison fixes)."""
     tree = sqlglot.parse_one(sql, read="duckdb")
     return tree.transform(_bigquery_fixes).sql(dialect="bigquery", pretty=True)
 

@@ -143,9 +143,11 @@ with DuckDB; the report is committed to [`results/bigquery/parity.md`](results/b
 Translation lives in [`src/olist/bigquery.py`](src/olist/bigquery.py):
 
 - 20 queries are translated automatically with [sqlglot](https://github.com/tobymao/sqlglot)
-  (DuckDB -> BigQuery), plus two fixes sqlglot leaves alone: `EXTRACT(DOW ...)` (0 = Sunday)
-  becomes `EXTRACT(DAYOFWEEK ...) - 1` (BigQuery counts 1 = Sunday) and `DATE - DATE` becomes
-  `DATE_DIFF(a, b, DAY)`.
+  (DuckDB -> BigQuery), plus three fixes sqlglot leaves alone: `EXTRACT(DOW ...)` (0 = Sunday)
+  becomes `EXTRACT(DAYOFWEEK ...) - 1` (BigQuery counts 1 = Sunday), `DATE - DATE` becomes
+  `DATE_DIFF(a, b, DAY)`, and `ts >= DATE 'd'` / `ts < DATE 'd'` compare `CAST(ts AS DATE)`
+  (BigQuery rejects TIMESTAMP vs DATE; for these two operators the result is identical). The
+  first BigQuery run found the last two cases (queries 03 and 19).
 - 6 queries use `PERCENTILE_CONT ... WITHIN GROUP`, which BigQuery only offers as an analytic
   function, so they have hand-written versions in [`sql/bigquery/`](sql/bigquery/) that compute
   the exact percentile per group with `PERCENTILE_CONT(x, p) OVER (PARTITION BY ...)` and carry

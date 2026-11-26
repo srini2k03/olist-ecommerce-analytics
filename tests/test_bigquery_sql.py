@@ -34,3 +34,17 @@ def test_day_of_week_is_shifted_to_zero_based_sunday():
 def test_date_minus_date_becomes_date_diff():
     out = translate("SELECT CAST(a AS DATE) - CAST(b AS DATE) AS days FROM t")
     assert "DATE_DIFF" in out and "DAY" in out
+
+
+def test_date_literal_minus_aggregate_becomes_date_diff():
+    out = translate("SELECT DATE '2018-09-01' - MAX(purchase_date) AS days FROM t")
+    assert "DATE_DIFF" in out
+
+
+def test_timestamp_vs_date_literal_compares_the_date_part():
+    out = translate("SELECT 1 FROM t WHERE ts >= DATE '2017-01-01' AND ts < DATE '2017-09-01'")
+    assert out.count("CAST(ts AS DATE)") == 2
+    mirrored = translate("SELECT 1 FROM t WHERE DATE '2017-01-01' <= ts")
+    assert "CAST(ts AS DATE)" in mirrored
+    untouched = translate("SELECT 1 FROM t WHERE ts > DATE '2017-01-01'")
+    assert "CAST(ts AS DATE)" not in untouched  # not equivalent for > on timestamps
