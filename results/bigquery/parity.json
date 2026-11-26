@@ -1,0 +1,326 @@
+{
+  "generated_at": "2026-11-26T12:10:46+00:00",
+  "git_commit": "1e871693466cf1a4adde80bb2a4828fefcdfefbd",
+  "project_dataset": "olist (location US, BigQuery sandbox)",
+  "tables_loaded": {
+    "fct_orders": {
+      "rows": 99441,
+      "seconds": 6.34
+    },
+    "fct_order_items": {
+      "rows": 112650,
+      "seconds": 5.39
+    },
+    "fct_payments": {
+      "rows": 103886,
+      "seconds": 15.2
+    },
+    "fct_reviews": {
+      "rows": 99224,
+      "seconds": 15.01
+    },
+    "dim_customers": {
+      "rows": 96096,
+      "seconds": 3.83
+    },
+    "dim_products": {
+      "rows": 32951,
+      "seconds": 4.23
+    },
+    "dim_sellers": {
+      "rows": 3095,
+      "seconds": 7.9
+    }
+  },
+  "queries": [
+    {
+      "query": "01_monthly_revenue_mom",
+      "domain": "revenue",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 20,
+      "duckdb_ms": 14.4,
+      "bigquery_ms": 1440.8,
+      "bigquery_bytes_processed": 4754568
+    },
+    {
+      "query": "02_cohort_retention",
+      "domain": "customer",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 207,
+      "duckdb_ms": 23.7,
+      "bigquery_ms": 1287.2,
+      "bigquery_bytes_processed": 6553170
+    },
+    {
+      "query": "03_rfm_scores",
+      "domain": "customer",
+      "bigquery_sql": "translated",
+      "match": false,
+      "detail": "BigQuery error: 400 No matching signature for operator *\n  Argument types: FLOAT64, INTERVAL\n  Signature: INT64 * INT64\n    Argument 1: Unable to coerce type FLOAT64 to expected type INT64\n  Signature: FLOAT64 * FLOAT64\n    Argument 2: Unable to coerce type INTERVAL to expected type FLOAT64\n  Signature: NUMERIC * NUMERIC\n    Argument 2: Unable to coerce type INTERVAL to expected type NUMERIC\n  Signature: BIGNUMERIC * BIGNUMERIC\n    Argument 2: Unable to coerce type INTERVAL to expected type BIGN",
+      "rows": 7,
+      "duckdb_ms": 64.8,
+      "bigquery_ms": 1287.2,
+      "bigquery_bytes_processed": 6553170
+    },
+    {
+      "query": "04_delivery_delay_vs_review",
+      "domain": "review",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 7,
+      "duckdb_ms": 8.4,
+      "bigquery_ms": 1126.1,
+      "bigquery_bytes_processed": 2356672
+    },
+    {
+      "query": "05_seller_league",
+      "domain": "seller",
+      "bigquery_sql": "hand-written",
+      "match": true,
+      "detail": "ok",
+      "rows": 25,
+      "duckdb_ms": 49.2,
+      "bigquery_ms": 1295.5,
+      "bigquery_bytes_processed": 16099028
+    },
+    {
+      "query": "06_category_pareto",
+      "domain": "product",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 74,
+      "duckdb_ms": 31.3,
+      "bigquery_ms": 1735.0,
+      "bigquery_bytes_processed": 7310277
+    },
+    {
+      "query": "07_payment_mix",
+      "domain": "payment",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 4,
+      "duckdb_ms": 33.6,
+      "bigquery_ms": 1063.4,
+      "bigquery_bytes_processed": 7252357
+    },
+    {
+      "query": "08_freight_ratio",
+      "domain": "product",
+      "bigquery_sql": "hand-written",
+      "match": true,
+      "detail": "ok",
+      "rows": 22,
+      "duckdb_ms": 11.8,
+      "bigquery_ms": 1047.1,
+      "bigquery_bytes_processed": 6176097
+    },
+    {
+      "query": "09_state_delivery_sla",
+      "domain": "delivery",
+      "bigquery_sql": "hand-written",
+      "match": true,
+      "detail": "ok",
+      "rows": 21,
+      "duckdb_ms": 11.8,
+      "bigquery_ms": 1085.5,
+      "bigquery_bytes_processed": 4321724
+    },
+    {
+      "query": "10_repeat_purchase_rate",
+      "domain": "customer",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 8,
+      "duckdb_ms": 27.1,
+      "bigquery_ms": 1006.2,
+      "bigquery_bytes_processed": 6553170
+    },
+    {
+      "query": "11_basket_size",
+      "domain": "order",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 4,
+      "duckdb_ms": 11.7,
+      "bigquery_ms": 938.9,
+      "bigquery_bytes_processed": 4742224
+    },
+    {
+      "query": "12_time_to_second_order",
+      "domain": "customer",
+      "bigquery_sql": "hand-written",
+      "match": true,
+      "detail": "ok",
+      "rows": 7,
+      "duckdb_ms": 33.8,
+      "bigquery_ms": 1278.2,
+      "bigquery_bytes_processed": 9138636
+    },
+    {
+      "query": "13_late_delivery_hotspots",
+      "domain": "delivery",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 20,
+      "duckdb_ms": 11.8,
+      "bigquery_ms": 921.3,
+      "bigquery_bytes_processed": 3131476
+    },
+    {
+      "query": "14_review_sentiment_proxies",
+      "domain": "review",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 5,
+      "duckdb_ms": 65.2,
+      "bigquery_ms": 1434.1,
+      "bigquery_bytes_processed": 4535053
+    },
+    {
+      "query": "15_customer_value_deciles",
+      "domain": "customer",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 10,
+      "duckdb_ms": 31.4,
+      "bigquery_ms": 976.5,
+      "bigquery_bytes_processed": 4804800
+    },
+    {
+      "query": "16_purchase_timing",
+      "domain": "order",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 168,
+      "duckdb_ms": 6.6,
+      "bigquery_ms": 892.9,
+      "bigquery_bytes_processed": 1591056
+    },
+    {
+      "query": "17_order_status_funnel",
+      "domain": "order",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 20,
+      "duckdb_ms": 6.9,
+      "bigquery_ms": 829.0,
+      "bigquery_bytes_processed": 3182112
+    },
+    {
+      "query": "18_money_reconciliation",
+      "domain": "revenue",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 20,
+      "duckdb_ms": 8.3,
+      "bigquery_ms": 885.8,
+      "bigquery_bytes_processed": 6339408
+    },
+    {
+      "query": "19_category_growth",
+      "domain": "product",
+      "bigquery_sql": "translated",
+      "match": false,
+      "detail": "BigQuery error: 400 No matching signature for operator >= for argument types: TIMESTAMP, DATE\n  Signature: T1 >= T1\n    Unable to find common supertype for templated argument <T1>\n      Input types for <T1>: {DATE, TIMESTAMP} at [14:14]; reason: invalidQuery, location: query, message: No matching signature for operator >= for argument types: TIMESTAMP, DATE\n  Signature: T1 >= T1\n    Unable to find common supertype for templated argument <T1>\n      Input types for <T1>: {DATE, TIMESTAMP} at [14:1",
+      "rows": 22,
+      "duckdb_ms": 36.0,
+      "bigquery_ms": 885.8,
+      "bigquery_bytes_processed": 6339408
+    },
+    {
+      "query": "20_cohort_revenue",
+      "domain": "customer",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 20,
+      "duckdb_ms": 25.9,
+      "bigquery_ms": 1025.4,
+      "bigquery_bytes_processed": 7342498
+    },
+    {
+      "query": "21_seller_scorecard",
+      "domain": "seller",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 3095,
+      "duckdb_ms": 50.7,
+      "bigquery_ms": 1176.3,
+      "bigquery_bytes_processed": 14372288
+    },
+    {
+      "query": "22_delivery_by_category",
+      "domain": "delivery",
+      "bigquery_sql": "hand-written",
+      "match": true,
+      "detail": "ok",
+      "rows": 26,
+      "duckdb_ms": 14.4,
+      "bigquery_ms": 921.5,
+      "bigquery_bytes_processed": 7755679
+    },
+    {
+      "query": "23_estimate_accuracy_by_month",
+      "domain": "delivery",
+      "bigquery_sql": "hand-written",
+      "match": true,
+      "detail": "ok",
+      "rows": 20,
+      "duckdb_ms": 13.8,
+      "bigquery_ms": 1168.2,
+      "bigquery_bytes_processed": 5521160
+    },
+    {
+      "query": "24_category_scorecard",
+      "domain": "product",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 74,
+      "duckdb_ms": 57.1,
+      "bigquery_ms": 1394.5,
+      "bigquery_bytes_processed": 13816753
+    },
+    {
+      "query": "25_review_by_delivery_status",
+      "domain": "review",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 3,
+      "duckdb_ms": 10.3,
+      "bigquery_ms": 1045.6,
+      "bigquery_bytes_processed": 3152200
+    },
+    {
+      "query": "26_installments_by_order_value",
+      "domain": "payment",
+      "bigquery_sql": "translated",
+      "match": true,
+      "detail": "ok",
+      "rows": 5,
+      "duckdb_ms": 9.2,
+      "bigquery_ms": 929.7,
+      "bigquery_bytes_processed": 5151085
+    }
+  ],
+  "matched": 24,
+  "total": 26,
+  "bytes_processed_total": 168846069
+}
