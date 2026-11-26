@@ -1,35 +1,35 @@
 {
-  "generated_at": "2026-11-26T12:10:46+00:00",
-  "git_commit": "1e871693466cf1a4adde80bb2a4828fefcdfefbd",
+  "generated_at": "2026-11-26T12:15:55+00:00",
+  "git_commit": "ecdbf73f2a5e692adc3db06d9994b519d9661992",
   "project_dataset": "olist (location US, BigQuery sandbox)",
   "tables_loaded": {
     "fct_orders": {
       "rows": 99441,
-      "seconds": 6.34
+      "seconds": 7.09
     },
     "fct_order_items": {
       "rows": 112650,
-      "seconds": 5.39
+      "seconds": 7.62
     },
     "fct_payments": {
       "rows": 103886,
-      "seconds": 15.2
+      "seconds": 5.89
     },
     "fct_reviews": {
       "rows": 99224,
-      "seconds": 15.01
+      "seconds": 9.03
     },
     "dim_customers": {
       "rows": 96096,
-      "seconds": 3.83
+      "seconds": 5.43
     },
     "dim_products": {
       "rows": 32951,
-      "seconds": 4.23
+      "seconds": 4.73
     },
     "dim_sellers": {
       "rows": 3095,
-      "seconds": 7.9
+      "seconds": 3.06
     }
   },
   "queries": [
@@ -40,8 +40,8 @@
       "match": true,
       "detail": "ok",
       "rows": 20,
-      "duckdb_ms": 14.4,
-      "bigquery_ms": 1440.8,
+      "duckdb_ms": 12.6,
+      "bigquery_ms": 761.1,
       "bigquery_bytes_processed": 4754568
     },
     {
@@ -51,20 +51,20 @@
       "match": true,
       "detail": "ok",
       "rows": 207,
-      "duckdb_ms": 23.7,
-      "bigquery_ms": 1287.2,
+      "duckdb_ms": 19.2,
+      "bigquery_ms": 774.9,
       "bigquery_bytes_processed": 6553170
     },
     {
       "query": "03_rfm_scores",
       "domain": "customer",
       "bigquery_sql": "translated",
-      "match": false,
-      "detail": "BigQuery error: 400 No matching signature for operator *\n  Argument types: FLOAT64, INTERVAL\n  Signature: INT64 * INT64\n    Argument 1: Unable to coerce type FLOAT64 to expected type INT64\n  Signature: FLOAT64 * FLOAT64\n    Argument 2: Unable to coerce type INTERVAL to expected type FLOAT64\n  Signature: NUMERIC * NUMERIC\n    Argument 2: Unable to coerce type INTERVAL to expected type NUMERIC\n  Signature: BIGNUMERIC * BIGNUMERIC\n    Argument 2: Unable to coerce type INTERVAL to expected type BIGN",
+      "match": true,
+      "detail": "ok",
       "rows": 7,
-      "duckdb_ms": 64.8,
-      "bigquery_ms": 1287.2,
-      "bigquery_bytes_processed": 6553170
+      "duckdb_ms": 59.8,
+      "bigquery_ms": 1172.8,
+      "bigquery_bytes_processed": 5761378
     },
     {
       "query": "04_delivery_delay_vs_review",
@@ -73,8 +73,8 @@
       "match": true,
       "detail": "ok",
       "rows": 7,
-      "duckdb_ms": 8.4,
-      "bigquery_ms": 1126.1,
+      "duckdb_ms": 6.4,
+      "bigquery_ms": 803.0,
       "bigquery_bytes_processed": 2356672
     },
     {
@@ -84,8 +84,8 @@
       "match": true,
       "detail": "ok",
       "rows": 25,
-      "duckdb_ms": 49.2,
-      "bigquery_ms": 1295.5,
+      "duckdb_ms": 39.1,
+      "bigquery_ms": 1007.2,
       "bigquery_bytes_processed": 16099028
     },
     {
@@ -95,8 +95,8 @@
       "match": true,
       "detail": "ok",
       "rows": 74,
-      "duckdb_ms": 31.3,
-      "bigquery_ms": 1735.0,
+      "duckdb_ms": 21.5,
+      "bigquery_ms": 1258.6,
       "bigquery_bytes_processed": 7310277
     },
     {
@@ -106,8 +106,8 @@
       "match": true,
       "detail": "ok",
       "rows": 4,
-      "duckdb_ms": 33.6,
-      "bigquery_ms": 1063.4,
+      "duckdb_ms": 24.7,
+      "bigquery_ms": 1061.2,
       "bigquery_bytes_processed": 7252357
     },
     {
@@ -117,8 +117,8 @@
       "match": true,
       "detail": "ok",
       "rows": 22,
-      "duckdb_ms": 11.8,
-      "bigquery_ms": 1047.1,
+      "duckdb_ms": 8.5,
+      "bigquery_ms": 742.0,
       "bigquery_bytes_processed": 6176097
     },
     {
@@ -128,8 +128,8 @@
       "match": true,
       "detail": "ok",
       "rows": 21,
-      "duckdb_ms": 11.8,
-      "bigquery_ms": 1085.5,
+      "duckdb_ms": 8.6,
+      "bigquery_ms": 817.1,
       "bigquery_bytes_processed": 4321724
     },
     {
@@ -139,8 +139,8 @@
       "match": true,
       "detail": "ok",
       "rows": 8,
-      "duckdb_ms": 27.1,
-      "bigquery_ms": 1006.2,
+      "duckdb_ms": 21.5,
+      "bigquery_ms": 903.4,
       "bigquery_bytes_processed": 6553170
     },
     {
@@ -150,8 +150,8 @@
       "match": true,
       "detail": "ok",
       "rows": 4,
-      "duckdb_ms": 11.7,
-      "bigquery_ms": 938.9,
+      "duckdb_ms": 9.4,
+      "bigquery_ms": 651.3,
       "bigquery_bytes_processed": 4742224
     },
     {
@@ -161,8 +161,8 @@
       "match": true,
       "detail": "ok",
       "rows": 7,
-      "duckdb_ms": 33.8,
-      "bigquery_ms": 1278.2,
+      "duckdb_ms": 26.5,
+      "bigquery_ms": 847.3,
       "bigquery_bytes_processed": 9138636
     },
     {
@@ -172,8 +172,8 @@
       "match": true,
       "detail": "ok",
       "rows": 20,
-      "duckdb_ms": 11.8,
-      "bigquery_ms": 921.3,
+      "duckdb_ms": 10.5,
+      "bigquery_ms": 710.7,
       "bigquery_bytes_processed": 3131476
     },
     {
@@ -183,8 +183,8 @@
       "match": true,
       "detail": "ok",
       "rows": 5,
-      "duckdb_ms": 65.2,
-      "bigquery_ms": 1434.1,
+      "duckdb_ms": 55.5,
+      "bigquery_ms": 800.9,
       "bigquery_bytes_processed": 4535053
     },
     {
@@ -194,8 +194,8 @@
       "match": true,
       "detail": "ok",
       "rows": 10,
-      "duckdb_ms": 31.4,
-      "bigquery_ms": 976.5,
+      "duckdb_ms": 27.9,
+      "bigquery_ms": 700.5,
       "bigquery_bytes_processed": 4804800
     },
     {
@@ -205,8 +205,8 @@
       "match": true,
       "detail": "ok",
       "rows": 168,
-      "duckdb_ms": 6.6,
-      "bigquery_ms": 892.9,
+      "duckdb_ms": 5.7,
+      "bigquery_ms": 822.5,
       "bigquery_bytes_processed": 1591056
     },
     {
@@ -216,8 +216,8 @@
       "match": true,
       "detail": "ok",
       "rows": 20,
-      "duckdb_ms": 6.9,
-      "bigquery_ms": 829.0,
+      "duckdb_ms": 5.0,
+      "bigquery_ms": 734.0,
       "bigquery_bytes_processed": 3182112
     },
     {
@@ -227,20 +227,20 @@
       "match": true,
       "detail": "ok",
       "rows": 20,
-      "duckdb_ms": 8.3,
-      "bigquery_ms": 885.8,
+      "duckdb_ms": 6.4,
+      "bigquery_ms": 828.5,
       "bigquery_bytes_processed": 6339408
     },
     {
       "query": "19_category_growth",
       "domain": "product",
       "bigquery_sql": "translated",
-      "match": false,
-      "detail": "BigQuery error: 400 No matching signature for operator >= for argument types: TIMESTAMP, DATE\n  Signature: T1 >= T1\n    Unable to find common supertype for templated argument <T1>\n      Input types for <T1>: {DATE, TIMESTAMP} at [14:14]; reason: invalidQuery, location: query, message: No matching signature for operator >= for argument types: TIMESTAMP, DATE\n  Signature: T1 >= T1\n    Unable to find common supertype for templated argument <T1>\n      Input types for <T1>: {DATE, TIMESTAMP} at [14:1",
+      "match": true,
+      "detail": "ok",
       "rows": 22,
-      "duckdb_ms": 36.0,
-      "bigquery_ms": 885.8,
-      "bigquery_bytes_processed": 6339408
+      "duckdb_ms": 23.3,
+      "bigquery_ms": 863.4,
+      "bigquery_bytes_processed": 8211477
     },
     {
       "query": "20_cohort_revenue",
@@ -249,8 +249,8 @@
       "match": true,
       "detail": "ok",
       "rows": 20,
-      "duckdb_ms": 25.9,
-      "bigquery_ms": 1025.4,
+      "duckdb_ms": 20.9,
+      "bigquery_ms": 917.0,
       "bigquery_bytes_processed": 7342498
     },
     {
@@ -260,8 +260,8 @@
       "match": true,
       "detail": "ok",
       "rows": 3095,
-      "duckdb_ms": 50.7,
-      "bigquery_ms": 1176.3,
+      "duckdb_ms": 35.1,
+      "bigquery_ms": 1180.6,
       "bigquery_bytes_processed": 14372288
     },
     {
@@ -271,8 +271,8 @@
       "match": true,
       "detail": "ok",
       "rows": 26,
-      "duckdb_ms": 14.4,
-      "bigquery_ms": 921.5,
+      "duckdb_ms": 9.8,
+      "bigquery_ms": 743.0,
       "bigquery_bytes_processed": 7755679
     },
     {
@@ -282,8 +282,8 @@
       "match": true,
       "detail": "ok",
       "rows": 20,
-      "duckdb_ms": 13.8,
-      "bigquery_ms": 1168.2,
+      "duckdb_ms": 10.6,
+      "bigquery_ms": 707.6,
       "bigquery_bytes_processed": 5521160
     },
     {
@@ -293,8 +293,8 @@
       "match": true,
       "detail": "ok",
       "rows": 74,
-      "duckdb_ms": 57.1,
-      "bigquery_ms": 1394.5,
+      "duckdb_ms": 42.2,
+      "bigquery_ms": 923.5,
       "bigquery_bytes_processed": 13816753
     },
     {
@@ -304,8 +304,8 @@
       "match": true,
       "detail": "ok",
       "rows": 3,
-      "duckdb_ms": 10.3,
-      "bigquery_ms": 1045.6,
+      "duckdb_ms": 11.7,
+      "bigquery_ms": 696.4,
       "bigquery_bytes_processed": 3152200
     },
     {
@@ -315,12 +315,12 @@
       "match": true,
       "detail": "ok",
       "rows": 5,
-      "duckdb_ms": 9.2,
-      "bigquery_ms": 929.7,
+      "duckdb_ms": 7.4,
+      "bigquery_ms": 792.5,
       "bigquery_bytes_processed": 5151085
     }
   ],
-  "matched": 24,
+  "matched": 26,
   "total": 26,
-  "bytes_processed_total": 168846069
+  "bytes_processed_total": 169926346
 }
